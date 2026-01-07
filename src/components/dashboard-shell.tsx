@@ -1,0 +1,36 @@
+"use client";
+
+import { MobileSidebarProvider, MobileHeader, MobileOverlay } from "@/components/mobile-sidebar";
+import { Sidebar } from "@/components/sidebar";
+import { Role } from "@/types/database.types";
+
+interface DashboardShellProps {
+    children: React.ReactNode;
+    userRole: Role;
+    userName: string;
+}
+
+export function DashboardShell({ children, userRole, userName }: DashboardShellProps) {
+    return (
+        <MobileSidebarProvider>
+            <div className="flex h-screen bg-gray-50">
+                {/* Mobile Header */}
+                <MobileHeader />
+
+                {/* Mobile Overlay */}
+                <MobileOverlay />
+
+                {/* Sidebar */}
+                <Sidebar userRole={userRole} userName={userName} />
+
+                {/* Main Content */}
+                <main className="flex-1 overflow-auto md:ml-0">
+                    {/* Add top padding on mobile for the fixed header */}
+                    <div className="p-4 md:p-6 pt-16 md:pt-6">
+                        {children}
+                    </div>
+                </main>
+            </div>
+        </MobileSidebarProvider>
+    );
+}

@@ -1,0 +1,133 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Bell, BellOff, Loader2 } from "lucide-react";
+import { savePushSubscription, removePushSubscription, getVapidPublicKey } from "@/app/(dashboard)/notifications/actions";
+
+function urlBase64ToUint8Array(base64String: string) {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+export function NotificationToggle() {
+    const [permission, setPermission] = useState<NotificationPermission>("default");
+    const [isSubscribed, setIsSubscribed] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if ("Notification" in window) {
+            setPermission(Notification.permission);
+        }
+
+        // Check if already subscribed
+        checkSubscription();
+    }, []);
+
+    const checkSubscription = async () => {
+        if (!("serviceWorker" in navigator)) return;
+
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        setIsSubscribed(!!subscription);
+    };
+
+    const subscribe = async () => {
+        setLoading(true);
+        try {
+            // Request permission
+            const perm = await Notification.requestPermission();
+            setPermission(perm);
+
+            if (perm !== "granted") {
+                setLoading(false);
+                return;
+            }
+
+            // Get VAPID key
+            const vapidKey = await getVapidPublicKey();
+            if (!vapidKey) {
+                console.error("VAPID key not configured");
+                setLoading(false);
+                return;
+            }
+
+            // Subscribe to push
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(vapidKey),
+            });
+
+            // Save to database
+            const subJson = subscription.toJSON();
+            await savePushSubscription({
+                endpoint: subJson.endpoint!,
+                keys: {
+                    p256dh: subJson.keys!.p256dh,
+                    auth: subJson.keys!.auth,
+                },
+            });
+
+            setIsSubscribed(true);
+        } catch (err) {
+            console.error("Error subscribing:", err);
+        }
+        setLoading(false);
+    };
+
+    const unsubscribe = async () => {
+        setLoading(true);
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.getSubscription();
+
+            if (subscription) {
+                await subscription.unsubscribe();
+                await removePushSubscription(subscription.endpoint);
+            }
+
+            setIsSubscribed(false);
+        } catch (err) {
+            console.error("Error unsubscribing:", err);
+        }
+        setLoading(false);
+    };
+
+    if (!("Notification" in window) || !("serviceWorker" in navigator)) {
+        return null; // Not supported
+    }
+
+    if (permission === "denied") {
+        return (
+            <Button variant="ghost" size="icon" disabled title="Notifikasi diblokir">
+                <BellOff className="w-5 h-5 text-gray-400" />
+            </Button>
+        );
+    }
+
+    return (
+        <Button
+            variant="ghost"
+            size="icon"
+            onClick={isSubscribed ? unsubscribe : subscribe}
+            disabled={loading}
+            title={isSubscribed ? "Matikan notifikasi" : "Aktifkan notifikasi"}
+            className={isSubscribed ? "text-emerald-500" : "text-gray-400"}
+        >
+            {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+            ) : isSubscribed ? (
+                <Bell className="w-5 h-5" />
+            ) : (
+                <BellOff className="w-5 h-5" />
+            )}
+        </Button>
+    );
+}
