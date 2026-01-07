@@ -32,11 +32,13 @@ async function getAdminChartData() {
     const total = santriData?.length || 0;
     const smpCount = (santriData || []).filter((s: any) => s.jenjang === "SMP").length;
     const smaCount = (santriData || []).filter((s: any) => s.jenjang === "SMA").length;
-    const otherCount = total - smpCount - smaCount;
+    const smkCount = (santriData || []).filter((s: any) => s.jenjang === "SMK").length;
+    const otherCount = total - smpCount - smaCount - smkCount;
 
     const jenjangData = [
         { name: "SMP", value: smpCount },
         { name: "SMA", value: smaCount },
+        { name: "SMK", value: smkCount },
     ];
     // Add "Lainnya" if there are any with different/null jenjang
     if (otherCount > 0) {

@@ -34,7 +34,7 @@ interface Santri {
     alamat: string | null;
     nama_wali: string | null;
     kontak_wali: string | null;
-    jenjang: "SMP" | "SMA";
+    jenjang: "SMP" | "SMA" | "SMK";
     status: string;
     foto_url: string | null;
     kelas_id: string | null;
@@ -316,10 +316,11 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
                                     <Select
                                         id="jenjang"
                                         value={formData.jenjang}
-                                        onChange={(e) => setFormData({ ...formData, jenjang: e.target.value as "SMP" | "SMA" })}
+                                        onChange={(e) => setFormData({ ...formData, jenjang: e.target.value as "SMP" | "SMA" | "SMK" })}
                                     >
                                         <option value="SMP">SMP</option>
                                         <option value="SMA">SMA</option>
+                                        <option value="SMK">SMK</option>
                                     </Select>
                                 </div>
                             </div>

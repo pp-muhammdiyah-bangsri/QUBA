@@ -11,7 +11,7 @@ const santriSchema = z.object({
     alamat: z.string().optional(),
     nama_wali: z.string().optional(),
     kontak_wali: z.string().optional(),
-    jenjang: z.enum(["SMP", "SMA"]),
+    jenjang: z.enum(["SMP", "SMA", "SMK"]),
     status: z.string().default("aktif"),
     foto_url: z.string().optional(),
     kelas_id: z.string().uuid().optional().nullable(),

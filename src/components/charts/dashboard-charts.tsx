@@ -23,7 +23,7 @@ interface DashboardChartsProps {
     pelanggaranTrend: { bulan: string; jumlah: number }[];
 }
 
-const COLORS = ["#10B981", "#3B82F6", "#F59E0B"]; // SMP=emerald, SMA=blue, Lainnya=amber
+const COLORS = ["#10B981", "#3B82F6", "#8B5CF6", "#F59E0B"]; // SMP=emerald, SMA=blue, SMK=purple, Lainnya=amber
 
 export function DashboardCharts({
     jenjangData,
