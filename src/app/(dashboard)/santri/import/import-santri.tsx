@@ -22,7 +22,7 @@ interface ParsedRow {
     alamat?: string;
     nama_wali?: string;
     kontak_wali?: string;
-    jenjang: "SMP" | "SMA";
+    jenjang: "SMP" | "SMA" | "SMK";
     status?: string;
 }
 
@@ -73,7 +73,12 @@ export function ImportSantri() {
                     alamat: row.alamat || undefined,
                     nama_wali: row.nama_wali || undefined,
                     kontak_wali: row.kontak_wali || undefined,
-                    jenjang: (row.jenjang?.toUpperCase() === "SMA" ? "SMA" : "SMP") as "SMP" | "SMA",
+                    jenjang: (() => {
+                        const val = row.jenjang?.toUpperCase() || "SMP";
+                        if (val.includes("SMK")) return "SMK";
+                        if (val.includes("SMA")) return "SMA";
+                        return "SMP";
+                    })() as "SMP" | "SMA" | "SMK",
                     status: row.status || "aktif",
                 });
             }
@@ -124,7 +129,7 @@ export function ImportSantri() {
                                 <li>File CSV dengan header di baris pertama</li>
                                 <li>Kolom wajib: <code className="bg-gray-100 px-1 rounded">nis, nama, jenis_kelamin, jenjang</code></li>
                                 <li>jenis_kelamin: L (Laki-laki) atau P (Perempuan)</li>
-                                <li>jenjang: SMP atau SMA</li>
+                                <li>jenjang: SMP, SMA, atau SMK</li>
                             </ul>
                         </div>
                         <div className="space-y-2">
@@ -141,7 +146,8 @@ export function ImportSantri() {
                         const csvContent = `nis,nama,jenis_kelamin,jenjang,alamat,nama_wali,kontak_wali
 2024001,Ahmad Fauzi,L,SMP,Jl. Merdeka No. 1,Bapak Fauzi,081234567890
 2024002,Aisyah Putri,P,SMP,Jl. Pahlawan No. 2,Ibu Siti,081234567891
-2024003,Muhammad Rizki,L,SMA,Jl. Sudirman No. 3,Bapak Rizki,081234567892`;
+2024003,Muhammad Rizki,L,SMA,Jl. Sudirman No. 3,Bapak Rizki,081234567892
+2024004,Fatimah Azzahra,P,SMK,Jl. Industri No. 4,Ibu Fatimah,081234567893`;
                         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
                         const link = document.createElement("a");
                         link.href = URL.createObjectURL(blob);

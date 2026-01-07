@@ -1,5 +1,5 @@
 ﻿export type Role = 'admin' | 'ustadz' | 'ortu';
-export type Jenjang = 'SMP' | 'SMA';
+export type Jenjang = 'SMP' | 'SMA' | 'SMK';
 export type JenisKelamin = 'L' | 'P';
 export type StatusPresensi = 'hadir' | 'izin' | 'sakit' | 'alpa';
 export type StatusPerizinan = 'pending' | 'approved' | 'rejected';
