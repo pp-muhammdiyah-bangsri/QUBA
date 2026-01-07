@@ -136,7 +136,6 @@ export function MapelTable({ initialData }: MapelTableProps) {
 
     return (
         <div className="space-y-6">
-            {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="border-0 shadow-sm bg-gradient-to-br from-green-50 to-emerald-50">
                     <CardContent className="p-4">
