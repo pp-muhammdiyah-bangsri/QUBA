@@ -55,7 +55,7 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
         jenis_kelamin: "L",
         alamat: "",
         kontak: "",
-        email: "",
+
         foto_url: "",
     });
 
@@ -65,7 +65,7 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
 
     const handleOpenAdd = () => {
         setEditingAsatidz(null);
-        setFormData({ nama: "", jenis_kelamin: "L", alamat: "", kontak: "", email: "", foto_url: "" });
+        setFormData({ nama: "", jenis_kelamin: "L", alamat: "", kontak: "", foto_url: "" });
         setError(null);
         setIsDialogOpen(true);
     };
@@ -77,7 +77,7 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
             jenis_kelamin: asatidz.jenis_kelamin || "L",
             alamat: asatidz.alamat || "",
             kontak: asatidz.kontak || "",
-            email: "",
+
             foto_url: asatidz.foto_url || "",
         });
         setError(null);

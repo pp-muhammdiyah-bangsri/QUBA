@@ -196,104 +196,131 @@ export function MapelTable({ initialData }: MapelTableProps) {
                             Tambah Mapel
                         </Button>
                     </div>
-
-                </TableCell>
-                <TableCell>
-                    <span className="font-semibold">{item.kkm}</span>
-                </TableCell>
-                <TableCell className="text-right">
-                    <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)}>
-                        <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleOpenDelete(item)}>
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                    </Button>
-                </TableCell>
-            </TableRow>
-            ))
-                            )}
-        </TableBody >
-                    </Table >
+                    <div className="border rounded-lg">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>No</TableHead>
+                                    <TableHead>Mata Pelajaran</TableHead>
+                                    <TableHead>Kategori</TableHead>
+                                    <TableHead>KKM</TableHead>
+                                    <TableHead className="text-right">Aksi</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredData.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                                            Tidak ada data mapel
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    filteredData.map((item, index) => (
+                                        <TableRow key={item.id}>
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell className="font-medium">{item.nama}</TableCell>
+                                            <TableCell>
+                                                <Badge variant="secondary" className={kategoriColors[item.kategori]}>
+                                                    {item.kategori.charAt(0).toUpperCase() + item.kategori.slice(1)}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                <span className="font-semibold">{item.kkm}</span>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <Button variant="ghost" size="icon" onClick={() => handleOpenEdit(item)}>
+                                                    <Pencil className="w-4 h-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" onClick={() => handleOpenDelete(item)}>
+                                                    <Trash2 className="w-4 h-4 text-red-500" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </CardContent >
             </Card >
 
-        {/* Add/Edit Dialog */ }
-        < Dialog open = { isDialogOpen } onOpenChange = { setIsDialogOpen } >
-            <DialogContent onClose={() => setIsDialogOpen(false)} className="sm:max-w-[400px]">
-                <DialogHeader>
-                    <DialogTitle>{editingItem ? "Edit Mapel" : "Tambah Mapel Baru"}</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit}>
-                    {error && (
-                        <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 rounded-md">{error}</div>
-                    )}
-                    <div className="grid gap-4 py-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="nama">Nama Mapel *</Label>
-                            <Input
-                                id="nama"
-                                value={formData.nama}
-                                onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-                                placeholder="Contoh: Fiqih, Matematika"
-                                required
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
+            {/* Add/Edit Dialog */}
+            < Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >
+                <DialogContent onClose={() => setIsDialogOpen(false)} className="sm:max-w-[400px]">
+                    <DialogHeader>
+                        <DialogTitle>{editingItem ? "Edit Mapel" : "Tambah Mapel Baru"}</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit}>
+                        {error && (
+                            <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 rounded-md">{error}</div>
+                        )}
+                        <div className="grid gap-4 py-4">
                             <div className="space-y-2">
-                                <Label htmlFor="kategori">Kategori *</Label>
-                                <Select
-                                    id="kategori"
-                                    value={formData.kategori}
-                                    onChange={(e) => setFormData({ ...formData, kategori: e.target.value as "diniyah" | "umum" })}
-                                >
-                                    <option value="diniyah">Diniyah</option>
-                                    <option value="umum">Umum</option>
-                                </Select>
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="kkm">KKM *</Label>
+                                <Label htmlFor="nama">Nama Mapel *</Label>
                                 <Input
-                                    id="kkm"
-                                    type="number"
-                                    min="0"
-                                    max="100"
-                                    value={formData.kkm}
-                                    onChange={(e) => setFormData({ ...formData, kkm: parseInt(e.target.value) || 0 })}
+                                    id="nama"
+                                    value={formData.nama}
+                                    onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
+                                    placeholder="Contoh: Fiqih, Matematika"
                                     required
                                 />
                             </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="kategori">Kategori *</Label>
+                                    <Select
+                                        id="kategori"
+                                        value={formData.kategori}
+                                        onChange={(e) => setFormData({ ...formData, kategori: e.target.value as "diniyah" | "umum" })}
+                                    >
+                                        <option value="diniyah">Diniyah</option>
+                                        <option value="umum">Umum</option>
+                                    </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="kkm">KKM *</Label>
+                                    <Input
+                                        id="kkm"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        value={formData.kkm}
+                                        onChange={(e) => setFormData({ ...formData, kkm: parseInt(e.target.value) || 0 })}
+                                        required
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                            Batal
-                        </Button>
-                        <Button type="submit" disabled={loading}>
-                            {loading ? "Menyimpan..." : "Simpan"}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
+                        <DialogFooter>
+                            <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                                Batal
+                            </Button>
+                            <Button type="submit" disabled={loading}>
+                                {loading ? "Menyimpan..." : "Simpan"}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
             </Dialog >
 
-        {/* Delete Dialog */ }
-        < Dialog open = { isDeleteDialogOpen } onOpenChange = { setIsDeleteDialogOpen } >
-            <DialogContent onClose={() => setIsDeleteDialogOpen(false)} className="sm:max-w-[400px]">
-                <DialogHeader>
-                    <DialogTitle>Hapus Mapel</DialogTitle>
-                </DialogHeader>
-                <p className="text-gray-600">
-                    Apakah Anda yakin ingin menghapus <strong>{deletingItem?.nama}</strong>?
-                </p>
-                <DialogFooter className="mt-4">
-                    <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-                        Batal
-                    </Button>
-                    <Button type="button" variant="destructive" onClick={handleDelete} disabled={loading}>
-                        {loading ? "Menghapus..." : "Hapus"}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
+            {/* Delete Dialog */}
+            < Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} >
+                <DialogContent onClose={() => setIsDeleteDialogOpen(false)} className="sm:max-w-[400px]">
+                    <DialogHeader>
+                        <DialogTitle>Hapus Mapel</DialogTitle>
+                    </DialogHeader>
+                    <p className="text-gray-600">
+                        Apakah Anda yakin ingin menghapus <strong>{deletingItem?.nama}</strong>?
+                    </p>
+                    <DialogFooter className="mt-4">
+                        <Button type="button" variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+                            Batal
+                        </Button>
+                        <Button type="button" variant="destructive" onClick={handleDelete} disabled={loading}>
+                            {loading ? "Menghapus..." : "Hapus"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
             </Dialog >
         </>
     );

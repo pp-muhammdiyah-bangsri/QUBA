@@ -78,7 +78,7 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
         alamat: "",
         nama_wali: "",
         kontak_wali: "",
-        email_wali: "",
+
         jenjang: "SMP",
         status: "aktif",
         foto_url: "",
@@ -101,7 +101,7 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
             alamat: "",
             nama_wali: "",
             kontak_wali: "",
-            email_wali: "",
+
             jenjang: "SMP",
             status: "aktif",
             foto_url: "",
@@ -121,7 +121,7 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
             alamat: santri.alamat || "",
             nama_wali: santri.nama_wali || "",
             kontak_wali: santri.kontak_wali || "",
-            email_wali: "",
+
             jenjang: santri.jenjang,
             status: santri.status,
             foto_url: santri.foto_url || "",
