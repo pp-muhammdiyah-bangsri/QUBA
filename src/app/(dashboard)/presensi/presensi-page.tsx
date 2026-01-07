@@ -47,7 +47,7 @@ interface Santri {
     id: string;
     nama: string;
     nis: string;
-    jenjang: "SMP" | "SMA";
+    jenjang: "SMP" | "SMA" | "SMK";
     kelas_id: string | null;
     halaqoh_id: string | null;
 }

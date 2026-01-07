@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 
 export type BulkAssignFilters = {
     jenjang?: string;
+    jenis_kelamin?: string;
     status?: string;
     noKelas?: boolean;
     noHalaqoh?: boolean;
@@ -20,7 +21,7 @@ export async function getSantriForBulk(filters: BulkAssignFilters = {}) {
     let query = (supabase as any)
         .from("santri")
         .select(`
-            id, nama, nis, jenjang, status,
+            id, nama, nis, jenjang, jenis_kelamin, status,
             kelas:kelas_id(id, nama),
             halaqoh:halaqoh_id(id, nama)
         `)
@@ -29,6 +30,10 @@ export async function getSantriForBulk(filters: BulkAssignFilters = {}) {
     // Apply filters
     if (filters.jenjang) {
         query = query.eq("jenjang", filters.jenjang);
+    }
+
+    if (filters.jenis_kelamin) {
+        query = query.eq("jenis_kelamin", filters.jenis_kelamin);
     }
 
     if (filters.status) {
