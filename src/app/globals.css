@@ -58,8 +58,10 @@
 
 /* Fix for Select Options in Dark Mode */
 .dark select option {
-  background-color: hsl(222.2 84% 4.9%); /* Matches --background */
-  color: hsl(210 40% 98%); /* Matches --foreground */
+  background-color: hsl(222.2 84% 4.9%);
+  /* Matches --background */
+  color: hsl(210 40% 98%);
+  /* Matches --foreground */
 }
 
 /* Specific styling for date inputs to ensure calendar is dark */
@@ -153,13 +155,68 @@ body {
 }
 
 .dark .text-gray-600 {
-  color: hsl(215 20% 65%) !important;
+  color: hsl(215 20% 70%) !important;
 }
 
 .dark .text-gray-500 {
-  color: hsl(var(--muted-foreground)) !important;
+  color: hsl(215 20% 65%) !important;
 }
 
+.dark .text-gray-400 {
+  color: hsl(215 20% 60%) !important;
+}
+
+/* Ensure black text is readable in dark mode */
+.dark .text-black {
+  color: hsl(210 40% 98%) !important;
+}
+
+/* Form inputs in dark mode */
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: hsl(217.2 32.6% 15%) !important;
+  border-color: hsl(217.2 32.6% 25%) !important;
+  color: hsl(210 40% 98%) !important;
+}
+
+.dark input::placeholder,
+.dark select::placeholder,
+.dark textarea::placeholder {
+  color: hsl(215 20% 50%) !important;
+}
+
+/* Status badges and colored text improvements */
+.dark .text-red-400 {
+  color: hsl(0 72% 65%) !important;
+}
+
+.dark .text-red-500 {
+  color: hsl(0 72% 60%) !important;
+}
+
+.dark .text-red-600 {
+  color: hsl(0 72% 55%) !important;
+}
+
+.dark .text-green-600,
+.dark .text-green-700 {
+  color: hsl(142 71% 50%) !important;
+}
+
+.dark .text-blue-600 {
+  color: hsl(221 83% 60%) !important;
+}
+
+.dark .text-yellow-600 {
+  color: hsl(45 93% 55%) !important;
+}
+
+.dark .text-emerald-600 {
+  color: hsl(160 84% 45%) !important;
+}
+
+/* Background fixes */
 .dark .bg-white {
   background-color: hsl(var(--card)) !important;
 }
@@ -172,12 +229,53 @@ body {
   background-color: hsl(217.2 32.6% 15%) !important;
 }
 
+.dark .bg-gray-200 {
+  background-color: hsl(217.2 32.6% 18%) !important;
+}
+
+/* Status background colors */
+.dark .bg-green-100 {
+  background-color: hsla(142, 71%, 30%, 0.3) !important;
+}
+
+.dark .bg-red-100,
+.dark .bg-red-50 {
+  background-color: hsla(0, 72%, 30%, 0.3) !important;
+}
+
+.dark .bg-yellow-100 {
+  background-color: hsla(45, 93%, 35%, 0.3) !important;
+}
+
+.dark .bg-blue-100,
+.dark .bg-blue-50 {
+  background-color: hsla(221, 83%, 35%, 0.3) !important;
+}
+
+.dark .bg-emerald-50 {
+  background-color: hsla(160, 84%, 25%, 0.3) !important;
+}
+
+/* Border fixes */
 .dark .border-gray-200 {
   border-color: hsl(var(--border)) !important;
 }
 
 .dark .border-gray-300 {
   border-color: hsl(217.2 32.6% 25%) !important;
+}
+
+.dark .border-gray-400 {
+  border-color: hsl(217.2 32.6% 35%) !important;
+}
+
+/* Card and dialog improvements */
+.dark .shadow-lg {
+  --tw-shadow-color: rgba(0, 0, 0, 0.5);
+}
+
+.dark .shadow-md {
+  --tw-shadow-color: rgba(0, 0, 0, 0.4);
 }
 
 /* Card hover effects */
