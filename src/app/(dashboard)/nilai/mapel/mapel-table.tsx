@@ -241,11 +241,11 @@ export function MapelTable({ initialData }: MapelTableProps) {
                             </TableBody>
                         </Table>
                     </div>
-                </CardContent >
-            </Card >
+                </CardContent>
+            </Card>
 
             {/* Add/Edit Dialog */}
-            < Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen} >
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent onClose={() => setIsDialogOpen(false)} className="sm:max-w-[400px]">
                     <DialogHeader>
                         <DialogTitle>{editingItem ? "Edit Mapel" : "Tambah Mapel Baru"}</DialogTitle>
@@ -301,10 +301,10 @@ export function MapelTable({ initialData }: MapelTableProps) {
                         </DialogFooter>
                     </form>
                 </DialogContent>
-            </Dialog >
+            </Dialog>
 
             {/* Delete Dialog */}
-            < Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen} >
+            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <DialogContent onClose={() => setIsDeleteDialogOpen(false)} className="sm:max-w-[400px]">
                     <DialogHeader>
                         <DialogTitle>Hapus Mapel</DialogTitle>
@@ -321,7 +321,7 @@ export function MapelTable({ initialData }: MapelTableProps) {
                         </Button>
                     </DialogFooter>
                 </DialogContent>
-            </Dialog >
+            </Dialog>
         </>
     );
 }
