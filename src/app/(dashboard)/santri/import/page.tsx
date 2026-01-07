@@ -34,7 +34,12 @@ export default function ImportSantriPage() {
                 nis: String(row["NIS"] || row["nis"] || "").trim(),
                 nama: String(row["Nama"] || row["nama"] || row["Nama Lengkap"] || "").trim(),
                 jenis_kelamin: (String(row["JK"] || row["Jenis Kelamin"] || row["jenis_kelamin"] || "L").toUpperCase().charAt(0) === "P" ? "P" : "L") as "L" | "P",
-                jenjang: (String(row["Jenjang"] || row["jenjang"] || "SMP").toUpperCase().includes("SMA") ? "SMA" : "SMP") as "SMP" | "SMA",
+                jenjang: (() => {
+                    const val = String(row["Jenjang"] || row["jenjang"] || "SMP").toUpperCase();
+                    if (val.includes("SMK")) return "SMK";
+                    if (val.includes("SMA")) return "SMA";
+                    return "SMP";
+                })() as "SMP" | "SMA" | "SMK",
                 alamat: String(row["Alamat"] || row["alamat"] || ""),
                 nama_wali: String(row["Nama Wali"] || row["nama_wali"] || row["Wali"] || ""),
                 kontak_wali: String(row["Kontak Wali"] || row["kontak_wali"] || row["HP Wali"] || ""),
