@@ -24,6 +24,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { createAsatidz, updateAsatidz, deleteAsatidz, AsatidzFormData } from "./actions";
 import { PhotoUpload } from "@/components/photo-upload";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Asatidz {
     id: string;
@@ -33,6 +34,9 @@ interface Asatidz {
     kontak: string | null;
     user_id: string | null;
     foto_url: string | null;
+    biografi: string | null;
+    pendidikan: string | null;
+    keahlian: string | null;
     created_at: string;
 }
 
@@ -55,8 +59,10 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
         jenis_kelamin: "L",
         alamat: "",
         kontak: "",
-
         foto_url: "",
+        biografi: "",
+        pendidikan: "",
+        keahlian: "",
     });
 
     const filteredData = data.filter((asatidz) =>
@@ -65,7 +71,7 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
 
     const handleOpenAdd = () => {
         setEditingAsatidz(null);
-        setFormData({ nama: "", jenis_kelamin: "L", alamat: "", kontak: "", foto_url: "" });
+        setFormData({ nama: "", jenis_kelamin: "L", alamat: "", kontak: "", foto_url: "", biografi: "", pendidikan: "", keahlian: "" });
         setError(null);
         setIsDialogOpen(true);
     };
@@ -77,8 +83,10 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
             jenis_kelamin: asatidz.jenis_kelamin || "L",
             alamat: asatidz.alamat || "",
             kontak: asatidz.kontak || "",
-
             foto_url: asatidz.foto_url || "",
+            biografi: asatidz.biografi || "",
+            pendidikan: asatidz.pendidikan || "",
+            keahlian: asatidz.keahlian || "",
         });
         setError(null);
         setIsDialogOpen(true);
@@ -281,6 +289,42 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
                                     </p>
                                 </div>
                             )}
+                            {/* Profil Section for PSB */}
+                            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <p className="text-sm font-medium text-muted-foreground mb-3">Profil Untuk PSB (Opsional)</p>
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="biografi">Biografi Singkat</Label>
+                                        <Textarea
+                                            id="biografi"
+                                            value={formData.biografi || ""}
+                                            onChange={(e) => setFormData({ ...formData, biografi: e.target.value })}
+                                            placeholder="Ceritakan pengalaman dan motivasi mengajar..."
+                                            rows={3}
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="pendidikan">Pendidikan</Label>
+                                            <Input
+                                                id="pendidikan"
+                                                value={formData.pendidikan || ""}
+                                                onChange={(e) => setFormData({ ...formData, pendidikan: e.target.value })}
+                                                placeholder="S1 Pendidikan Islam, UIN..."
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="keahlian">Keahlian/Bidang</Label>
+                                            <Input
+                                                id="keahlian"
+                                                value={formData.keahlian || ""}
+                                                onChange={(e) => setFormData({ ...formData, keahlian: e.target.value })}
+                                                placeholder="Tahfidz, Tajwid, Fiqih..."
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <DialogFooter>
                             <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
