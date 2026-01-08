@@ -300,6 +300,7 @@ export async function getPresensiRekap(
 
     // Initialize map with all santri
     type SantriRekap = {
+        id: string;
         nama: string;
         nis: string;
         jenjang: string;
@@ -314,6 +315,7 @@ export async function getPresensiRekap(
     if (allSantri) {
         allSantri.forEach((s: any) => {
             santriMap[s.id] = {
+                id: s.id,
                 nama: s.nama,
                 nis: s.nis,
                 jenjang: s.jenjang,
@@ -359,8 +361,11 @@ export async function getPresensiRekap(
         }
     });
 
+    const result = Object.values(santriMap);
+    result.sort((a, b) => a.nama.localeCompare(b.nama));
+
     return {
-        santriRekap: Object.entries(santriMap).map(([id, data]) => ({ id, ...data })),
+        santriRekap: result,
         kegiatanCount: uniqueKegiatan.size,
     };
 }
