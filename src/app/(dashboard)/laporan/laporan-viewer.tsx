@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Label } from "@/components/ui/label";
 import {
     Table,
@@ -138,12 +139,18 @@ export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole 
                         {userRole !== "ortu" && (
                             <div className="space-y-2">
                                 <Label>Pilih Santri</Label>
-                                <Select value={selectedSantri} onChange={(e) => setSelectedSantri(e.target.value)}>
-                                    <option value="">-- Pilih Santri --</option>
-                                    {santriList.map((s) => (
-                                        <option key={s.id} value={s.id}>{s.nama} ({s.nis})</option>
-                                    ))}
-                                </Select>
+                                <SearchableSelect
+                                    options={santriList.map((s) => ({
+                                        value: s.id,
+                                        label: s.nama,
+                                        sublabel: `NIS: ${s.nis}`,
+                                    }))}
+                                    value={selectedSantri}
+                                    onChange={(value) => setSelectedSantri(value)}
+                                    placeholder="-- Pilih Santri --"
+                                    searchPlaceholder="Ketik nama santri..."
+                                    emptyText="Santri tidak ditemukan"
+                                />
                             </div>
                         )}
                         <div className="space-y-2">

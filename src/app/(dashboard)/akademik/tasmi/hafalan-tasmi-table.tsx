@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { createHafalanTasmi, deleteHafalanTasmi, HafalanTasmiFormData } from "../actions";
 
 interface HafalanTasmi {
@@ -323,19 +324,18 @@ export function HafalanTasmiTable({ initialData, santriList, asatidzList, userRo
                         <div className="grid gap-4 py-4">
                             <div className="space-y-2">
                                 <Label htmlFor="santri_id">Santri *</Label>
-                                <Select
-                                    id="santri_id"
+                                <SearchableSelect
+                                    options={santriList.map((s) => ({
+                                        value: s.id,
+                                        label: s.nama,
+                                        sublabel: `NIS: ${s.nis}`,
+                                    }))}
                                     value={formData.santri_id}
-                                    onChange={(e) => setFormData({ ...formData, santri_id: e.target.value })}
-                                    required
-                                >
-                                    <option value="">-- Pilih Santri --</option>
-                                    {santriList.map((s) => (
-                                        <option key={s.id} value={s.id}>
-                                            {s.nama} ({s.nis})
-                                        </option>
-                                    ))}
-                                </Select>
+                                    onChange={(value) => setFormData({ ...formData, santri_id: value })}
+                                    placeholder="-- Pilih Santri --"
+                                    searchPlaceholder="Ketik nama santri..."
+                                    emptyText="Santri tidak ditemukan"
+                                />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -390,18 +390,17 @@ export function HafalanTasmiTable({ initialData, santriList, asatidzList, userRo
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="penguji_id">Penguji</Label>
-                                <Select
-                                    id="penguji_id"
+                                <SearchableSelect
+                                    options={asatidzList.map((a) => ({
+                                        value: a.id,
+                                        label: `${a.jenis_kelamin === "P" ? "Ustadzah" : "Ustadz"} ${a.nama}`,
+                                    }))}
                                     value={formData.penguji_id || ""}
-                                    onChange={(e) => setFormData({ ...formData, penguji_id: e.target.value || undefined })}
-                                >
-                                    <option value="">-- Pilih Penguji --</option>
-                                    {asatidzList.map((a) => (
-                                        <option key={a.id} value={a.id}>
-                                            {a.jenis_kelamin === "P" ? "Ustadzah" : "Ustadz"} {a.nama}
-                                        </option>
-                                    ))}
-                                </Select>
+                                    onChange={(value) => setFormData({ ...formData, penguji_id: value || undefined })}
+                                    placeholder="-- Pilih Penguji --"
+                                    searchPlaceholder="Ketik nama penguji..."
+                                    emptyText="Penguji tidak ditemukan"
+                                />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="catatan">Catatan</Label>

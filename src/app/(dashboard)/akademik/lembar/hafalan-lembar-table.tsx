@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { createHafalanLembar, deleteHafalanLembar, HafalanLembarFormData } from "../actions";
 
 interface HafalanLembar {
@@ -262,26 +263,24 @@ export function HafalanLembarTable({ initialData, santriList, asatidzList, compl
                         <div className="grid gap-4 py-4">
                             <div className="space-y-2">
                                 <Label htmlFor="santri_id">Santri *</Label>
-                                <Select
-                                    id="santri_id"
+                                <SearchableSelect
+                                    options={santriList.map((s) => ({
+                                        value: s.id,
+                                        label: s.nama,
+                                        sublabel: `NIS: ${s.nis}`,
+                                    }))}
                                     value={formData.santri_id}
-                                    onChange={(e) => {
-                                        const newSantriId = e.target.value;
+                                    onChange={(newSantriId) => {
                                         // Get first available juz for this santri
                                         const completed = completedJuzBySantri[newSantriId] || [];
                                         const availableJuz = Array.from({ length: 30 }, (_, i) => i + 1).filter(juz => !completed.includes(juz));
                                         const firstAvailableJuz = availableJuz.length > 0 ? availableJuz[0] : 1;
                                         setFormData({ ...formData, santri_id: newSantriId, juz: firstAvailableJuz });
                                     }}
-                                    required
-                                >
-                                    <option value="">-- Pilih Santri --</option>
-                                    {santriList.map((s) => (
-                                        <option key={s.id} value={s.id}>
-                                            {s.nama} ({s.nis})
-                                        </option>
-                                    ))}
-                                </Select>
+                                    placeholder="-- Pilih Santri --"
+                                    searchPlaceholder="Ketik nama santri..."
+                                    emptyText="Santri tidak ditemukan"
+                                />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -362,18 +361,17 @@ export function HafalanLembarTable({ initialData, santriList, asatidzList, compl
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="penguji_id">Penguji</Label>
-                                    <Select
-                                        id="penguji_id"
+                                    <SearchableSelect
+                                        options={asatidzList.map((a) => ({
+                                            value: a.id,
+                                            label: `${a.jenis_kelamin === "P" ? "Ustadzah" : "Ustadz"} ${a.nama}`,
+                                        }))}
                                         value={formData.penguji_id || ""}
-                                        onChange={(e) => setFormData({ ...formData, penguji_id: e.target.value || undefined })}
-                                    >
-                                        <option value="">-- Pilih Penguji --</option>
-                                        {asatidzList.map((a) => (
-                                            <option key={a.id} value={a.id}>
-                                                {a.jenis_kelamin === "P" ? "Ustadzah" : "Ustadz"} {a.nama}
-                                            </option>
-                                        ))}
-                                    </Select>
+                                        onChange={(value) => setFormData({ ...formData, penguji_id: value || undefined })}
+                                        placeholder="-- Pilih Penguji --"
+                                        searchPlaceholder="Ketik nama penguji..."
+                                        emptyText="Penguji tidak ditemukan"
+                                    />
                                 </div>
                             </div>
                             <div className="space-y-2">

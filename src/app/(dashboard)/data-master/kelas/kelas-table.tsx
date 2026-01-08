@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { createKelas, updateKelas, deleteKelas, Kelas, KelasFormData } from "../actions";
 
 interface AsatidzOption {
@@ -242,18 +243,17 @@ export function KelasTable({ initialData, asatidzList }: KelasTableProps) {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="wali_kelas_id">Wali Kelas</Label>
-                                <Select
-                                    id="wali_kelas_id"
+                                <SearchableSelect
+                                    options={asatidzList.map((a) => ({
+                                        value: a.id,
+                                        label: `${a.jenis_kelamin === "P" ? "Ustadzah" : "Ustadz"} ${a.nama}`,
+                                    }))}
                                     value={formData.wali_kelas_id || ""}
-                                    onChange={(e) => setFormData({ ...formData, wali_kelas_id: e.target.value || null })}
-                                >
-                                    <option value="">-- Tidak Ada --</option>
-                                    {asatidzList.map((a) => (
-                                        <option key={a.id} value={a.id}>
-                                            {a.jenis_kelamin === "P" ? "Ustadzah" : "Ustadz"} {a.nama}
-                                        </option>
-                                    ))}
-                                </Select>
+                                    onChange={(value) => setFormData({ ...formData, wali_kelas_id: value || null })}
+                                    placeholder="-- Tidak Ada --"
+                                    searchPlaceholder="Ketik nama ustadz..."
+                                    emptyText="Ustadz tidak ditemukan"
+                                />
                             </div>
                         </div>
                         <DialogFooter>

@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { createPerizinan, updatePerizinanStatus, deletePerizinan, PerizinanFormData } from "../actions";
 
 interface Perizinan {
@@ -336,19 +337,18 @@ export function PerizinanTable({ initialData, santriList, userRole = "admin", li
                                         className="bg-gray-100"
                                     />
                                 ) : (
-                                    <Select
-                                        id="santri_id"
+                                    <SearchableSelect
+                                        options={santriList.map((s) => ({
+                                            value: s.id,
+                                            label: s.nama,
+                                            sublabel: `NIS: ${s.nis}`,
+                                        }))}
                                         value={formData.santri_id}
-                                        onChange={(e) => setFormData({ ...formData, santri_id: e.target.value })}
-                                        required
-                                    >
-                                        <option value="">-- Pilih Santri --</option>
-                                        {santriList.map((s) => (
-                                            <option key={s.id} value={s.id}>
-                                                {s.nama} ({s.nis})
-                                            </option>
-                                        ))}
-                                    </Select>
+                                        onChange={(value) => setFormData({ ...formData, santri_id: value })}
+                                        placeholder="-- Pilih Santri --"
+                                        searchPlaceholder="Ketik nama santri..."
+                                        emptyText="Santri tidak ditemukan"
+                                    />
                                 )}
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

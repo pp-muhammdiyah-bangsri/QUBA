@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { createHalaqoh, updateHalaqoh, deleteHalaqoh, Halaqoh, HalaqohFormData } from "../actions";
 
 interface AsatidzOption {
@@ -223,18 +224,17 @@ export function HalaqohTable({ initialData, asatidzList }: HalaqohTableProps) {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="musyrif_id">Musyrif</Label>
-                                <Select
-                                    id="musyrif_id"
+                                <SearchableSelect
+                                    options={asatidzList.map((a) => ({
+                                        value: a.id,
+                                        label: `${a.jenis_kelamin === "P" ? "Ustadzah" : "Ustadz"} ${a.nama}`,
+                                    }))}
                                     value={formData.musyrif_id || ""}
-                                    onChange={(e) => setFormData({ ...formData, musyrif_id: e.target.value || null })}
-                                >
-                                    <option value="">-- Tidak Ada --</option>
-                                    {asatidzList.map((a) => (
-                                        <option key={a.id} value={a.id}>
-                                            {a.jenis_kelamin === "P" ? "Ustadzah" : "Ustadz"} {a.nama}
-                                        </option>
-                                    ))}
-                                </Select>
+                                    onChange={(value) => setFormData({ ...formData, musyrif_id: value || null })}
+                                    placeholder="-- Tidak Ada --"
+                                    searchPlaceholder="Ketik nama ustadz..."
+                                    emptyText="Ustadz tidak ditemukan"
+                                />
                             </div>
                         </div>
                         <DialogFooter>

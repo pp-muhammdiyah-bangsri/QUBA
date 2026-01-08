@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Label } from "@/components/ui/label";
 import {
     Table,
@@ -87,7 +88,7 @@ export function RapotViewer({ santriList, semesterOptions }: RapotViewerProps) {
     const diniyahNilai = rapotData?.nilaiList.filter((n) => n.mapel?.kategori === "diniyah") || [];
     const umumNilai = rapotData?.nilaiList.filter((n) => n.mapel?.kategori === "umum") || [];
 
-    const totalPresensi = rapotData ? 
+    const totalPresensi = rapotData ?
         rapotData.presensi.hadir + rapotData.presensi.izin + rapotData.presensi.sakit + rapotData.presensi.alpa : 0;
 
     return (
@@ -98,17 +99,18 @@ export function RapotViewer({ santriList, semesterOptions }: RapotViewerProps) {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                         <div className="space-y-2">
                             <Label>Pilih Santri</Label>
-                            <Select
+                            <SearchableSelect
+                                options={santriList.map((s) => ({
+                                    value: s.id,
+                                    label: s.nama,
+                                    sublabel: `NIS: ${s.nis}`,
+                                }))}
                                 value={selectedSantri}
-                                onChange={(e) => setSelectedSantri(e.target.value)}
-                            >
-                                <option value="">-- Pilih Santri --</option>
-                                {santriList.map((s) => (
-                                    <option key={s.id} value={s.id}>
-                                        {s.nama} ({s.nis})
-                                    </option>
-                                ))}
-                            </Select>
+                                onChange={(value) => setSelectedSantri(value)}
+                                placeholder="-- Pilih Santri --"
+                                searchPlaceholder="Ketik nama santri..."
+                                emptyText="Santri tidak ditemukan"
+                            />
                         </div>
                         <div className="space-y-2">
                             <Label>Semester</Label>
@@ -144,7 +146,7 @@ export function RapotViewer({ santriList, semesterOptions }: RapotViewerProps) {
                                 <h2 className="text-2xl font-bold print:text-xl">LAPORAN HASIL BELAJAR</h2>
                                 <p className="text-gray-600">Semester: {rapotData.semester}</p>
                             </div>
-                            
+
                             <div className="grid grid-cols-2 gap-4 text-sm">
                                 <div className="space-y-2">
                                     <div className="flex">
