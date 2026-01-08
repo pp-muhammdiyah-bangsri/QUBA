@@ -284,27 +284,21 @@ export async function getPresensiRekap(
     const startDate = `${targetYear}-${targetMonth.toString().padStart(2, "0")}-01`;
     const endDate = new Date(targetYear, targetMonth, 0).toISOString().split("T")[0];
 
-    // Get all presensi in date range
+    // 1. Get all relevant santri first (to ensure those with 0 attendance are included)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: presensiData } = await (supabase as any)
-        .from("presensi")
-        .select(`
-            *,
-            santri:santri_id(id, nama, nis, jenjang, kelas_id, halaqoh_id, jenis_kelamin),
-            kegiatan:kegiatan_id(id, nama, tanggal_mulai)
-        `)
-        .gte("created_at", startDate)
-        .lte("created_at", endDate + "T23:59:59");
+    let santriQuery = (supabase as any)
+        .from("santri")
+        .select("id, nama, nis, jenjang, jenis_kelamin, kelas_id, halaqoh_id")
+        .eq("status", "aktif")
+        .order("nama", { ascending: true });
 
-    if (!presensiData) return { santriRekap: [], kegiatanCount: 0 };
+    if (filterType === "kelas" && filterId) santriQuery = santriQuery.eq("kelas_id", filterId);
+    if (filterType === "halaqoh" && filterId) santriQuery = santriQuery.eq("halaqoh_id", filterId);
+    if (gender !== "all") santriQuery = santriQuery.eq("jenis_kelamin", gender);
 
-    // Get unique kegiatan count
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const uniqueKegiatan = new Set((presensiData as any[])
-        .filter(p => (!kegiatanName || p.kegiatan?.nama === kegiatanName))
-        .map((p: { kegiatan_id: string }) => p.kegiatan_id));
+    const { data: allSantri } = await santriQuery;
 
-    // Aggregate per santri
+    // Initialize map with all santri
     type SantriRekap = {
         nama: string;
         nis: string;
@@ -317,28 +311,52 @@ export async function getPresensiRekap(
     };
     const santriMap: Record<string, SantriRekap> = {};
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (presensiData as any[]).forEach((p: { santri_id: string; santri: { nama: string; nis: string; jenjang: string; kelas_id: string; halaqoh_id: string; jenis_kelamin: string }; kegiatan: { nama: string }; status: string }) => {
-        // Apply Filters
-        if (filterType === "kelas" && filterId && p.santri.kelas_id !== filterId) return;
-        if (filterType === "halaqoh" && filterId && p.santri.halaqoh_id !== filterId) return;
-        if (kegiatanName && p.kegiatan?.nama !== kegiatanName) return;
-        if (gender !== "all" && p.santri.jenis_kelamin !== gender) return;
-
-        const key = p.santri_id;
-        if (!santriMap[key]) {
-            santriMap[key] = {
-                nama: p.santri?.nama || "",
-                nis: p.santri?.nis || "",
-                jenjang: p.santri?.jenjang || "",
+    if (allSantri) {
+        allSantri.forEach((s: any) => {
+            santriMap[s.id] = {
+                nama: s.nama,
+                nis: s.nis,
+                jenjang: s.jenjang,
                 hadir: 0,
                 izin: 0,
                 sakit: 0,
                 alpa: 0,
-                jenis_kelamin: p.santri?.jenis_kelamin || "",
+                jenis_kelamin: s.jenis_kelamin,
             };
+        });
+    }
+
+    // 2. Get presensi data
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: presensiData } = await (supabase as any)
+        .from("presensi")
+        .select(`
+            *,
+            kegiatan:kegiatan_id(id, nama)
+        `)
+        .gte("created_at", startDate)
+        .lte("created_at", endDate + "T23:59:59");
+
+    if (!presensiData) return { santriRekap: Object.values(santriMap), kegiatanCount: 0 };
+
+    // 3. Update stats from presensi data and count unique filtered activities
+    const uniqueKegiatan = new Set<string>();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (presensiData as any[]).forEach((p) => {
+        // Skip if not in our santri map (means didn't match initial filters)
+        if (!santriMap[p.santri_id]) return;
+
+        // Apply Kegiatan Name filter
+        if (kegiatanName && p.kegiatan?.nama !== kegiatanName) return;
+
+        // Count this activity
+        uniqueKegiatan.add(p.kegiatan_id);
+
+        const status = p.status as "hadir" | "izin" | "sakit" | "alpa";
+        if (santriMap[p.santri_id][status] !== undefined) {
+            santriMap[p.santri_id][status]++;
         }
-        santriMap[key][p.status as "hadir" | "izin" | "sakit" | "alpa"]++;
     });
 
     return {
