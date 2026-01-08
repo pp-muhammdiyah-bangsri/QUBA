@@ -160,6 +160,7 @@ export async function updateAsatidzProfile(
         keahlian?: string;
         kontak?: string;
         alamat?: string;
+        foto_url?: string;
     }
 ) {
     console.log("updateAsatidzProfile called with ID:", asatidzId);
@@ -194,6 +195,11 @@ export async function updateAsatidzProfile(
     // Only add nama if provided (to prevent accidental clearing)
     if (data.nama && data.nama.trim() !== "") {
         updateData.nama = data.nama.trim();
+    }
+
+    // Add foto_url if provided
+    if (data.foto_url !== undefined) {
+        updateData.foto_url = data.foto_url || null;
     }
 
     console.log("Update data (processed):", JSON.stringify(updateData, null, 2));

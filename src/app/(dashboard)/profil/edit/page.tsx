@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Save, Loader2 } from "lucide-react";
+import { User, Save, Loader2, Camera } from "lucide-react";
+import { PhotoUpload } from "@/components/photo-upload";
 
 interface UstadzProfile {
     id: string;
@@ -53,6 +54,7 @@ export default function EditProfilePage() {
             keahlian: profile.keahlian || "",
             kontak: profile.kontak || "",
             alamat: profile.alamat || "",
+            foto_url: profile.foto_url || "",
         });
 
         if (result.error) {
@@ -94,6 +96,18 @@ export default function EditProfilePage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
+                            {/* Photo Upload Section */}
+                            <div className="flex flex-col items-center pb-4 border-b border-gray-100 dark:border-gray-800">
+                                <Label className="mb-3 flex items-center gap-2">
+                                    <Camera className="w-4 h-4" />
+                                    Foto Profil
+                                </Label>
+                                <PhotoUpload
+                                    currentUrl={profile.foto_url}
+                                    onUpload={(url) => setProfile({ ...profile, foto_url: url || null })}
+                                    folder="asatidz"
+                                />
+                            </div>
                             <div>
                                 <Label>Nama Lengkap</Label>
                                 <Input
