@@ -438,52 +438,58 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
                                     </TableCell>
                                 </TableRow>
                             ) : (
-                                filteredKegiatan.map((k) => (
-                                    <TableRow key={k.id}>
-                                        <TableCell>{formatDate(k.tanggal_mulai)}</TableCell>
-                                        <TableCell className="font-medium">{k.nama}</TableCell>
-                                        <TableCell>
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${jenisColors[k.jenis]}`}>
-                                                {jenisLabels[k.jenis]}
-                                            </span>
-                                        </TableCell>
-                                        <TableCell>{k.lokasi || "-"}</TableCell>
-                                        <TableCell className="text-right">
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => handleOpenPresensi(k)}
-                                                className="mr-2"
-                                                disabled={(() => {
-                                                    // Simple client-side check for UI feedback
-                                                    // Ideally we pass server time or pre-calculated status
-                                                    if (!k.jadwal_rutin_id) return false;
-                                                    // We don't have jadwal_rutin loaded here yet. 
-                                                    // For MVP, we'll let them click but Server Action will reject.
-                                                    // Or we can add status badge in next iteration.
-                                                    return false;
-                                                })()}
-                                            >
-                                                <Users className="w-4 h-4 mr-1" />
-                                                Presensi
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleOpenEditKegiatan(k)}
-                                            >
-                                                <Pencil className="w-4 h-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleOpenDeleteKegiatan(k)}
-                                            >
-                                                <Trash2 className="w-4 h-4 text-red-500" />
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
+                                filteredKegiatan.map((k) => {
+                                    // Check if presensi period is expired
+                                    // Logic: Expired if current time > end of activity date (23:59:59)
+                                    // If tanggal_selesai exists, use that. Otherwise use tanggal_mulai.
+                                    const endDateStr = k.tanggal_selesai || k.tanggal_mulai;
+                                    const endDate = new Date(endDateStr);
+                                    endDate.setHours(23, 59, 59, 999);
+
+                                    const now = new Date();
+                                    const isExpired = now > endDate;
+                                    const canDoPresensi = userRole === "admin" || !isExpired;
+
+                                    return (
+                                        <TableRow key={k.id}>
+                                            <TableCell>{formatDate(k.tanggal_mulai)}</TableCell>
+                                            <TableCell className="font-medium">{k.nama}</TableCell>
+                                            <TableCell>
+                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${jenisColors[k.jenis]}`}>
+                                                    {jenisLabels[k.jenis]}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell>{k.lokasi || "-"}</TableCell>
+                                            <TableCell className="text-right">
+                                                {canDoPresensi && (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => handleOpenPresensi(k)}
+                                                        className="mr-2"
+                                                    >
+                                                        <Users className="w-4 h-4 mr-1" />
+                                                        Presensi
+                                                    </Button>
+                                                )}
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleOpenEditKegiatan(k)}
+                                                >
+                                                    <Pencil className="w-4 h-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleOpenDeleteKegiatan(k)}
+                                                >
+                                                    <Trash2 className="w-4 h-4 text-red-500" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })
                             )}
                         </TableBody>
                     </Table>
