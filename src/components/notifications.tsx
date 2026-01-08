@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { Bell, X, BookOpen, AlertTriangle, Calendar, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getNotificationsForUser } from "@/app/(dashboard)/notifications/actions";
+import { getNotificationsForUser, dismissNotification } from "@/app/(dashboard)/notifications/actions";
 
 interface Notification {
     id: string;
@@ -32,54 +32,42 @@ const colorMap = {
     info: "bg-zinc-100 text-zinc-600 dark:bg-zinc-500/10 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800",
 };
 
-// URL mapping based on notification type and title content
-const getNotificationUrl = (type: string, title: string): string => {
+// URL mapping based on notification type and title content (role-aware)
+const getNotificationUrl = (type: string, title: string, userRole: string): string => {
     // Detect from title since type may always be "info"
     const titleLower = title.toLowerCase();
 
+    // URLs that ortu CANNOT access
+    const restrictedForOrtu = ["/kesantrian/event", "/kesantrian/pelanggaran", "/kesantrian/perizinan"];
+
+    let url = "/"; // Default to dashboard
+
     if (titleLower.includes("hafalan") || titleLower.includes("tasmi")) {
-        return "/akademik/lembar";
-    }
-    if (titleLower.includes("pelanggaran")) {
-        return "/kesantrian/pelanggaran";
-    }
-    if (titleLower.includes("perizinan")) {
-        return "/kesantrian/perizinan";
-    }
-    if (titleLower.includes("event")) {
-        return "/kesantrian/event";
+        url = "/akademik/lembar";
+    } else if (titleLower.includes("pelanggaran")) {
+        url = "/kesantrian/pelanggaran";
+    } else if (titleLower.includes("perizinan")) {
+        url = "/kesantrian/perizinan";
+    } else if (titleLower.includes("event")) {
+        url = "/kesantrian/event";
+    } else if (type === "hafalan") {
+        url = "/akademik/lembar";
+    } else if (type === "pelanggaran") {
+        url = "/kesantrian/pelanggaran";
+    } else if (type === "event") {
+        url = "/kesantrian/event";
     }
 
-    // Fallback based on type
-    if (type === "hafalan") return "/akademik/lembar";
-    if (type === "pelanggaran") return "/kesantrian/pelanggaran";
-    if (type === "event") return "/kesantrian/event";
+    // If ortu and URL is restricted, redirect to dashboard
+    if (userRole === "ortu" && restrictedForOrtu.includes(url)) {
+        return "/";
+    }
 
-    // Default to dashboard for ortu (accessible to all roles)
-    return "/";
+    return url;
 };
 
-// LocalStorage keys
-const DISMISSED_KEY = "quba_dismissed_notifications";
+// LocalStorage keys (for read status only now, dismissals are server-side)
 const READ_KEY = "quba_read_notifications";
-
-const getDismissedIds = (): string[] => {
-    if (typeof window === "undefined") return [];
-    try {
-        return JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]");
-    } catch {
-        return [];
-    }
-};
-
-const saveDismissedId = (id: string) => {
-    if (typeof window === "undefined") return;
-    const dismissed = getDismissedIds();
-    if (!dismissed.includes(id)) {
-        dismissed.push(id);
-        localStorage.setItem(DISMISSED_KEY, JSON.stringify(dismissed));
-    }
-};
 
 const getReadIds = (): string[] => {
     if (typeof window === "undefined") return [];
@@ -107,6 +95,7 @@ const saveAllAsRead = (ids: string[]) => {
 export function NotificationBell() {
     const [isOpen, setIsOpen] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
+    const [userRole, setUserRole] = useState<string>("ortu");
     const [loading, setLoading] = useState(true);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
     const buttonRef = useRef<HTMLButtonElement>(null);
@@ -141,23 +130,21 @@ export function NotificationBell() {
         };
     }, []);
 
-    // Fetch notifications from database (filtered by dismissed)
+    // Fetch notifications from database (already filtered by server)
     const fetchNotifications = async () => {
         try {
-            const data = await getNotificationsForUser();
-            const dismissedIds = getDismissedIds();
+            const result = await getNotificationsForUser();
             const readIds = getReadIds();
 
-            // Filter out dismissed and mark read status from localStorage
-            const filtered = data
-                .filter((n: Notification) => !dismissedIds.includes(n.id))
-                .map((n: Notification) => ({
-                    ...n,
-                    read: readIds.includes(n.id),
-                    url: n.url || getNotificationUrl(n.type, n.title),
-                }));
+            // Map notifications with read status and URLs
+            const mapped = result.notifications.map((n: Notification) => ({
+                ...n,
+                read: readIds.includes(n.id),
+                url: n.url || getNotificationUrl(n.type, n.title, result.userRole),
+            }));
 
-            setNotifications(filtered);
+            setNotifications(mapped);
+            setUserRole(result.userRole);
         } catch (error) {
             console.error("Error fetching notifications:", error);
         } finally {
@@ -187,9 +174,11 @@ export function NotificationBell() {
         setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     };
 
-    const removeNotification = (id: string) => {
-        saveDismissedId(id);
+    const removeNotification = async (id: string) => {
+        // Optimistically remove from UI
         setNotifications((prev) => prev.filter((n) => n.id !== id));
+        // Persist to server
+        await dismissNotification(id);
     };
 
     const handleNotificationClick = (notification: Notification) => {

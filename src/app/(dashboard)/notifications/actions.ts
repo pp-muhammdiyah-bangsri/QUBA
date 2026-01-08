@@ -170,40 +170,92 @@ export async function getNotificationsForUser() {
     const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return [];
+    if (!user) return { notifications: [], userRole: "ortu" };
 
-    // Get user profile to check role
+    // Get user profile to check role and linked santri
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: profile } = await (supabase as any)
         .from("profiles")
-        .select("role")
+        .select("role, linked_santri_id")
         .eq("id", user.id)
         .single();
 
     const userRole = profile?.role || "ortu";
+    const linkedSantriId = profile?.linked_santri_id || null;
+
+    // Get dismissed notification IDs for this user
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: dismissals } = await (supabase as any)
+        .from("notification_dismissals")
+        .select("notification_id")
+        .eq("user_id", user.id);
+
+    const dismissedIds = (dismissals || []).map((d: any) => d.notification_id);
 
     // Fetch notifications targeted to this user's role or all users
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: notifications, error } = await (supabase as any)
+    let query = (supabase as any)
         .from("notifications")
-        .select("id, title, body, target_role, created_at")
-        .or(`target_role.is.null,target_role.eq.${userRole}`)
+        .select("id, title, body, target_role, target_santri_id, created_at")
         .order("created_at", { ascending: false })
         .limit(20);
 
+    // Filter by role OR global (null)
+    query = query.or(`target_role.is.null,target_role.eq.${userRole}`);
+
+    const { data: notifications, error } = await query;
+
     if (error) {
         console.error("Error fetching notifications:", error);
-        return [];
+        return { notifications: [], userRole };
     }
 
-    return (notifications || []).map((n: any) => ({
+    // Additional filtering for ortu: only show notifications for their linked santri
+    let filtered = notifications || [];
+
+    if (userRole === "ortu" && linkedSantriId) {
+        filtered = filtered.filter((n: any) => {
+            // Allow if: no target_santri_id (global) OR matches linked santri
+            return !n.target_santri_id || n.target_santri_id === linkedSantriId;
+        });
+    }
+
+    // Filter out dismissed notifications
+    filtered = filtered.filter((n: any) => !dismissedIds.includes(n.id));
+
+    const result = filtered.map((n: any) => ({
         id: n.id,
         type: "info" as const,
         title: n.title,
         message: n.body,
         time: formatRelativeTime(n.created_at),
-        read: false, // TODO: track read status per user
+        read: false,
     }));
+
+    return { notifications: result, userRole };
+}
+
+// Dismiss a notification (persisted server-side)
+export async function dismissNotification(notificationId: string) {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Not authenticated" };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any)
+        .from("notification_dismissals")
+        .upsert({
+            user_id: user.id,
+            notification_id: notificationId,
+        }, { onConflict: "user_id,notification_id" });
+
+    if (error) {
+        console.error("Error dismissing notification:", error);
+        return { error: error.message };
+    }
+
+    return { success: true };
 }
 
 // Helper function to format relative time
