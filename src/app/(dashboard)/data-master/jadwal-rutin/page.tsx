@@ -11,6 +11,11 @@ import { Badge } from "@/components/ui/badge";
 import { Trash2, Loader2 } from "lucide-react";
 
 const HARI_LABELS = ["Sn", "Sl", "Rb", "Km", "Jm", "Sb", "Mg"];
+const TARGET_GENDER_LABELS: Record<string, { label: string; color: string }> = {
+    all: { label: "Semua", color: "bg-gray-100 text-gray-700 border-gray-300" },
+    L: { label: "Putra", color: "bg-blue-100 text-blue-700 border-blue-300" },
+    P: { label: "Putri", color: "bg-pink-100 text-pink-700 border-pink-300" },
+};
 
 export default function JadwalRutinPage() {
     const [jadwalList, setJadwalList] = useState<JadwalRutin[]>([]);
@@ -23,6 +28,7 @@ export default function JadwalRutinPage() {
     const [jamSelesai, setJamSelesai] = useState("");
     const [kodePresensi, setKodePresensi] = useState("");
     const [hariAktif, setHariAktif] = useState<number[]>([]);
+    const [targetGender, setTargetGender] = useState<'all' | 'L' | 'P'>('all');
 
     const fetchData = async () => {
         setLoading(true);
@@ -55,6 +61,7 @@ export default function JadwalRutinPage() {
         formData.set("jam_selesai", jamSelesai);
         formData.set("kode_presensi", kodePresensi);
         formData.set("hari_aktif", hariAktif.join(","));
+        formData.set("target_gender", targetGender);
 
         await createJadwalRutin(formData);
 
@@ -64,6 +71,7 @@ export default function JadwalRutinPage() {
         setJamSelesai("");
         setKodePresensi("");
         setHariAktif([]);
+        setTargetGender('all');
 
         // Refresh list
         await fetchData();
@@ -137,8 +145,8 @@ export default function JadwalRutinPage() {
                                         <label
                                             key={i}
                                             className={`flex items-center gap-1 text-sm border p-2 rounded cursor-pointer transition-colors ${hariAktif.includes(i + 1)
-                                                    ? "bg-emerald-100 border-emerald-500 text-emerald-700"
-                                                    : "hover:bg-gray-50"
+                                                ? "bg-emerald-100 border-emerald-500 text-emerald-700"
+                                                : "hover:bg-gray-50"
                                                 }`}
                                         >
                                             <input
@@ -148,6 +156,30 @@ export default function JadwalRutinPage() {
                                                 className="sr-only"
                                             />
                                             {d}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Berlaku Untuk</Label>
+                                <div className="flex flex-wrap gap-2">
+                                    {(['all', 'L', 'P'] as const).map((g) => (
+                                        <label
+                                            key={g}
+                                            className={`flex items-center gap-1 text-sm border p-2 rounded cursor-pointer transition-colors ${targetGender === g
+                                                    ? TARGET_GENDER_LABELS[g].color
+                                                    : "hover:bg-gray-50"
+                                                }`}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="target_gender"
+                                                value={g}
+                                                checked={targetGender === g}
+                                                onChange={() => setTargetGender(g)}
+                                                className="sr-only"
+                                            />
+                                            {TARGET_GENDER_LABELS[g].label}
                                         </label>
                                     ))}
                                 </div>
@@ -178,13 +210,14 @@ export default function JadwalRutinPage() {
                                         <TableHead>Kegiatan</TableHead>
                                         <TableHead>Jam</TableHead>
                                         <TableHead>Hari</TableHead>
+                                        <TableHead>Berlaku</TableHead>
                                         <TableHead className="w-[50px]"></TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {jadwalList.length === 0 ? (
                                         <TableRow>
-                                            <TableCell colSpan={4} className="text-center text-gray-500 py-8">
+                                            <TableCell colSpan={5} className="text-center text-gray-500 py-8">
                                                 Belum ada jadwal rutin
                                             </TableCell>
                                         </TableRow>
@@ -204,6 +237,14 @@ export default function JadwalRutinPage() {
                                                             </Badge>
                                                         ))}
                                                     </div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge
+                                                        variant="outline"
+                                                        className={`text-xs ${TARGET_GENDER_LABELS[j.target_gender || 'all'].color}`}
+                                                    >
+                                                        {TARGET_GENDER_LABELS[j.target_gender || 'all'].label}
+                                                    </Badge>
                                                 </TableCell>
                                                 <TableCell>
                                                     <Button

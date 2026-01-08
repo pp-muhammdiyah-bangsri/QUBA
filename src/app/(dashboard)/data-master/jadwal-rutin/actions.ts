@@ -10,6 +10,7 @@ export type JadwalRutin = {
     jam_selesai: string;
     hari_aktif: number[];
     kode_presensi: string;
+    target_gender: 'all' | 'L' | 'P';
 };
 
 export async function getJadwalRutin() {
@@ -27,6 +28,7 @@ export async function createJadwalRutin(formData: FormData) {
     const jam_mulai = formData.get("jam_mulai") as string;
     const jam_selesai = formData.get("jam_selesai") as string;
     const kode_presensi = formData.get("kode_presensi") as string;
+    const target_gender = (formData.get("target_gender") as string) || "all";
 
     // Parse hari_aktif from checkboxes (expected format: "1,2,3")
     const hari_aktif_str = formData.get("hari_aktif") as string;
@@ -39,6 +41,7 @@ export async function createJadwalRutin(formData: FormData) {
         jam_selesai,
         hari_aktif,
         kode_presensi,
+        target_gender,
     });
 
     if (error) {

@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    turbopack: {},
     webpack: (config, { isServer }) => {
         // Fix for pdfjs-dist in Next.js
         // pdfjs-dist tries to require 'canvas' which doesn't exist in browser
@@ -23,3 +24,4 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+

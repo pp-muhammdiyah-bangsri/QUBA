@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS jadwal_rutin (
     jam_selesai TIME NOT NULL,
     hari_aktif INTEGER[] NOT NULL, -- 1=Monday, 7=Sunday
     kode_presensi TEXT UNIQUE NOT NULL,
+    target_gender TEXT DEFAULT 'all' CHECK (target_gender IN ('all', 'L', 'P')), -- 'all'=Semua, 'L'=Putra, 'P'=Putri
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
