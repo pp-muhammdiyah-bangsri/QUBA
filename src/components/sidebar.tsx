@@ -147,8 +147,16 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
     };
 
     const handleLogout = async () => {
-        await supabase.auth.signOut();
-        window.location.href = "/login";
+        try {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error("Error signing out:", error);
+            }
+        } catch (err) {
+            console.error("Logout error:", err);
+        }
+        // Force a full page reload to clear any cached state
+        window.location.replace("/login");
     };
 
     const filteredMenu = menuItems.filter((item) =>
