@@ -266,11 +266,15 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
         setLoading(true);
 
         try {
-            const presensiList = Object.entries(presensiData).map(([santri_id, data]) => ({
-                santri_id,
-                status: data.status,
-                catatan: data.catatan,
-            }));
+            // Only submit presensi for santri that are in the filtered list
+            const filteredIds = new Set(filteredSantri.map(s => s.id));
+            const presensiList = Object.entries(presensiData)
+                .filter(([santri_id]) => filteredIds.has(santri_id))
+                .map(([santri_id, data]) => ({
+                    santri_id,
+                    status: data.status,
+                    catatan: data.catatan,
+                }));
 
             const result = await bulkCreatePresensi(selectedKegiatan.id, presensiList);
             if (result.error) {
