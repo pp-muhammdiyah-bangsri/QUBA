@@ -5,13 +5,11 @@ import { createClient } from "@/lib/supabase/server";
 export async function getPublicTeachers() {
     const supabase = await createClient();
 
-    // Fetch teachers with non-null biography as a basic filter for "complete profile"
-    // Or just fetch all and let the UI filter/show placeholders
-    // Using 'asatidz' table
+    // Fetch all asatidz for public display on PSB page
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase as any)
         .from("asatidz")
-        .select("id, nama, biografi, pendidikan, keahlian, foto_url")
+        .select("id, nama, biografi, pendidikan, keahlian, foto_url, jenis_kelamin")
         .order("nama", { ascending: true });
 
     if (error) {
@@ -19,11 +17,8 @@ export async function getPublicTeachers() {
         return [];
     }
 
-    // Filter client-side if needed, but for now return all
-    // Filter those with filled profiles (biografi is not null/empty OR pendidikan OR keahlian)
-    return (data || []).filter((teacher: any) =>
-        teacher.biografi || teacher.pendidikan || teacher.keahlian
-    );
+    // Return all teachers - UI will handle display of those without full profile
+    return data || [];
 }
 
 // Generate unique registration number

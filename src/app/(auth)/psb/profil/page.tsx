@@ -52,7 +52,9 @@ export default async function PSBProfilPage() {
                                 <CardTitle className="text-xl font-bold text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                     {teacher.nama}
                                 </CardTitle>
-                                <CardDescription className="text-emerald-600 dark:text-emerald-400 font-medium">Asatidz & Pembimbing</CardDescription>
+                                <CardDescription className="text-emerald-600 dark:text-emerald-400 font-medium">
+                                    {teacher.jenis_kelamin === "P" ? "Ustadzah" : "Ustadz"} & Pembimbing
+                                </CardDescription>
                             </CardHeader>
 
                             <CardContent className="space-y-5 pt-6 relative z-10">
