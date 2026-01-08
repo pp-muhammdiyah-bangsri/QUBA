@@ -20,6 +20,7 @@ import {
     Layers,
     KeyRound,
     Bell,
+    Settings,
 } from "lucide-react";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -124,6 +125,12 @@ const menuItems = [
         href: "/notifications",
         icon: Bell,
         roles: ["admin"],
+    },
+    {
+        title: "Pengaturan",
+        href: "/settings",
+        icon: Settings,
+        roles: ["admin", "ustadz", "ortu"],
     },
 ];
 
