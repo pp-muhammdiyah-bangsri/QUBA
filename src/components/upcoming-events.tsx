@@ -11,7 +11,7 @@ export interface EventItem {
 
 export function UpcomingEvents({ events = [] }: { events?: EventItem[] }) {
     if (!events.length) {
-        return <p className="text-gray-500 text-sm">Tidak ada event mendatang.</p>;
+        return <p className="text-gray-500 dark:text-gray-400 text-sm">Tidak ada event mendatang.</p>;
     }
 
     return (
@@ -19,17 +19,17 @@ export function UpcomingEvents({ events = [] }: { events?: EventItem[] }) {
             {events.map((event) => (
                 <div
                     key={event.id}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                    className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 dark:bg-gray-800/50 dark:hover:bg-gray-800 transition-colors"
                 >
-                    <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600">
+                    <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
                         <Calendar className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-800">{event.nama}</p>
+                        <p className="text-sm font-medium text-gray-800 dark:text-gray-100">{event.nama}</p>
                         <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs text-gray-500">{event.tanggal}</span>
-                            <span className="text-gray-300">•</span>
-                            <div className="flex items-center gap-1 text-xs text-gray-500">
+                            <span className="text-xs text-gray-500 dark:text-gray-400">{event.tanggal}</span>
+                            <span className="text-gray-300 dark:text-gray-600">•</span>
+                            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                                 <MapPin className="w-3 h-3" />
                                 {event.lokasi || "Online/TBA"}
                             </div>

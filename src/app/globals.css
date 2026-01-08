@@ -301,6 +301,22 @@ body {
   background-color: hsla(160, 84%, 25%, 0.3) !important;
 }
 
+.dark .bg-purple-50 {
+  background-color: hsla(270, 70%, 30%, 0.3) !important;
+}
+
+.dark .bg-purple-100 {
+  background-color: hsla(270, 70%, 25%, 0.3) !important;
+}
+
+.dark .bg-orange-50 {
+  background-color: hsla(25, 95%, 30%, 0.3) !important;
+}
+
+.dark .bg-orange-100 {
+  background-color: hsla(25, 95%, 25%, 0.3) !important;
+}
+
 /* Border fixes */
 .dark .border-gray-200 {
   border-color: hsl(var(--border)) !important;

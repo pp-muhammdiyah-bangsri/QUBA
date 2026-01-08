@@ -99,8 +99,8 @@ export default function EditSantriProfilePage() {
         return (
             <div className="text-center py-12">
                 <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-                <h2 className="text-lg font-medium text-gray-800">Data Santri Tidak Ditemukan</h2>
-                <p className="text-gray-500">Akun Anda belum terhubung dengan data santri. Hubungi Admin.</p>
+                <h2 className="text-lg font-medium text-gray-800 dark:text-gray-100">Data Santri Tidak Ditemukan</h2>
+                <p className="text-gray-500 dark:text-gray-400">Akun Anda belum terhubung dengan data santri. Hubungi Admin.</p>
             </div>
         );
     }
@@ -125,15 +125,15 @@ export default function EditSantriProfilePage() {
                         <CardContent className="space-y-4">
                             <div>
                                 <Label>Nama Lengkap</Label>
-                                <Input value={profile.nama} disabled className="bg-gray-100" />
+                                <Input value={profile.nama} disabled className="bg-gray-100 dark:bg-gray-800" />
                             </div>
                             <div>
                                 <Label>NIS</Label>
-                                <Input value={profile.nis} disabled className="bg-gray-100" />
+                                <Input value={profile.nis} disabled className="bg-gray-100 dark:bg-gray-800" />
                             </div>
                             <div>
                                 <Label>Jenjang</Label>
-                                <Input value={profile.jenjang} disabled className="bg-gray-100" />
+                                <Input value={profile.jenjang} disabled className="bg-gray-100 dark:bg-gray-800" />
                             </div>
                         </CardContent>
                     </Card>
@@ -176,7 +176,9 @@ export default function EditSantriProfilePage() {
                 </div>
 
                 {message && (
-                    <div className={`mt-4 p-3 rounded-md text-sm ${message.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+                    <div className={`mt-4 p-3 rounded-md text-sm ${message.type === "success"
+                        ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300"
+                        : "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300"
                         }`}>
                         {message.text}
                     </div>

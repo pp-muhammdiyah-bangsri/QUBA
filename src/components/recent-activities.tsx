@@ -9,14 +9,14 @@ export interface ActivityItem {
 }
 
 const iconMap = {
-    hafalan: { icon: BookOpen, color: "text-emerald-500 bg-emerald-100" },
-    pelanggaran: { icon: AlertTriangle, color: "text-red-500 bg-red-100" },
-    perizinan: { icon: Clock, color: "text-blue-500 bg-blue-100" },
+    hafalan: { icon: BookOpen, color: "text-emerald-500 bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-900/30" },
+    pelanggaran: { icon: AlertTriangle, color: "text-red-500 bg-red-100 dark:text-red-400 dark:bg-red-900/30" },
+    perizinan: { icon: Clock, color: "text-blue-500 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30" },
 };
 
 export function RecentActivities({ activities = [] }: { activities?: ActivityItem[] }) {
     if (!activities.length) {
-        return <p className="text-gray-500 text-sm">Belum ada aktivitas terbaru.</p>;
+        return <p className="text-gray-500 dark:text-gray-400 text-sm">Belum ada aktivitas terbaru.</p>;
     }
 
     return (
@@ -32,8 +32,8 @@ export function RecentActivities({ activities = [] }: { activities?: ActivityIte
                             <Icon className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-800">{activity.text}</p>
-                            <p className="text-xs text-gray-500">{activity.time}</p>
+                            <p className="text-sm text-gray-800 dark:text-gray-100">{activity.text}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</p>
                         </div>
                     </div>
                 );

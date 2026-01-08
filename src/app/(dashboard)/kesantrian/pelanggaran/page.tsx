@@ -23,8 +23,8 @@ export default async function PelanggaranPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Pelanggaran</h1>
-                <p className="text-gray-500 mt-1">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pelanggaran</h1>
+                <p className="text-gray-500 dark:text-gray-400 mt-1">
                     Catatan dan tracking pelanggaran santri
                 </p>
             </div>

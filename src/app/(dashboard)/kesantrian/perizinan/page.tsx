@@ -30,8 +30,8 @@ export default async function PerizinanPage() {
     return (
         <div className="space-y-6">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Perizinan</h1>
-                <p className="text-gray-500 mt-1">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Perizinan</h1>
+                <p className="text-gray-500 dark:text-gray-400 mt-1">
                     {userRole === "ortu"
                         ? "Ajukan permohonan izin untuk anak Anda"
                         : "Kelola pengajuan izin santri"

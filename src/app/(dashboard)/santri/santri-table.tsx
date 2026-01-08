@@ -288,7 +288,7 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
                     </DialogHeader>
                     <form onSubmit={handleSubmit}>
                         {error && (
-                            <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 rounded-md">
+                            <div className="mb-4 p-3 text-sm text-red-600 bg-red-50 rounded-md dark:bg-red-900/20 dark:text-red-300">
                                 {error}
                             </div>
                         )}

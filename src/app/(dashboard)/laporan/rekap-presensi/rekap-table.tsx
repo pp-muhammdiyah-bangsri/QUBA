@@ -207,19 +207,19 @@ export function RekapTable({ data, totalKegiatan, kelasList, halaqohList, kegiat
 
             {/* Summary Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-blue-50 border-blue-100">
+                <Card className="bg-blue-50 border-blue-100 dark:bg-blue-900/20 dark:border-blue-800">
                     <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-blue-700">{totalKegiatan}</div>
-                        <div className="text-sm text-blue-600">Total Kegiatan</div>
+                        <div className="text-2xl font-bold text-blue-700 dark:text-blue-300">{totalKegiatan}</div>
+                        <div className="text-sm text-blue-600 dark:text-blue-400">Total Kegiatan</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-green-50 border-green-100">
+                <Card className="bg-green-50 border-green-100 dark:bg-green-900/20 dark:border-green-800">
                     <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-green-700">{data.length}</div>
-                        <div className="text-sm text-green-600">Total Santri</div>
+                        <div className="text-2xl font-bold text-green-700 dark:text-green-300">{data.length}</div>
+                        <div className="text-sm text-green-600 dark:text-green-400">Total Santri</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-white border-dashed">
+                <Card className="bg-white dark:bg-card border-dashed">
                     <CardContent className="p-4 flex flex-col items-center justify-center h-full gap-2">
                         <Button variant="outline" size="sm" className="w-full" onClick={handleExportExcel}>
                             <FileSpreadsheet className="w-4 h-4 mr-2 text-green-600" />
