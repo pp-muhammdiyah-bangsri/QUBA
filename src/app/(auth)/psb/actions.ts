@@ -1,9 +1,9 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export async function getPublicTeachers() {
-    const supabase = await createClient();
+    const supabase = createServiceClient();
 
     // Fetch all asatidz for public display on PSB page
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
