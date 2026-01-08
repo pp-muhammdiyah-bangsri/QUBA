@@ -1,4 +1,4 @@
-import { getPresensiRekap } from "@/app/(dashboard)/presensi/actions";
+import { getPresensiRekap, getUniqueKegiatanNames } from "@/app/(dashboard)/presensi/actions";
 import { getKelasDropdown, getHalaqohDropdown } from "@/app/(dashboard)/data-master/actions";
 import { RekapTable } from "./rekap-table";
 
@@ -15,10 +15,11 @@ export default async function RekapPresensiPage({
     const kegiatanName = (params.kegiatan as string) || "";
     const gender = (params.gender as "L" | "P" | "all") || "all";
 
-    const [rekapData, kelasList, halaqohList] = await Promise.all([
+    const [rekapData, kelasList, halaqohList, kegiatanList] = await Promise.all([
         getPresensiRekap(month, year, filterType, filterId, kegiatanName, gender),
         getKelasDropdown(),
         getHalaqohDropdown(),
+        getUniqueKegiatanNames(),
     ]);
 
     return (
@@ -35,7 +36,9 @@ export default async function RekapPresensiPage({
                 totalKegiatan={rekapData.kegiatanCount}
                 kelasList={kelasList}
                 halaqohList={halaqohList}
+                kegiatanList={kegiatanList}
             />
         </div>
     );
 }
+

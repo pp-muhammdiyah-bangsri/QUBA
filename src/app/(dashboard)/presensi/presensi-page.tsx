@@ -305,26 +305,43 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
         // Admin Logic
         if (userRole === "admin") {
             if (filterType === "all") return true;
-            // If specific filter selected but no ID, show nothing to keep clean
-            if (filterType === "kelas") return filterId ? s.kelas_id === filterId : false;
-            if (filterType === "halaqoh") return filterId ? s.halaqoh_id === filterId : false;
+            // If specific filter selected but no ID, show all santri of that type
+            if (filterType === "kelas") {
+                if (!filterId) return true; // Show all if no specific kelas selected
+                return s.kelas_id === filterId;
+            }
+            if (filterType === "halaqoh") {
+                if (!filterId) return true; // Show all if no specific halaqoh selected
+                return s.halaqoh_id === filterId;
+            }
             return true;
         }
 
         // Ustadz Strict Logic
-        // 1. Cannot use 'all' filter
-        if (filterType === "all") return false;
-
-        // 2. Class Filter: Must match assigned class and user selection
-        if (filterType === "kelas") {
-            if (!myGroups.kelasId || filterId !== myGroups.kelasId) return false;
-            return s.kelas_id === filterId;
+        // 1. Cannot use 'all' filter - must use their assigned group
+        if (filterType === "all") {
+            // For ustadz, show their group by default
+            if (myGroups.kelasId && s.kelas_id === myGroups.kelasId) return true;
+            if (myGroups.halaqohId && s.halaqoh_id === myGroups.halaqohId) return true;
+            return false;
         }
 
-        // 3. Halaqoh Filter: Must match assigned halaqoh and user selection
+        // 2. Class Filter: Must match assigned class
+        if (filterType === "kelas") {
+            if (!myGroups.kelasId) return false;
+            if (!filterId || filterId === myGroups.kelasId) {
+                return s.kelas_id === myGroups.kelasId;
+            }
+            return false;
+        }
+
+        // 3. Halaqoh Filter: Must match assigned halaqoh
         if (filterType === "halaqoh") {
-            if (!myGroups.halaqohId || filterId !== myGroups.halaqohId) return false;
-            return s.halaqoh_id === filterId;
+            if (!myGroups.halaqohId) return false;
+            if (!filterId || filterId === myGroups.halaqohId) {
+                return s.halaqoh_id === myGroups.halaqohId;
+            }
+            return false;
         }
 
         // Default deny
@@ -468,8 +485,8 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
                                                     {k.nama}
                                                     {k.jadwal_rutin?.target_gender && k.jadwal_rutin.target_gender !== "all" && (
                                                         <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${k.jadwal_rutin.target_gender === "L"
-                                                                ? "bg-blue-100 text-blue-700"
-                                                                : "bg-pink-100 text-pink-700"
+                                                            ? "bg-blue-100 text-blue-700"
+                                                            : "bg-pink-100 text-pink-700"
                                                             }`}>
                                                             {k.jadwal_rutin.target_gender === "L" ? "Putra" : "Putri"}
                                                         </span>

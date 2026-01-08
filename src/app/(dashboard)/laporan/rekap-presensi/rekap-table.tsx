@@ -20,7 +20,6 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { RekapPdfDocument } from "./rekap-pdf";
 
-const NAMA_KEGIATAN_OPTIONS = ["Halaqoh Pagi", "Halaqoh Sore", "KBM", "Kajian Ba'da Maghrib/Isya"];
 
 interface Option {
     id: string;
@@ -44,9 +43,10 @@ interface RekapTableProps {
     totalKegiatan: number;
     kelasList: Option[];
     halaqohList: Option[];
+    kegiatanList: string[];
 }
 
-export function RekapTable({ data, totalKegiatan, kelasList, halaqohList }: RekapTableProps) {
+export function RekapTable({ data, totalKegiatan, kelasList, halaqohList, kegiatanList }: RekapTableProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -163,7 +163,7 @@ export function RekapTable({ data, totalKegiatan, kelasList, halaqohList }: Reka
                                 onChange={(e) => setKegiatanName(e.target.value)}
                             >
                                 <option value="">Semua</option>
-                                {NAMA_KEGIATAN_OPTIONS.map((opt) => (
+                                {kegiatanList.map((opt) => (
                                     <option key={opt} value={opt}>{opt}</option>
                                 ))}
                             </Select>

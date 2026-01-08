@@ -410,3 +410,21 @@ export async function getUserRole() {
 
     return (profile as any)?.role || "user";
 }
+
+// Get unique kegiatan names from database for rekap filter
+export async function getUniqueKegiatanNames(): Promise<string[]> {
+    const supabase = await createClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase as any)
+        .from("kegiatan")
+        .select("nama");
+
+    if (error) {
+        console.error("Error fetching kegiatan names:", error);
+        return [];
+    }
+
+    // Get unique names
+    const uniqueNames = [...new Set((data || []).map((k: { nama: string }) => k.nama))] as string[];
+    return uniqueNames.sort();
+}
