@@ -41,6 +41,7 @@ interface Kegiatan {
     lokasi: string | null;
     deskripsi: string | null;
     jadwal_rutin_id?: string | null;
+    jadwal_rutin?: { target_gender: "all" | "L" | "P" } | null;
 }
 
 interface Santri {
@@ -48,6 +49,7 @@ interface Santri {
     nama: string;
     nis: string;
     jenjang: "SMP" | "SMA" | "SMK";
+    jenis_kelamin: "L" | "P";
     kelas_id: string | null;
     halaqoh_id: string | null;
 }
@@ -292,6 +294,14 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
     };
 
     const filteredSantri = santriList.filter((s) => {
+        // 1. Filter by target gender from jadwal rutin (if kegiatan is selected)
+        if (selectedKegiatan?.jadwal_rutin?.target_gender) {
+            const targetGender = selectedKegiatan.jadwal_rutin.target_gender;
+            if (targetGender !== "all" && s.jenis_kelamin !== targetGender) {
+                return false;
+            }
+        }
+
         // Admin Logic
         if (userRole === "admin") {
             if (filterType === "all") return true;
@@ -453,7 +463,19 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
                                     return (
                                         <TableRow key={k.id}>
                                             <TableCell>{formatDate(k.tanggal_mulai)}</TableCell>
-                                            <TableCell className="font-medium">{k.nama}</TableCell>
+                                            <TableCell className="font-medium">
+                                                <div className="flex items-center gap-2">
+                                                    {k.nama}
+                                                    {k.jadwal_rutin?.target_gender && k.jadwal_rutin.target_gender !== "all" && (
+                                                        <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${k.jadwal_rutin.target_gender === "L"
+                                                                ? "bg-blue-100 text-blue-700"
+                                                                : "bg-pink-100 text-pink-700"
+                                                            }`}>
+                                                            {k.jadwal_rutin.target_gender === "L" ? "Putra" : "Putri"}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </TableCell>
                                             <TableCell>
                                                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${jenisColors[k.jenis]}`}>
                                                     {jenisLabels[k.jenis]}

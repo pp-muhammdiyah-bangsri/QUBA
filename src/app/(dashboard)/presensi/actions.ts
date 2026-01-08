@@ -79,7 +79,10 @@ export async function getKegiatanList() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase as any)
         .from("kegiatan")
-        .select("*")
+        .select(`
+            *,
+            jadwal_rutin:jadwal_rutin_id(target_gender)
+        `)
         .order("tanggal_mulai", { ascending: false })
         .limit(100);
 
@@ -349,7 +352,7 @@ export async function getSantriForPresensi() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data } = await (supabase as any)
         .from("santri")
-        .select("id, nama, nis, jenjang, kelas_id, halaqoh_id")
+        .select("id, nama, nis, jenjang, jenis_kelamin, kelas_id, halaqoh_id")
         .eq("status", "aktif")
         .order("nama", { ascending: true });
     return data || [];

@@ -161,18 +161,54 @@ async function getUstadzData() {
     const supabase = await createClient();
     const today = new Date().toISOString().split("T")[0];
 
-    const [santriResult, hafalanTodayResult, tasmiResult, eventResult, eventsResult, recentHafalanResult] = await Promise.all([
+    // Helper for last 6 months
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(1);
+        d.setMonth(d.getMonth() - i);
+        months.push({
+            name: d.toLocaleString("id-ID", { month: "short" }),
+            monthIdx: d.getMonth(),
+            year: d.getFullYear(),
+        });
+    }
+
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setDate(1);
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    const gteDate = sixMonthsAgo.toISOString().split('T')[0];
+
+    const [
+        santriResult,
+        hafalanTodayResult,
+        presensiTodayResult,
+        eventResult,
+        eventsResult,
+        recentHafalanResult,
+        hafalanSelesaiResult,
+        hafalanChartResult,
+        topSantriResult
+    ] = await Promise.all([
         supabase.from("santri").select("*", { count: "exact", head: true }).eq("status", "aktif"),
         supabase.from("hafalan_lembar").select("*", { count: "exact", head: true }).eq("tanggal", today),
-        supabase.from("hafalan_tasmi").select("*", { count: "exact", head: true }),
+        supabase.from("presensi").select("kegiatan_id, kegiatan:kegiatan_id(tanggal_mulai)"),
         supabase.from("event").select("*", { count: "exact", head: true }).gte("tanggal_mulai", today),
         supabase.from("event").select("id, judul, tanggal_mulai, jenis").gte("tanggal_mulai", today).order("tanggal_mulai").limit(5),
-        supabase.from("hafalan_lembar").select("id, juz, lembar, tanggal, santri:santri_id(id, nama, nis, jenjang)").order("tanggal", { ascending: false }).order("created_at", { ascending: false }).limit(20)
+        supabase.from("hafalan_lembar").select("id, juz, lembar, tanggal, santri:santri_id(id, nama, nis, jenjang)").order("tanggal", { ascending: false }).order("created_at", { ascending: false }).limit(10),
+        supabase.from("hafalan_selesai").select("id, juz, tanggal, santri:santri_id(id, nama)").order("tanggal", { ascending: false }).limit(5),
+        supabase.from("hafalan_selesai").select("tanggal").gte("tanggal", gteDate),
+        supabase.from("hafalan_selesai").select("santri_id, santri:santri_id(id, nama)"),
     ]);
+
+    // Count presensi today
+    const presensiToday = (presensiTodayResult.data || []).filter((p: any) => {
+        const kegiatanDate = p.kegiatan?.tanggal_mulai?.split("T")[0];
+        return kegiatanDate === today;
+    }).length;
 
     // Process recent santri uniqueness
     const processedSantri = new Map();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (recentHafalanResult.data || []).forEach((h: any) => {
         if (h.santri && !processedSantri.has(h.santri.id) && processedSantri.size < 5) {
             processedSantri.set(h.santri.id, {
@@ -185,27 +221,59 @@ async function getUstadzData() {
         }
     });
 
-    // Fallback if no hafalan data, just show some santri
     let recentSantri = Array.from(processedSantri.values());
     if (recentSantri.length === 0) {
         const { data: fallbackSantri } = await supabase.from("santri").select("id, nama, nis, jenjang").eq("status", "aktif").limit(5);
         recentSantri = (fallbackSantri || []).map((s: any) => ({
             id: s.id,
-            nama: s.nama,
+            nama: formatShortName(s.nama),
             nis: s.nis,
             jenjang: s.jenjang,
             lastHafalan: "-"
         }));
     }
 
+    // Hafalan chart data
+    const hafalanPerBulan = months.map(m => {
+        const count = (hafalanChartResult.data || []).filter((h: any) => {
+            const d = new Date(h.tanggal);
+            return d.getMonth() === m.monthIdx && d.getFullYear() === m.year;
+        }).length;
+        return { bulan: m.name, selesai: count };
+    });
+
+    // Top santri by hafalan count
+    const santriHafalanCount = new Map<string, { nama: string; count: number }>();
+    (topSantriResult.data || []).forEach((h: any) => {
+        if (h.santri) {
+            const current = santriHafalanCount.get(h.santri_id) || { nama: h.santri.nama, count: 0 };
+            santriHafalanCount.set(h.santri_id, { nama: current.nama, count: current.count + 1 });
+        }
+    });
+    const topSantri = Array.from(santriHafalanCount.entries())
+        .map(([id, data]) => ({ id, nama: formatShortName(data.nama), juzCount: data.count }))
+        .sort((a, b) => b.juzCount - a.juzCount)
+        .slice(0, 5);
+
+    // Recent hafalan selesai activities
+    const recentHafalanSelesai = (hafalanSelesaiResult.data || []).map((h: any) => ({
+        id: h.id,
+        santriNama: formatShortName(h.santri?.nama || ""),
+        juz: h.juz,
+        tanggal: new Date(h.tanggal).toLocaleDateString("id-ID"),
+    }));
+
     return {
         stats: {
             santriCount: santriResult.count || 0,
             hafalanHariIni: hafalanTodayResult.count || 0,
-            tasmiPending: tasmiResult.count || 0,
+            presensiHariIni: presensiToday,
             eventCount: eventResult.count || 0,
         },
         recentSantri,
+        topSantri,
+        recentHafalanSelesai,
+        hafalanPerBulan,
         upcomingEvents: (eventsResult.data || []).map((e: { id: string; judul: string; tanggal_mulai: string; jenis: string }) => ({
             id: e.id,
             nama: e.judul,
@@ -334,7 +402,16 @@ export default async function DashboardPage() {
 
     if (userRole === "ustadz") {
         const data = await getUstadzData();
-        return <UstadzDashboard stats={data.stats} recentSantri={data.recentSantri} upcomingEvents={data.upcomingEvents} />;
+        return (
+            <UstadzDashboard
+                stats={data.stats}
+                recentSantri={data.recentSantri}
+                topSantri={data.topSantri}
+                recentHafalanSelesai={data.recentHafalanSelesai}
+                hafalanPerBulan={data.hafalanPerBulan}
+                upcomingEvents={data.upcomingEvents}
+            />
+        );
     }
 
     // Default: ortu
