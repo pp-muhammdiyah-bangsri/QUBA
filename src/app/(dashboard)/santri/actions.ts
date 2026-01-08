@@ -256,10 +256,37 @@ export async function syncParentAccounts() {
         return { success: true, processed: 0, linked: 0, errors: [] };
     }
 
+    // 4. Pre-fetch ALL Auth Users to Map (Handling Pagination)
+    // This fixes the issue where listUsers only returns first 50 users
+    const emailToIdMap = new Map<string, string>();
+    let page = 1;
+    const perPage = 1000;
+
+    try {
+        while (true) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: users, error } = await (adminClient as any).auth.admin.listUsers({
+                page: page,
+                perPage: perPage
+            });
+
+            if (error || !users || !users.users || users.users.length === 0) break;
+
+            users.users.forEach((u: any) => {
+                if (u.email) emailToIdMap.set(u.email.toLowerCase(), u.id);
+            });
+
+            if (users.users.length < perPage) break; // Reached last page
+            page++;
+        }
+    } catch (err) {
+        console.error("Error fetching auth users:", err);
+    }
+
     let linked = 0;
     const errors: string[] = [];
 
-    // 4. Process orphans
+    // 5. Process orphans
     for (const santri of orphans) {
         try {
             const autoEmail = `${santri.nis}@quba.app`;
@@ -269,18 +296,13 @@ export async function syncParentAccounts() {
             let userId: string | null = null;
             let warningMsg = "";
 
-            // Check if profile exists by email (using admin client to bypass RLS if needed, though profiles should be readable)
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const { data: existingProfile } = await (adminClient as any)
-                .from("profiles")
-                .select("id")
-                .eq("email", autoEmail)
-                .single();
+            // A. Check if user exists in our Pre-fetched Map (Auth)
+            const mappedId = emailToIdMap.get(autoEmail.toLowerCase());
 
-            if (existingProfile) {
-                userId = existingProfile.id;
+            if (mappedId) {
+                userId = mappedId;
             } else {
-                // Check Auth
+                // B. If not in Map, Create User
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const { data: authData, error: authError } = await (adminClient as any).auth.admin.createUser({
                     email: autoEmail,
@@ -290,26 +312,28 @@ export async function syncParentAccounts() {
 
                 if (authData?.user) {
                     userId = authData.user.id;
-                } else if (authError?.message?.includes("already been registered")) {
-                    // Try to find user in list
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const { data: users } = await (adminClient as any).auth.admin.listUsers();
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const found = users?.users?.find((u: any) => u.email === autoEmail);
-                    if (found) userId = found.id;
-                    else warningMsg = "User registered but not found (pagination limit)";
+                    // Add to map just in case
+                    emailToIdMap.set(autoEmail.toLowerCase(), userId!);
                 } else {
                     warningMsg = `Auth error: ${authError?.message}`;
                 }
             }
 
             if (userId) {
+                // Check if profile exists
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const { data: existingProfile } = await (adminClient as any)
+                    .from("profiles")
+                    .select("id")
+                    .eq("id", userId)
+                    .single();
+
                 if (existingProfile) {
                     // Update existing profile
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     await (adminClient as any).from("profiles").update({
                         linked_santri_id: santri.id,
-                        role: "ortu", // Ensure role is ortu
+                        role: "ortu",
                     }).eq("id", userId);
                 } else {
                     // Create new profile
