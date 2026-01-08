@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Search, BookOpen, TrendingUp, Award, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { formatShortName } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -66,7 +67,7 @@ export function ProgressView({ initialData }: ProgressViewProps) {
         .sort((a, b) => b.juzSelesai.length - a.juzSelesai.length)
         .slice(0, 10)
         .map((s) => ({
-            name: s.nama.split(" ")[0],
+            name: formatShortName(s.nama),
             juz: s.juzSelesai.length,
             lembar: s.lembarTotal,
         }));

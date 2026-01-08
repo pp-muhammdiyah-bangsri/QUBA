@@ -20,3 +20,15 @@ export function formatDateShort(date: Date | string): string {
     year: 'numeric'
   }).format(new Date(date));
 }
+
+export function formatShortName(name: string): string {
+  if (!name) return "";
+  const parts = name.trim().split(" ");
+  if (parts.length === 1) return parts[0];
+
+  const first = parts[0].toLowerCase().replace(".", "");
+  if ((first === "muhammad" || first === "muh" || first === "m") && parts.length > 1) {
+    return parts[1];
+  }
+  return parts[0];
+}
