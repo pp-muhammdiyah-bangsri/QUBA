@@ -33,6 +33,23 @@ export default function RootLayout({
         <html lang="id" suppressHydrationWarning>
             <head>
                 <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            (function() {
+                                try {
+                                    var stored = localStorage.getItem('quba-theme');
+                                    var theme = stored || 'system';
+                                    var resolved = theme;
+                                    if (theme === 'system') {
+                                        resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                                    }
+                                    document.documentElement.classList.add(resolved);
+                                } catch (e) {}
+                            })();
+                        `,
+                    }}
+                />
             </head>
             <body className="antialiased" suppressHydrationWarning>
                 <ThemeProvider defaultTheme="system">
