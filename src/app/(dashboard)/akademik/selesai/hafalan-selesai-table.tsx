@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/ui/toast";
+import { formatShortName } from "@/lib/utils";
 import { Search, Award, CheckCircle2, Plus, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -179,7 +180,7 @@ export function HafalanSelesaiTable({ initialData, santriList, asatidzList, user
                                         {idx + 1}
                                     </div>
                                     <div>
-                                        <div className="font-medium text-emerald-900 dark:text-emerald-100 truncate">{s.nama}</div>
+                                        <div className="font-medium text-emerald-900 dark:text-emerald-100 truncate">{formatShortName(s.nama)}</div>
                                         <div className="text-sm text-emerald-600 dark:text-emerald-400 font-semibold">{s.count} Juz</div>
                                     </div>
                                 </div>

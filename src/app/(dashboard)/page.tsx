@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { formatShortName } from "@/lib/utils";
 import { AdminDashboard } from "@/components/dashboard/admin-dashboard";
 import { UstadzDashboard } from "@/components/dashboard/ustadz-dashboard";
 import { OrtuDashboard } from "@/components/dashboard/ortu-dashboard";
@@ -124,21 +125,21 @@ async function getAdminExtraData() {
         ...(hafalanRes.data || []).map((h: any) => ({
             id: `hafalan-${h.id}`,
             type: "hafalan" as const,
-            text: `${h.santri?.nama || 'Santri'} menyelesaikan Juz ${h.juz}`,
+            text: `${formatShortName(h.santri?.nama) || 'Santri'} menyelesaikan Juz ${h.juz}`,
             time: timeAgo(h.tanggal),
             rawDate: new Date(h.tanggal)
         })),
         ...(pelanggaranRes.data || []).map((p: any) => ({
             id: `pelanggaran-${p.id}`,
             type: "pelanggaran" as const,
-            text: `Pelanggaran: ${p.deskripsi} - ${p.santri?.nama || 'Santri'}`,
+            text: `Pelanggaran: ${p.deskripsi} - ${formatShortName(p.santri?.nama) || 'Santri'}`,
             time: timeAgo(p.tanggal),
             rawDate: new Date(p.tanggal)
         })),
         ...(perizinanRes.data || []).map((p: any) => ({
             id: `perizinan-${p.id}`,
             type: "perizinan" as const,
-            text: `Izin: ${p.alasan} - ${p.santri?.nama || 'Santri'}`,
+            text: `Izin: ${p.alasan} - ${formatShortName(p.santri?.nama) || 'Santri'}`,
             time: timeAgo(p.created_at),
             rawDate: new Date(p.created_at)
         }))
@@ -176,7 +177,7 @@ async function getUstadzData() {
         if (h.santri && !processedSantri.has(h.santri.id) && processedSantri.size < 5) {
             processedSantri.set(h.santri.id, {
                 id: h.santri.id,
-                nama: h.santri.nama,
+                nama: formatShortName(h.santri.nama),
                 nis: h.santri.nis,
                 jenjang: h.santri.jenjang,
                 lastHafalan: `Juz ${h.juz} Lembar ${h.lembar}`
