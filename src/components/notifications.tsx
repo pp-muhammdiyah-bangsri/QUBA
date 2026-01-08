@@ -263,10 +263,10 @@ export function NotificationBell() {
                                                     e.stopPropagation();
                                                     removeNotification(notification.id);
                                                 }}
-                                                className="text-muted-foreground/40 hover:text-destructive opacity-0 group-hover:opacity-100 transition-all p-1 hover:bg-muted rounded-md"
+                                                className="text-muted-foreground/60 hover:text-destructive sm:opacity-0 sm:group-hover:opacity-100 transition-all p-1.5 hover:bg-muted rounded-md -mr-1"
                                                 title="Hapus notifikasi"
                                             >
-                                                <X className="w-3.5 h-3.5" />
+                                                <X className="w-4 h-4" />
                                             </button>
                                         </div>
                                         <p className="text-sm text-muted-foreground line-clamp-2 leading-snug">

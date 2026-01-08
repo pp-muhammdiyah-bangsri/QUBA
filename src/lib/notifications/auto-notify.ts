@@ -51,7 +51,7 @@ async function sendToUser(userId: string, payload: NotificationPayload) {
 }
 
 // Helper to save notification to database for in-app bell display
-async function saveToNotificationsTable(title: string, body: string, targetRole?: string, url?: string) {
+async function saveToNotificationsTable(title: string, body: string, targetRole?: string, targetSantriId?: string) {
     try {
         // Use service client to bypass RLS
         const { createServiceClient } = await import("@/lib/supabase/server");
@@ -64,6 +64,7 @@ async function saveToNotificationsTable(title: string, body: string, targetRole?
                 title,
                 body,
                 target_role: targetRole || null,
+                target_santri_id: targetSantriId || null,
             });
 
         if (error) {
@@ -105,8 +106,8 @@ export async function notifyParentHafalanSelesai(santriId: string, juz: number) 
     const body = `${santri?.nama || "Anak Anda"} telah menyelesaikan hafalan Juz ${juz}`;
     const url = "/akademik/progres";
 
-    // Save to notifications table for in-app display
-    await saveToNotificationsTable(title, body, "ortu", url);
+    // Save to notifications table for in-app display (with santri-specific targeting)
+    await saveToNotificationsTable(title, body, "ortu", santriId);
 
     if (!parentProfile) return { sent: 0 };
 
@@ -138,8 +139,8 @@ export async function notifyParentHafalanLembar(santriId: string, juz: number, l
     const body = `${santri?.nama || "Anak Anda"} telah menyelesaikan Juz ${juz} Lembar ${lembar}`;
     const url = "/akademik/lembar";
 
-    // Save to notifications table for in-app display
-    await saveToNotificationsTable(title, body, "ortu", url);
+    // Save to notifications table for in-app display (with santri-specific targeting)
+    await saveToNotificationsTable(title, body, "ortu", santriId);
 
     if (!parentProfile) return { sent: 0 };
 
@@ -171,8 +172,8 @@ export async function notifyParentHafalanTasmi(santriId: string, juz: number, pr
     const body = `${santri?.nama || "Anak Anda"} Tasmi' Juz ${juz}: ${predikat}`;
     const url = "/akademik/tasmi";
 
-    // Save to notifications table for in-app display
-    await saveToNotificationsTable(title, body, "ortu", url);
+    // Save to notifications table for in-app display (with santri-specific targeting)
+    await saveToNotificationsTable(title, body, "ortu", santriId);
 
     if (!parentProfile) return { sent: 0 };
 
@@ -204,8 +205,8 @@ export async function notifyParentPelanggaran(santriId: string, deskripsi: strin
     const body = `${santri?.nama || "Anak Anda"}: ${deskripsi.substring(0, 50)}...`;
     const url = "/kesantrian/pelanggaran";
 
-    // Save to notifications table for in-app display
-    await saveToNotificationsTable(title, body, "ortu", url);
+    // Save to notifications table for in-app display (with santri-specific targeting)
+    await saveToNotificationsTable(title, body, "ortu", santriId);
 
     if (!parentProfile) return { sent: 0 };
 
@@ -240,8 +241,8 @@ export async function notifyParentPerizinan(santriId: string, status: string) {
     const body = `Perizinan ${santri?.nama || "Anak Anda"}: ${statusText}`;
     const url = "/kesantrian/perizinan";
 
-    // Save to notifications table for in-app display
-    await saveToNotificationsTable(title, body, "ortu", url);
+    // Save to notifications table for in-app display (with santri-specific targeting)
+    await saveToNotificationsTable(title, body, "ortu", santriId);
 
     if (!parentProfile) return { sent: 0 };
 
@@ -265,8 +266,8 @@ export async function notifyAllParentsEvent(eventName: string, eventDate: string
     const body = `${eventName} - ${eventDate}`;
     const url = "/event";
 
-    // Save to notifications table for in-app display
-    await saveToNotificationsTable(title, body, "ortu", url);
+    // Save to notifications table for in-app display (global event for all parents)
+    await saveToNotificationsTable(title, body, "ortu");
 
     if (!parents || parents.length === 0) return { sent: 0 };
 
