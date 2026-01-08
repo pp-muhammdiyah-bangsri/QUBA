@@ -202,8 +202,8 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
         <>
             <Card className="border-0 shadow-md">
                 <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="relative w-64">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-6">
+                        <div className="relative w-full sm:w-64">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <Input
                                 placeholder="Cari santri..."
@@ -212,7 +212,7 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
                                 className="pl-10"
                             />
                         </div>
-                        <Button onClick={handleOpenAdd}>
+                        <Button onClick={handleOpenAdd} className="w-full sm:w-auto">
                             <Plus className="w-4 h-4 mr-2" />
                             Tambah Santri
                         </Button>
@@ -301,7 +301,7 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
                                     folder="santri"
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="nis">NIS *</Label>
                                     <Input
@@ -324,7 +324,7 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
                                     </Select>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="nama">Nama Lengkap *</Label>
                                     <Input
@@ -354,7 +354,7 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
                                     onChange={(e) => setFormData({ ...formData, alamat: e.target.value })}
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="nama_wali">Nama Wali</Label>
                                     <Input
@@ -395,7 +395,7 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
                                     <option value="pindah">Pindah</option>
                                 </Select>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="kelas_id">Kelas</Label>
                                     <Select

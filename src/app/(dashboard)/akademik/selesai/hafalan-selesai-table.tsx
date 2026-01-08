@@ -190,9 +190,9 @@ export function HafalanSelesaiTable({ initialData, santriList, asatidzList, user
 
             <Card className="border-0 shadow-md">
                 <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-6">
                         {userRole !== "ortu" ? (
-                            <div className="relative w-64">
+                            <div className="relative w-full sm:w-64">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                 <Input
                                     placeholder="Cari santri..."
@@ -202,13 +202,13 @@ export function HafalanSelesaiTable({ initialData, santriList, asatidzList, user
                                 />
                             </div>
                         ) : <div></div>}
-                        <div className="flex items-center gap-4">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                 <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                                 Total: {data.length} Juz Selesai
                             </div>
                             {userRole !== "ortu" && (
-                                <Button onClick={handleOpenAdd} className="gap-2">
+                                <Button onClick={handleOpenAdd} className="gap-2 w-full sm:w-auto">
                                     <Plus className="w-4 h-4" />
                                     Tambah
                                 </Button>
@@ -331,7 +331,7 @@ export function HafalanSelesaiTable({ initialData, santriList, asatidzList, user
                                     ))}
                                 </Select>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="juz">Juz *</Label>
                                     <Select
@@ -356,7 +356,7 @@ export function HafalanSelesaiTable({ initialData, santriList, asatidzList, user
                                     />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="penguji_id">Penguji</Label>
                                     <Select
@@ -437,7 +437,7 @@ export function HafalanSelesaiTable({ initialData, santriList, asatidzList, user
 
                     {selectedItem && (
                         <div className="space-y-6 py-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <Label className="text-gray-500">Santri</Label>
                                     <div className="font-medium text-lg">{selectedItem.santri?.nama}</div>
@@ -453,7 +453,7 @@ export function HafalanSelesaiTable({ initialData, santriList, asatidzList, user
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <Label className="text-gray-500">Waktu Penyelesaian</Label>
                                     <div className="font-medium">{selectedItem.nilai || "-"}</div>

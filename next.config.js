@@ -20,11 +20,6 @@ const nextConfig = {
     },
     // Transpile pdfjs-dist for proper ESM handling
     transpilePackages: ['pdfjs-dist'],
-
-    // Experimental: Enable layers for async module loading
-    experimental: {
-        esmExternals: 'loose',
-    },
 };
 
 module.exports = nextConfig;

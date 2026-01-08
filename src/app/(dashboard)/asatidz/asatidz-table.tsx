@@ -145,8 +145,8 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
         <>
             <Card className="border-0 shadow-md">
                 <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="relative w-64">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-6">
+                        <div className="relative w-full sm:w-64">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <Input
                                 placeholder="Cari asatidz..."
@@ -155,7 +155,7 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
                                 className="pl-10"
                             />
                         </div>
-                        <Button onClick={handleOpenAdd}>
+                        <Button onClick={handleOpenAdd} className="w-full sm:w-auto">
                             <Plus className="w-4 h-4 mr-2" />
                             Tambah Asatidz
                         </Button>
@@ -239,7 +239,7 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
                                     required
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="jenis_kelamin">Jenis Kelamin *</Label>
                                     <Select

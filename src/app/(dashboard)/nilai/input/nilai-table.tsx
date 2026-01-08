@@ -227,9 +227,9 @@ export function NilaiTable({ initialData, santriList, mapelList, semesterOptions
 
             <Card className="border-0 shadow-md">
                 <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-6 gap-4">
-                        <div className="flex gap-2">
-                            <div className="relative w-64">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-6">
+                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                            <div className="relative w-full sm:w-64">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                 <Input
                                     placeholder="Cari santri/mapel..."
@@ -241,7 +241,7 @@ export function NilaiTable({ initialData, santriList, mapelList, semesterOptions
                             <Select
                                 value={filterSemester}
                                 onChange={(e) => setFilterSemester(e.target.value)}
-                                className="w-48"
+                                className="w-full sm:w-48"
                             >
                                 <option value="">Semua Semester</option>
                                 {semesterOptions.map((s) => (
@@ -249,7 +249,7 @@ export function NilaiTable({ initialData, santriList, mapelList, semesterOptions
                                 ))}
                             </Select>
                         </div>
-                        <Button onClick={handleOpenAdd}>
+                        <Button onClick={handleOpenAdd} className="w-full sm:w-auto">
                             <Plus className="w-4 h-4 mr-2" />
                             Input Nilai
                         </Button>
@@ -350,7 +350,7 @@ export function NilaiTable({ initialData, santriList, mapelList, semesterOptions
                                     ))}
                                 </Select>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="mapel_id">Mata Pelajaran *</Label>
                                     <Select
@@ -381,7 +381,7 @@ export function NilaiTable({ initialData, santriList, mapelList, semesterOptions
                                     </Select>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="nilai_uh">Nilai UH</Label>
                                     <Input

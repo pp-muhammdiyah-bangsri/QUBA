@@ -123,8 +123,8 @@ export function HalaqohTable({ initialData, asatidzList }: HalaqohTableProps) {
         <div className="space-y-6">
             <Card className="border-0 shadow-md">
                 <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                        <div className="relative w-64">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-6">
+                        <div className="relative w-full sm:w-64">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <Input
                                 placeholder="Cari halaqoh..."
@@ -133,7 +133,7 @@ export function HalaqohTable({ initialData, asatidzList }: HalaqohTableProps) {
                                 className="pl-10"
                             />
                         </div>
-                        <Button onClick={handleOpenAdd} className="gap-2">
+                        <Button onClick={handleOpenAdd} className="gap-2 w-full sm:w-auto">
                             <Plus className="w-4 h-4" />
                             Tambah Halaqoh
                         </Button>

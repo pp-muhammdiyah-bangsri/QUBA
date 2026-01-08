@@ -324,14 +324,14 @@ export function EventPage({ initialEvents, initialInformasi, userRole = "admin" 
             <Card className="border-0 shadow-md">
                 <CardContent className="p-6">
                     <Tabs value={activeTab} onValueChange={setActiveTab}>
-                        <div className="flex items-center justify-between mb-6">
+                        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between mb-6">
                             <TabsList>
                                 <TabsTrigger value="events">Event</TabsTrigger>
                                 <TabsTrigger value="informasi">Informasi</TabsTrigger>
                             </TabsList>
-                            <div className="flex gap-2">
+                            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                                 {userRole !== "ortu" ? (
-                                    <div className="relative w-64">
+                                    <div className="relative w-full sm:w-64">
                                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                                         <Input
                                             placeholder="Cari..."
@@ -342,7 +342,7 @@ export function EventPage({ initialEvents, initialInformasi, userRole = "admin" 
                                     </div>
                                 ) : <div></div>}
                                 {userRole !== "ortu" && (
-                                    <Button onClick={activeTab === "events" ? handleOpenAddEvent : handleOpenAddInfo}>
+                                    <Button onClick={activeTab === "events" ? handleOpenAddEvent : handleOpenAddInfo} className="w-full sm:w-auto">
                                         <Plus className="w-4 h-4 mr-2" />
                                         Tambah {activeTab === "events" ? "Event" : "Informasi"}
                                     </Button>
@@ -494,7 +494,7 @@ export function EventPage({ initialEvents, initialInformasi, userRole = "admin" 
                                 <Label>Judul *</Label>
                                 <Input value={eventForm.judul} onChange={(e) => setEventForm({ ...eventForm, judul: e.target.value })} required />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>Jenis *</Label>
                                     <Select value={eventForm.jenis} onChange={(e) => setEventForm({ ...eventForm, jenis: e.target.value as EventFormData["jenis"] })}>
@@ -509,7 +509,7 @@ export function EventPage({ initialEvents, initialInformasi, userRole = "admin" 
                                     <Input value={eventForm.lokasi} onChange={(e) => setEventForm({ ...eventForm, lokasi: e.target.value })} />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>Tanggal Mulai *</Label>
                                     <Input type="date" value={eventForm.tanggal_mulai} onChange={(e) => setEventForm({ ...eventForm, tanggal_mulai: e.target.value })} required />

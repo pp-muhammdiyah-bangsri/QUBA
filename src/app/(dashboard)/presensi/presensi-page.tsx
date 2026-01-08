@@ -399,16 +399,16 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
 
             {/* Kegiatan Table */}
             <Card className="border-0 shadow-md">
-                <CardHeader className="flex flex-row items-center justify-between">
+                <CardHeader className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
                     <CardTitle>Daftar Kegiatan</CardTitle>
-                    <Button onClick={handleOpenAddKegiatan}>
+                    <Button onClick={handleOpenAddKegiatan} className="w-full sm:w-auto">
                         <Plus className="w-4 h-4 mr-2" />
                         Tambah Kegiatan
                     </Button>
                 </CardHeader>
                 <CardContent>
                     <div className="mb-4">
-                        <div className="relative w-64">
+                        <div className="relative w-full sm:w-64">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <Input
                                 placeholder="Cari kegiatan..."
@@ -536,7 +536,7 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
                                     )}
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="jenis">Jenis *</Label>
                                     <Select
@@ -580,7 +580,7 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
                                     </div>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="tanggal_mulai">Tanggal Mulai *</Label>
                                     <Input
