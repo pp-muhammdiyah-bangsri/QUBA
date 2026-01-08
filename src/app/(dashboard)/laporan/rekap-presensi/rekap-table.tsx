@@ -251,32 +251,32 @@ export function RekapTable({ data, totalKegiatan, kelasList, halaqohList, kegiat
                         <TableBody>
                             {data.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                                    <TableCell colSpan={7} className="text-center py-8 text-gray-500 dark:text-gray-400">
                                         Tidak ada data presensi untuk filter ini
                                     </TableCell>
                                 </TableRow>
                             ) : (
                                 data.map((row) => {
                                     const percentage = getPercentage(row.hadir);
-                                    let colorClass = "text-green-600";
-                                    if (percentage < 50) colorClass = "text-red-500 font-bold";
-                                    else if (percentage < 75) colorClass = "text-yellow-600";
+                                    let colorClass = "text-green-600 dark:text-green-400";
+                                    if (percentage < 50) colorClass = "text-red-500 dark:text-red-400 font-bold";
+                                    else if (percentage < 75) colorClass = "text-yellow-600 dark:text-yellow-400";
 
                                     return (
                                         <TableRow key={row.id}>
                                             <TableCell>
                                                 <div>
                                                     <div className="font-medium">{row.nama}</div>
-                                                    <div className="text-xs text-gray-500">{row.nis}</div>
+                                                    <div className="text-xs text-gray-500 dark:text-gray-400">{row.nis}</div>
                                                 </div>
                                             </TableCell>
                                             <TableCell>
                                                 <Badge variant="outline">{row.jenjang}</Badge>
                                             </TableCell>
-                                            <TableCell className="text-center bg-green-50">{row.hadir}</TableCell>
+                                            <TableCell className="text-center bg-green-50 dark:bg-green-900/20">{row.hadir}</TableCell>
                                             <TableCell className="text-center">{row.izin}</TableCell>
                                             <TableCell className="text-center">{row.sakit}</TableCell>
-                                            <TableCell className="text-center bg-red-50">{row.alpa}</TableCell>
+                                            <TableCell className="text-center bg-red-50 dark:bg-red-900/20">{row.alpa}</TableCell>
                                             <TableCell className="text-right">
                                                 <span className={colorClass}>{percentage}%</span>
                                             </TableCell>
