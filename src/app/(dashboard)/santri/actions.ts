@@ -228,3 +228,110 @@ export async function deleteSantri(id: string) {
     revalidatePath("/santri");
     return { success: true };
 }
+
+export async function syncParentAccounts() {
+    const supabase = await createClient();
+    const adminClient = await createAdminClient();
+
+    // 1. Get all santri
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: allSantri } = await (supabase as any).from("santri").select("*");
+    if (!allSantri || allSantri.length === 0) return { success: true, processed: 0, linked: 0, errors: [] };
+
+    // 2. Find santri who already have a parent linked
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: linkedProfiles } = await (adminClient as any)
+        .from("profiles")
+        .select("linked_santri_id")
+        .not("linked_santri_id", "is", null);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const linkedSantriIds = new Set(linkedProfiles?.map((p: any) => p.linked_santri_id));
+
+    // 3. Filter orphans
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const orphans = (allSantri as any[]).filter(s => !linkedSantriIds.has(s.id));
+
+    if (orphans.length === 0) {
+        return { success: true, processed: 0, linked: 0, errors: [] };
+    }
+
+    let linked = 0;
+    const errors: string[] = [];
+
+    // 4. Process orphans
+    for (const santri of orphans) {
+        try {
+            const autoEmail = `${santri.nis}@quba.app`;
+            const cleanPhone = santri.kontak_wali?.replace(/\D/g, "") || "123456";
+            const password = cleanPhone.length > 6 ? cleanPhone : `Ortu${cleanPhone}`;
+
+            let userId: string | null = null;
+            let warningMsg = "";
+
+            // Check if profile exists by email (using admin client to bypass RLS if needed, though profiles should be readable)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: existingProfile } = await (adminClient as any)
+                .from("profiles")
+                .select("id")
+                .eq("email", autoEmail)
+                .single();
+
+            if (existingProfile) {
+                userId = existingProfile.id;
+            } else {
+                // Check Auth
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const { data: authData, error: authError } = await (adminClient as any).auth.admin.createUser({
+                    email: autoEmail,
+                    password: password,
+                    email_confirm: true,
+                });
+
+                if (authData?.user) {
+                    userId = authData.user.id;
+                } else if (authError?.message?.includes("already been registered")) {
+                    // Try to find user in list
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const { data: users } = await (adminClient as any).auth.admin.listUsers();
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const found = users?.users?.find((u: any) => u.email === autoEmail);
+                    if (found) userId = found.id;
+                    else warningMsg = "User registered but not found (pagination limit)";
+                } else {
+                    warningMsg = `Auth error: ${authError?.message}`;
+                }
+            }
+
+            if (userId) {
+                if (existingProfile) {
+                    // Update existing profile
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    await (adminClient as any).from("profiles").update({
+                        linked_santri_id: santri.id,
+                        role: "ortu", // Ensure role is ortu
+                    }).eq("id", userId);
+                } else {
+                    // Create new profile
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    await (adminClient as any).from("profiles").insert({
+                        id: userId,
+                        email: autoEmail,
+                        full_name: santri.nama_wali || `Wali ${santri.nama}`,
+                        role: "ortu",
+                        linked_santri_id: santri.id,
+                    });
+                }
+                linked++;
+            } else {
+                if (warningMsg) errors.push(`${santri.nama}: ${warningMsg}`);
+            }
+
+        } catch (err: any) {
+            errors.push(`${santri.nama}: ${err.message}`);
+        }
+    }
+
+    revalidatePath("/santri");
+    return { success: true, processed: orphans.length, linked, errors };
+}

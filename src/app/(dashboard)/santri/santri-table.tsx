@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
-import { createSantri, updateSantri, deleteSantri, SantriFormData } from "./actions";
+import { createSantri, updateSantri, deleteSantri, syncParentAccounts, SantriFormData } from "./actions";
 import { PhotoUpload } from "@/components/photo-upload";
 
 interface Santri {
@@ -198,6 +198,30 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
         }
     };
 
+    const handleSync = async () => {
+        if (!confirm("Proses ini akan mengecek semua santri yang belum memiliki akun wali dan mencoba menghubungkan/membuat akun untuk mereka. Lanjutkan?")) return;
+
+        setLoading(true);
+        try {
+            const result = await syncParentAccounts();
+            if (result.success) {
+                if (result.processed === 0) {
+                    alert("Semua santri sudah terhubung dengan akun wali.");
+                } else {
+                    alert(`Sinkronisasi Selesai!\n\nData Diproses: ${result.processed}\nBerhasil Dihubungkan: ${result.linked}\nGagal: ${result.errors.length}\n\n${result.errors.length > 0 ? "Detail Error:\n" + result.errors.slice(0, 5).join("\n") + (result.errors.length > 5 ? "\n..." : "") : ""}`);
+                    // Reload to reflect changes if needed
+                    window.location.reload();
+                }
+            } else {
+                alert("Gagal melakukan sinkronisasi.");
+            }
+        } catch {
+            alert("Terjadi kesalahan saat sinkronisasi.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <>
             <Card className="border-0 shadow-md">
@@ -212,10 +236,21 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
                                 className="pl-10"
                             />
                         </div>
-                        <Button onClick={handleOpenAdd} className="w-full sm:w-auto">
-                            <Plus className="w-4 h-4 mr-2" />
-                            Tambah Santri
-                        </Button>
+                        <div className="flex gap-2 w-full sm:w-auto">
+                            <Button
+                                variant="outline"
+                                onClick={handleSync}
+                                disabled={loading}
+                                className="flex-1 sm:flex-none"
+                            >
+                                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
+                                Sync Akun Wali
+                            </Button>
+                            <Button onClick={handleOpenAdd} className="flex-1 sm:flex-none">
+                                <Plus className="w-4 h-4 mr-2" />
+                                Tambah Santri
+                            </Button>
+                        </div>
                     </div>
 
                     <Table>
