@@ -432,10 +432,12 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
             <Card className="border-0 shadow-md">
                 <CardHeader className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
                     <CardTitle>Daftar Kegiatan</CardTitle>
-                    <Button onClick={handleOpenAddKegiatan} className="w-full sm:w-auto">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Tambah Kegiatan
-                    </Button>
+                    {userRole === "admin" && (
+                        <Button onClick={handleOpenAddKegiatan} className="w-full sm:w-auto">
+                            <Plus className="w-4 h-4 mr-2" />
+                            Tambah Kegiatan
+                        </Button>
+                    )}
                 </CardHeader>
                 <CardContent>
                     <div className="mb-4">
@@ -515,20 +517,24 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
                                                         Presensi
                                                     </Button>
                                                 )}
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => handleOpenEditKegiatan(k)}
-                                                >
-                                                    <Pencil className="w-4 h-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => handleOpenDeleteKegiatan(k)}
-                                                >
-                                                    <Trash2 className="w-4 h-4 text-red-500" />
-                                                </Button>
+                                                {userRole === "admin" && (
+                                                    <>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => handleOpenEditKegiatan(k)}
+                                                        >
+                                                            <Pencil className="w-4 h-4" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => handleOpenDeleteKegiatan(k)}
+                                                        >
+                                                            <Trash2 className="w-4 h-4 text-red-500" />
+                                                        </Button>
+                                                    </>
+                                                )}
                                             </TableCell>
                                         </TableRow>
                                     );

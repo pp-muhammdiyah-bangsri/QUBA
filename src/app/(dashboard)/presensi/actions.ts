@@ -97,6 +97,11 @@ export async function getKegiatanList() {
 export async function createKegiatan(formData: KegiatanFormData) {
     const supabase = await createClient();
 
+    const role = await getUserRole();
+    if (role !== "admin") {
+        return { error: "Hanya Admin yang dapat membuat kegiatan" };
+    }
+
     const validated = kegiatanSchema.safeParse(formData);
     if (!validated.success) {
         return { error: validated.error.errors[0].message };
@@ -123,6 +128,11 @@ export async function createKegiatan(formData: KegiatanFormData) {
 
 export async function updateKegiatan(id: string, formData: KegiatanFormData) {
     const supabase = await createClient();
+
+    const role = await getUserRole();
+    if (role !== "admin") {
+        return { error: "Hanya Admin yang dapat mengubah kegiatan" };
+    }
 
     const validated = kegiatanSchema.safeParse(formData);
     if (!validated.success) {
@@ -152,6 +162,11 @@ export async function updateKegiatan(id: string, formData: KegiatanFormData) {
 
 export async function deleteKegiatan(id: string) {
     const supabase = await createClient();
+
+    const role = await getUserRole();
+    if (role !== "admin") {
+        return { error: "Hanya Admin yang dapat menghapus kegiatan" };
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabase as any).from("kegiatan").delete().eq("id", id);
