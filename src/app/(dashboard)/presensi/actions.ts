@@ -529,14 +529,15 @@ export async function getPresensiRekapMultiActivity(
 
     // 4. Filter activities based on mode
     const filteredActivities = Object.keys(activityCount).filter((name) => {
-        const nameLower = name.toLowerCase();
+        // Normalize: lowercase and remove apostrophes for matching
+        const nameNorm = name.toLowerCase().replace(/[''`]/g, "");
         const isSholat =
-            nameLower.includes("sholat") ||
-            nameLower.includes("solat") ||
-            nameLower.includes("shalat") ||
-            nameLower.includes("badiah") ||    // matches ba'diah, badiah
-            nameLower.includes("qobliah") ||   // matches qobliah
-            nameLower.includes("qabliah");     // alternate spelling
+            nameNorm.includes("sholat") ||
+            nameNorm.includes("solat") ||
+            nameNorm.includes("shalat") ||
+            nameNorm.includes("badiah") ||    // matches ba'diah, badiah
+            nameNorm.includes("qobliah") ||   // matches qobliah
+            nameNorm.includes("qabliah");     // alternate spelling
 
         const isRecurring = activityCount[name] > 5; // Heuristic: >5 occurrences = recurring
 
