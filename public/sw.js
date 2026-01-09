@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quba-v1';
+const CACHE_NAME = 'quba-v2';
 const STATIC_ASSETS = [
     '/',
     '/login',
@@ -34,15 +34,41 @@ self.addEventListener('fetch', (event) => {
     // Skip non-GET requests
     if (event.request.method !== 'GET') return;
 
-    // Skip API requests (always network)
-    if (event.request.url.includes('/api/') || event.request.url.includes('supabase')) {
+    // Skip API requests and auth-related routes (always network)
+    if (event.request.url.includes('/api/') ||
+        event.request.url.includes('supabase') ||
+        event.request.url.includes('/auth/')) {
         return;
     }
 
+    // For navigation requests (HTML pages), always try network first
+    if (event.request.mode === 'navigate') {
+        event.respondWith(
+            fetch(event.request)
+                .catch(() => {
+                    // Only fallback to cached index if offline
+                    return caches.match('/') || caches.match('/login');
+                })
+        );
+        return;
+    }
+
+    // For other resources (JS, CSS, images), use cache-first strategy
     event.respondWith(
-        fetch(event.request)
-            .then((response) => {
-                // Cache successful responses
+        caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+                // Return cached version and update cache in background
+                fetch(event.request).then((response) => {
+                    if (response.status === 200) {
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, response);
+                        });
+                    }
+                });
+                return cachedResponse;
+            }
+            // If not in cache, fetch from network
+            return fetch(event.request).then((response) => {
                 if (response.status === 200) {
                     const responseClone = response.clone();
                     caches.open(CACHE_NAME).then((cache) => {
@@ -50,11 +76,8 @@ self.addEventListener('fetch', (event) => {
                     });
                 }
                 return response;
-            })
-            .catch(() => {
-                // Fallback to cache
-                return caches.match(event.request);
-            })
+            });
+        })
     );
 });
 
