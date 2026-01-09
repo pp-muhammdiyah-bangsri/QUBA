@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Filter, FileSpreadsheet, FileText } from "lucide-react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -232,16 +233,18 @@ export function RekapTable({
                         </div>
                         <div className="space-y-2">
                             <Label>Nama Kegiatan</Label>
-                            <Select
+                            <SearchableSelect
                                 value={kegiatanName}
-                                onChange={(e) => setKegiatanName(e.target.value)}
-                            >
-                                <option value="">Semua (Kecuali Sholat)</option>
-                                <option value="__SHOLAT__">🕌 Rekap Sholat</option>
-                                {kegiatanList.map((opt) => (
-                                    <option key={opt} value={opt}>{opt}</option>
-                                ))}
-                            </Select>
+                                onChange={setKegiatanName}
+                                placeholder="Semua (Kecuali Sholat)"
+                                searchPlaceholder="Cari kegiatan..."
+                                emptyText="Tidak ditemukan"
+                                options={[
+                                    { value: "", label: "Semua (Kecuali Sholat)" },
+                                    { value: "__SHOLAT__", label: "🕌 Rekap Sholat" },
+                                    ...kegiatanList.map((opt) => ({ value: opt, label: opt })),
+                                ]}
+                            />
                         </div>
                         <div className="space-y-2">
                             <Label>Tipe Grup</Label>
