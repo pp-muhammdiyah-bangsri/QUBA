@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Bell, BellOff, Loader2 } from "lucide-react";
-import { savePushSubscription, removePushSubscription, getVapidPublicKey } from "@/app/(dashboard)/notifications/actions";
+import { savePushSubscription, removePushSubscription, getVapidPublicKey, sendTestNotification } from "@/app/(dashboard)/notifications/actions";
 
 function urlBase64ToUint8Array(base64String: string) {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -104,6 +104,19 @@ export function NotificationToggle() {
         return null; // Not supported
     }
 
+    const handleTest = async () => {
+        if (!isSubscribed) return;
+        setLoading(true);
+        try {
+            await sendTestNotification();
+            alert("Test notifikasi dikirim! Cek notifikasi di HP/PC Anda.");
+        } catch (err) {
+            console.error("Test failed:", err);
+            alert("Gagal mengirim test notifikasi.");
+        }
+        setLoading(false);
+    };
+
     if (permission === "denied") {
         return (
             <Button variant="ghost" size="icon" disabled title="Notifikasi diblokir">
@@ -113,21 +126,34 @@ export function NotificationToggle() {
     }
 
     return (
-        <Button
-            variant="ghost"
-            size="icon"
-            onClick={isSubscribed ? unsubscribe : subscribe}
-            disabled={loading}
-            title={isSubscribed ? "Matikan notifikasi" : "Aktifkan notifikasi"}
-            className={isSubscribed ? "text-emerald-500" : "text-gray-400"}
-        >
-            {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-            ) : isSubscribed ? (
-                <Bell className="w-5 h-5" />
-            ) : (
-                <BellOff className="w-5 h-5" />
+        <div className="flex items-center gap-1">
+            {isSubscribed && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleTest}
+                    disabled={loading}
+                    className="text-xs text-emerald-500 hidden md:flex"
+                >
+                    Test Push
+                </Button>
             )}
-        </Button>
+            <Button
+                variant="ghost"
+                size="icon"
+                onClick={isSubscribed ? unsubscribe : subscribe}
+                disabled={loading}
+                title={isSubscribed ? "Matikan notifikasi" : "Aktifkan notifikasi"}
+                className={isSubscribed ? "text-emerald-500" : "text-gray-400"}
+            >
+                {loading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                ) : isSubscribed ? (
+                    <Bell className="w-5 h-5" />
+                ) : (
+                    <BellOff className="w-5 h-5" />
+                )}
+            </Button>
+        </div>
     );
 }

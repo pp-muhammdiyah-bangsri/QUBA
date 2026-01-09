@@ -278,3 +278,20 @@ function formatRelativeTime(dateStr: string): string {
 export async function getVapidPublicKey() {
     return VAPID_PUBLIC_KEY;
 }
+
+// Send a test notification to the current user
+export async function sendTestNotification() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) return { error: "Not authenticated" };
+
+    const result = await sendNotificationToUser(
+        user.id,
+        "Test Notifikasi QUBA",
+        "Ini adalah pesan uji coba push notification. Jika Anda melihat ini, berarti konfigurasi berhasil!",
+        "/notifications"
+    );
+
+    return result;
+}
