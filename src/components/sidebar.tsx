@@ -28,6 +28,7 @@ import { Role } from "@/types/database.types";
 import { useMobileSidebar } from "./mobile-sidebar";
 import { ThemeToggle } from "./theme-toggle";
 import { NotificationBell } from "./notifications";
+import { NotificationToggle } from "@/components/notification-toggle";
 
 interface SidebarProps {
     userRole: Role;
@@ -308,6 +309,7 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
                         <p className="text-sm font-medium truncate text-white">{userName}</p>
                         <p className="text-xs text-emerald-200/60 capitalize">{userRole}</p>
                     </div>
+                    <NotificationToggle />
                     <NotificationBell />
                     <ThemeToggle />
                 </div>

@@ -3,6 +3,7 @@
 import { MobileSidebarProvider, MobileHeader, MobileOverlay } from "@/components/mobile-sidebar";
 import { Sidebar } from "@/components/sidebar";
 import { Role } from "@/types/database.types";
+import { InstallPrompt } from "@/components/install-prompt";
 
 interface DashboardShellProps {
     children: React.ReactNode;
@@ -19,6 +20,8 @@ export function DashboardShell({ children, userRole, userName }: DashboardShellP
 
                 {/* Mobile Overlay */}
                 <MobileOverlay />
+
+                <InstallPrompt />
 
                 {/* Sidebar */}
                 <Sidebar userRole={userRole} userName={userName} />
