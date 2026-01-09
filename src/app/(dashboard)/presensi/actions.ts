@@ -546,7 +546,28 @@ export async function getPresensiRekapMultiActivity(
         } else {
             return !isSholat; // "all" mode excludes sholat
         }
-    }).sort();
+    });
+
+    // Custom sort order for sholat activities
+    const sholatOrder = [
+        "tahajud", "qobliah subuh", "subuh", "syuruq", "duha",
+        "dzuhur", "badiah dzuhur", "qobliah ashar", "ashar",
+        "maghrib", "badiah maghrib", "isya", "badiah isya", "witir"
+    ];
+
+    const getSholatSortIndex = (name: string): number => {
+        const norm = name.toLowerCase().replace(/[''`]/g, "").replace(/sholat\s*/i, "").trim();
+        for (let i = 0; i < sholatOrder.length; i++) {
+            if (norm.includes(sholatOrder[i]) || sholatOrder[i].includes(norm)) {
+                return i;
+            }
+        }
+        return 999; // Unknown activities go to the end
+    };
+
+    const sortedActivities = mode === "sholat"
+        ? filteredActivities.sort((a, b) => getSholatSortIndex(a) - getSholatSortIndex(b))
+        : filteredActivities.sort();
 
     // 5. Build santri map with activity-based attendance
     type SantriMultiRekap = {
@@ -614,7 +635,7 @@ export async function getPresensiRekapMultiActivity(
 
     return {
         santriRekap: result,
-        activities: filteredActivities,
+        activities: sortedActivities,
         activityTotals,
     };
 }

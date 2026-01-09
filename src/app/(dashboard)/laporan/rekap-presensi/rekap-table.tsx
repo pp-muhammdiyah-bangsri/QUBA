@@ -97,16 +97,31 @@ export function RekapTable({
     const handleExportExcel = () => {
         if (isMultiMode) {
             // Multi-activity Excel
+            const isSholat = kegiatanName === "__SHOLAT__";
             const rows = multiData.map(row => {
                 const rowData: Record<string, string | number> = {
                     "Nama Santri": row.nama,
                     "Jenjang": row.jenjang,
                     "L/P": row.jenis_kelamin,
                 };
+
+                let totalHadir = 0;
+                let totalKegiatan = 0;
+
                 activities.forEach(act => {
                     const stats = row.activities[act] || { hadir: 0, total: 0 };
-                    rowData[act] = `${stats.hadir}/${activityTotals[act] || stats.total}`;
+                    const total = activityTotals[act] || stats.total;
+                    rowData[act] = `${stats.hadir}/${total}`;
+                    totalHadir += stats.hadir;
+                    totalKegiatan += total;
                 });
+
+                // Add total and percentage for sholat mode
+                if (isSholat) {
+                    rowData["Total Hadir"] = `${totalHadir}/${totalKegiatan}`;
+                    rowData["%"] = totalKegiatan > 0 ? `${Math.round((totalHadir / totalKegiatan) * 100)}%` : "0%";
+                }
+
                 return rowData;
             });
             const worksheet = XLSX.utils.json_to_sheet(rows);
