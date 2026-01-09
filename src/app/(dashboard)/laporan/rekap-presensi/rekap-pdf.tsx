@@ -220,14 +220,17 @@ export const RekapPdfMultiDocument = ({
         title = `Rekap Presensi Seluruh Kegiatan Santri${genderSuffix}${groupSuffix}`;
     }
 
+    // Calculate attendance stats if isSholat
+    const statsWidth = isSholat ? 12 : 0; // 6% for Total, 6% for %
+
     // Calculate dynamic column width
-    const nameWidth = 25; // percentage
-    const jenjangWidth = 10;
-    const remainingWidth = 100 - nameWidth - jenjangWidth;
+    const nameWidth = 20; // percentage
+    const jenjangWidth = 8;
+    const remainingWidth = 100 - nameWidth - jenjangWidth - statsWidth;
     const activityWidth = activities.length > 0 ? remainingWidth / activities.length : 10;
 
-    // Use landscape for many columns
-    const orientation = activities.length > 5 ? "landscape" : "portrait";
+    // Use landscape for many columns or if it is sholat report
+    const orientation = activities.length > 5 || isSholat ? "landscape" : "portrait";
 
     return (
         <Document>
@@ -253,6 +256,16 @@ export const RekapPdfMultiDocument = ({
                                 <Text style={styles.tableCellHeader}>{act}</Text>
                             </View>
                         ))}
+                        {isSholat && (
+                            <>
+                                <View style={[styles.tableColDynamic, { width: "6%" }]}>
+                                    <Text style={styles.tableCellHeader}>Hadir</Text>
+                                </View>
+                                <View style={[styles.tableColDynamic, { width: "6%" }]}>
+                                    <Text style={styles.tableCellHeader}>%</Text>
+                                </View>
+                            </>
+                        )}
                     </View>
 
                     {/* Table Rows */}
@@ -273,6 +286,29 @@ export const RekapPdfMultiDocument = ({
                                     </View>
                                 );
                             })}
+
+                            {isSholat && (() => {
+                                let totalHadir = 0;
+                                let totalKegiatan = 0;
+                                activities.forEach(act => {
+                                    const stats = row.activities[act] || { hadir: 0, total: 0 };
+                                    const total = activityTotals[act] || stats.total;
+                                    totalHadir += stats.hadir;
+                                    totalKegiatan += total;
+                                });
+                                const percentage = totalKegiatan > 0 ? Math.round((totalHadir / totalKegiatan) * 100) : 0;
+
+                                return (
+                                    <>
+                                        <View style={[styles.tableColDynamic, { width: "6%" }]}>
+                                            <Text style={styles.tableCell}>{totalHadir}/{totalKegiatan}</Text>
+                                        </View>
+                                        <View style={[styles.tableColDynamic, { width: "6%" }]}>
+                                            <Text style={styles.tableCell}>{percentage}%</Text>
+                                        </View>
+                                    </>
+                                );
+                            })()}
                         </View>
                     ))}
                 </View>

@@ -540,7 +540,7 @@ export async function getPresensiRekapMultiActivity(
         const isRecurring = activityCount[name] > 5; // Heuristic: >5 occurrences = recurring
 
         if (mode === "sholat") {
-            return isSholat && isRecurring;
+            return isSholat; // Include all sholat-related activities regardless of frequency
         } else {
             return !isSholat; // "all" mode excludes sholat
         }
