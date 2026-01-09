@@ -11,12 +11,12 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     title: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: "bold",
         marginBottom: 5,
     },
     subtitle: {
-        fontSize: 12,
+        fontSize: 11,
         color: "#666666",
     },
     table: {
@@ -45,20 +45,26 @@ const styles = StyleSheet.create({
         borderLeftWidth: 0,
         borderTopWidth: 0,
     },
+    tableColDynamic: {
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderLeftWidth: 0,
+        borderTopWidth: 0,
+    },
     tableCellHeader: {
         margin: 5,
-        fontSize: 10,
+        fontSize: 9,
         fontWeight: "bold",
         textAlign: "center",
     },
     tableCell: {
         margin: 5,
-        fontSize: 9,
+        fontSize: 8,
         textAlign: "center",
     },
     tableCellLeft: {
         margin: 5,
-        fontSize: 9,
+        fontSize: 8,
         textAlign: "left",
     },
 });
@@ -74,28 +80,58 @@ interface SantriRekap {
     alpa: number;
 }
 
+interface SantriMultiRekap {
+    id: string;
+    nama: string;
+    nis: string;
+    jenjang: string;
+    jenis_kelamin: string;
+    activities: Record<string, { hadir: number; total: number }>;
+}
+
 interface RekapPdfProps {
     data: SantriRekap[];
     month: string;
     year: string;
     kegiatan: string;
     gender: string;
+    filterType?: string;
+    groupName?: string;
 }
 
-export const RekapPdfDocument = ({ data, month, year, kegiatan, gender }: RekapPdfProps) => {
+interface RekapPdfMultiProps {
+    data: SantriMultiRekap[];
+    activities: string[];
+    activityTotals: Record<string, number>;
+    month: string;
+    year: string;
+    gender: string;
+    isSholat: boolean;
+    filterType?: string;
+    groupName?: string;
+}
+
+// Single Activity PDF (Hadir/Izin/Sakit/Alpha format)
+export const RekapPdfDocument = ({ data, month, year, kegiatan, gender, filterType, groupName }: RekapPdfProps) => {
     const monthName = new Date(0, parseInt(month) - 1).toLocaleString("id-ID", { month: "long" });
 
-    let suffix = "";
-    if (gender === "L") suffix = " Putra";
-    if (gender === "P") suffix = " Putri";
+    // Build dynamic title
+    let genderSuffix = "";
+    if (gender === "L") genderSuffix = " Putra";
+    if (gender === "P") genderSuffix = " Putri";
+
+    let groupSuffix = "";
+    if (filterType && filterType !== "all" && groupName) {
+        groupSuffix = ` ${groupName}`;
+    }
+
+    const title = `Rekap Presensi ${kegiatan} Santri${genderSuffix}${groupSuffix}`;
 
     return (
         <Document>
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>
-                        Rekap Presensi {kegiatan ? kegiatan + " " : ""}Santri{suffix}
-                    </Text>
+                    <Text style={styles.title}>{title}</Text>
                     <Text style={styles.subtitle}>
                         Periode: {monthName} {year}
                     </Text>
@@ -145,6 +181,98 @@ export const RekapPdfDocument = ({ data, month, year, kegiatan, gender }: RekapP
                             <View style={styles.tableCol}>
                                 <Text style={styles.tableCell}>{row.alpa}</Text>
                             </View>
+                        </View>
+                    ))}
+                </View>
+            </Page>
+        </Document>
+    );
+};
+
+// Multi Activity PDF (columns per activity with hadir/total format)
+export const RekapPdfMultiDocument = ({
+    data,
+    activities,
+    activityTotals,
+    month,
+    year,
+    gender,
+    isSholat,
+    filterType,
+    groupName
+}: RekapPdfMultiProps) => {
+    const monthName = new Date(0, parseInt(month) - 1).toLocaleString("id-ID", { month: "long" });
+
+    // Build dynamic title
+    let genderSuffix = "";
+    if (gender === "L") genderSuffix = " Putra";
+    if (gender === "P") genderSuffix = " Putri";
+
+    let groupSuffix = "";
+    if (filterType && filterType !== "all" && groupName) {
+        groupSuffix = ` ${groupName}`;
+    }
+
+    let title = "";
+    if (isSholat) {
+        title = `Rekap Presensi Sholat Santri${genderSuffix}${groupSuffix}`;
+    } else {
+        title = `Rekap Presensi Seluruh Kegiatan Santri${genderSuffix}${groupSuffix}`;
+    }
+
+    // Calculate dynamic column width
+    const nameWidth = 25; // percentage
+    const jenjangWidth = 10;
+    const remainingWidth = 100 - nameWidth - jenjangWidth;
+    const activityWidth = activities.length > 0 ? remainingWidth / activities.length : 10;
+
+    // Use landscape for many columns
+    const orientation = activities.length > 5 ? "landscape" : "portrait";
+
+    return (
+        <Document>
+            <Page size="A4" orientation={orientation} style={styles.page}>
+                <View style={styles.header}>
+                    <Text style={styles.title}>{title}</Text>
+                    <Text style={styles.subtitle}>
+                        Periode: {monthName} {year}
+                    </Text>
+                </View>
+
+                <View style={styles.table}>
+                    {/* Table Header */}
+                    <View style={styles.tableRow}>
+                        <View style={[styles.tableColDynamic, { width: `${nameWidth}%` }]}>
+                            <Text style={styles.tableCellHeader}>Nama</Text>
+                        </View>
+                        <View style={[styles.tableColDynamic, { width: `${jenjangWidth}%` }]}>
+                            <Text style={styles.tableCellHeader}>Jenjang</Text>
+                        </View>
+                        {activities.map((act) => (
+                            <View key={act} style={[styles.tableColDynamic, { width: `${activityWidth}%` }]}>
+                                <Text style={styles.tableCellHeader}>{act}</Text>
+                            </View>
+                        ))}
+                    </View>
+
+                    {/* Table Rows */}
+                    {data.map((row) => (
+                        <View style={styles.tableRow} key={row.id}>
+                            <View style={[styles.tableColDynamic, { width: `${nameWidth}%` }]}>
+                                <Text style={styles.tableCellLeft}>{row.nama}</Text>
+                            </View>
+                            <View style={[styles.tableColDynamic, { width: `${jenjangWidth}%` }]}>
+                                <Text style={styles.tableCell}>{row.jenjang}</Text>
+                            </View>
+                            {activities.map((act) => {
+                                const stats = row.activities[act] || { hadir: 0, total: 0 };
+                                const total = activityTotals[act] || stats.total;
+                                return (
+                                    <View key={act} style={[styles.tableColDynamic, { width: `${activityWidth}%` }]}>
+                                        <Text style={styles.tableCell}>{stats.hadir}/{total}</Text>
+                                    </View>
+                                );
+                            })}
                         </View>
                     ))}
                 </View>

@@ -466,3 +466,148 @@ export async function getUniqueKegiatanNames(): Promise<string[]> {
     const uniqueNames = [...new Set((data || []).map((k: { nama: string }) => k.nama))] as string[];
     return uniqueNames.sort();
 }
+
+// Multi-activity rekap: returns attendance per activity as columns
+// mode: "all" = all activities except sholat, "sholat" = only recurring sholat activities
+export async function getPresensiRekapMultiActivity(
+    month?: number,
+    year?: number,
+    filterType: "all" | "kelas" | "halaqoh" = "all",
+    filterId: string = "",
+    gender: "L" | "P" | "all" = "all",
+    mode: "all" | "sholat" = "all"
+) {
+    const supabase = await createClient();
+    const now = new Date();
+    const targetMonth = month ?? now.getMonth() + 1;
+    const targetYear = year ?? now.getFullYear();
+
+    const startDate = `${targetYear}-${targetMonth.toString().padStart(2, "0")}-01`;
+    const endDate = new Date(targetYear, targetMonth, 0).toISOString().split("T")[0];
+
+    // 1. Get all relevant santri
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let santriQuery = (supabase as any)
+        .from("santri")
+        .select("id, nama, nis, jenjang, jenis_kelamin, kelas_id, halaqoh_id")
+        .eq("status", "aktif")
+        .order("nama", { ascending: true });
+
+    if (filterType === "kelas" && filterId) santriQuery = santriQuery.eq("kelas_id", filterId);
+    if (filterType === "halaqoh" && filterId) santriQuery = santriQuery.eq("halaqoh_id", filterId);
+    if (gender !== "all") santriQuery = santriQuery.eq("jenis_kelamin", gender);
+
+    const { data: allSantri } = await santriQuery;
+    if (!allSantri || allSantri.length === 0) {
+        return { santriRekap: [], activities: [], activityTotals: {} };
+    }
+
+    // 2. Get all presensi data with kegiatan info
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: presensiData } = await (supabase as any)
+        .from("presensi")
+        .select(`
+            *,
+            kegiatan:kegiatan_id(id, nama)
+        `)
+        .gte("created_at", startDate)
+        .lte("created_at", endDate + "T23:59:59");
+
+    if (!presensiData) {
+        return { santriRekap: [], activities: [], activityTotals: {} };
+    }
+
+    // 3. Count activity occurrences to identify recurring vs one-time
+    const activityCount: Record<string, number> = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (presensiData as any[]).forEach((p) => {
+        const actName = p.kegiatan?.nama;
+        if (actName) {
+            activityCount[actName] = (activityCount[actName] || 0) + 1;
+        }
+    });
+
+    // 4. Filter activities based on mode
+    const filteredActivities = Object.keys(activityCount).filter((name) => {
+        const nameLower = name.toLowerCase();
+        const isSholat = nameLower.includes("sholat") || nameLower.includes("solat") || nameLower.includes("shalat");
+        const isRecurring = activityCount[name] > 5; // Heuristic: >5 occurrences = recurring
+
+        if (mode === "sholat") {
+            return isSholat && isRecurring;
+        } else {
+            return !isSholat; // "all" mode excludes sholat
+        }
+    }).sort();
+
+    // 5. Build santri map with activity-based attendance
+    type SantriMultiRekap = {
+        id: string;
+        nama: string;
+        nis: string;
+        jenjang: string;
+        jenis_kelamin: string;
+        activities: Record<string, { hadir: number; total: number }>;
+    };
+
+    const santriMap: Record<string, SantriMultiRekap> = {};
+    const activityTotals: Record<string, number> = {};
+
+    // Initialize santri map
+    allSantri.forEach((s: any) => {
+        santriMap[s.id] = {
+            id: s.id,
+            nama: s.nama,
+            nis: s.nis,
+            jenjang: s.jenjang,
+            jenis_kelamin: s.jenis_kelamin,
+            activities: {},
+        };
+        // Initialize each activity
+        filteredActivities.forEach((act) => {
+            santriMap[s.id].activities[act] = { hadir: 0, total: 0 };
+        });
+    });
+
+    // Initialize activity totals
+    filteredActivities.forEach((act) => {
+        activityTotals[act] = 0;
+    });
+
+    // 6. Process presensi data - count unique kegiatan_id per activity name
+    const kegiatanIdsByName: Record<string, Set<string>> = {};
+    filteredActivities.forEach((act) => {
+        kegiatanIdsByName[act] = new Set();
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (presensiData as any[]).forEach((p) => {
+        const actName = p.kegiatan?.nama;
+        if (!actName || !filteredActivities.includes(actName)) return;
+        if (!santriMap[p.santri_id]) return;
+
+        // Track unique kegiatan instances
+        kegiatanIdsByName[actName].add(p.kegiatan_id);
+
+        // Count attendance
+        santriMap[p.santri_id].activities[actName].total++;
+        if (p.status === "hadir") {
+            santriMap[p.santri_id].activities[actName].hadir++;
+        }
+    });
+
+    // Calculate totals per activity (number of unique kegiatan instances)
+    filteredActivities.forEach((act) => {
+        activityTotals[act] = kegiatanIdsByName[act].size;
+    });
+
+    const result = Object.values(santriMap);
+    result.sort((a, b) => a.nama.localeCompare(b.nama));
+
+    return {
+        santriRekap: result,
+        activities: filteredActivities,
+        activityTotals,
+    };
+}
+

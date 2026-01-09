@@ -1,4 +1,4 @@
-import { getPresensiRekap, getUniqueKegiatanNames } from "@/app/(dashboard)/presensi/actions";
+import { getPresensiRekap, getUniqueKegiatanNames, getPresensiRekapMultiActivity } from "@/app/(dashboard)/presensi/actions";
 import { getKelasDropdown, getHalaqohDropdown } from "@/app/(dashboard)/data-master/actions";
 import { RekapTable } from "./rekap-table";
 
@@ -15,8 +15,15 @@ export default async function RekapPresensiPage({
     const kegiatanName = (params.kegiatan as string) || "";
     const gender = (params.gender as "L" | "P" | "all") || "all";
 
-    const [rekapData, kelasList, halaqohList, kegiatanList] = await Promise.all([
-        getPresensiRekap(month, year, filterType, filterId, kegiatanName, gender),
+    // Determine which data to fetch based on kegiatan filter
+    const isMultiMode = kegiatanName === "" || kegiatanName === "__SHOLAT__";
+    const multiMode = kegiatanName === "__SHOLAT__" ? "sholat" : "all";
+
+    const [rekapData, multiRekapData, kelasList, halaqohList, kegiatanList] = await Promise.all([
+        // Single activity mode (for specific kegiatan)
+        isMultiMode ? Promise.resolve({ santriRekap: [], kegiatanCount: 0 }) : getPresensiRekap(month, year, filterType, filterId, kegiatanName, gender),
+        // Multi-activity mode (for "semua" or "sholat")
+        isMultiMode ? getPresensiRekapMultiActivity(month, year, filterType, filterId, gender, multiMode as "all" | "sholat") : Promise.resolve({ santriRekap: [], activities: [], activityTotals: {} }),
         getKelasDropdown(),
         getHalaqohDropdown(),
         getUniqueKegiatanNames(),
@@ -33,12 +40,15 @@ export default async function RekapPresensiPage({
 
             <RekapTable
                 data={rekapData.santriRekap}
+                multiData={multiRekapData.santriRekap}
+                activities={multiRekapData.activities}
+                activityTotals={multiRekapData.activityTotals}
                 totalKegiatan={rekapData.kegiatanCount}
                 kelasList={kelasList}
                 halaqohList={halaqohList}
                 kegiatanList={kegiatanList}
+                isMultiMode={isMultiMode}
             />
         </div>
     );
 }
-
