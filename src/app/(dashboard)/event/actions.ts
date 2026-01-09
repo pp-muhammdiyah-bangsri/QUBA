@@ -24,7 +24,7 @@ export async function getEventList() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase as any)
         .from("event")
-        .select("*")
+        .select("id, judul, deskripsi, tanggal_mulai, tanggal_selesai, lokasi, jenis, is_active, created_at")
         .order("tanggal_mulai", { ascending: false })
         .limit(100);
 
@@ -114,7 +114,7 @@ export async function getInformasiList() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase as any)
         .from("informasi")
-        .select("*")
+        .select("id, judul, konten, kategori, is_pinned, is_active, created_at")
         .order("is_pinned", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(100);
