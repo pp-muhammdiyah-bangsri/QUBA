@@ -14,9 +14,19 @@ export function InstallPrompt() {
     const [showBanner, setShowBanner] = useState(false);
 
     useEffect(() => {
-        // Register service worker
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/sw.js").catch(console.error);
+        // Check if already dismissed (use localStorage for persistence across sessions)
+        const dismissed = localStorage.getItem("pwa-install-dismissed");
+        const dismissedTime = dismissed ? parseInt(dismissed) : 0;
+        const daysSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60 * 24);
+
+        // Don't show if dismissed within last 7 days
+        if (dismissedTime && daysSinceDismissed < 7) {
+            return;
+        }
+
+        // Check if already installed (standalone mode)
+        if (window.matchMedia("(display-mode: standalone)").matches) {
+            return;
         }
 
         // Listen for install prompt
@@ -41,34 +51,30 @@ export function InstallPrompt() {
 
         if (outcome === "accepted") {
             setShowBanner(false);
+            // Mark as installed
+            localStorage.setItem("pwa-installed", "true");
         }
         setDeferredPrompt(null);
     };
 
     const handleDismiss = () => {
         setShowBanner(false);
-        // Don't show again for this session
-        sessionStorage.setItem("pwa-dismissed", "true");
+        setDeferredPrompt(null);
+        // Remember dismissal for 7 days
+        localStorage.setItem("pwa-install-dismissed", Date.now().toString());
     };
-
-    // Don't show if already dismissed this session
-    useEffect(() => {
-        if (sessionStorage.getItem("pwa-dismissed")) {
-            setShowBanner(false);
-        }
-    }, []);
 
     if (!showBanner) return null;
 
     return (
-        <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white border border-emerald-200 shadow-lg rounded-lg p-4 z-50 animate-in slide-in-from-bottom-4">
+        <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-800 shadow-lg rounded-lg p-4 z-50 animate-in slide-in-from-bottom-4">
             <div className="flex items-start gap-3">
-                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <span className="text-lg font-bold text-emerald-600">Q</span>
+                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/50 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">Q</span>
                 </div>
                 <div className="flex-1">
-                    <h3 className="font-semibold text-gray-800">Install QUBA</h3>
-                    <p className="text-sm text-gray-600 mb-3">
+                    <h3 className="font-semibold text-gray-800 dark:text-white">Install QUBA</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                         Tambahkan ke layar utama untuk akses cepat
                     </p>
                     <div className="flex gap-2">
@@ -81,7 +87,7 @@ export function InstallPrompt() {
                         </Button>
                     </div>
                 </div>
-                <button onClick={handleDismiss} className="text-gray-400 hover:text-gray-600">
+                <button onClick={handleDismiss} className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
                     <X className="w-5 h-5" />
                 </button>
             </div>
