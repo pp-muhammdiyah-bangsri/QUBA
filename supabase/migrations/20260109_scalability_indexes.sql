@@ -27,9 +27,6 @@ CREATE INDEX IF NOT EXISTS idx_hafalan_lembar_tanggal ON hafalan_lembar(tanggal)
 CREATE INDEX IF NOT EXISTS idx_hafalan_selesai_santri_id ON hafalan_selesai(santri_id);
 CREATE INDEX IF NOT EXISTS idx_hafalan_selesai_tanggal ON hafalan_selesai(tanggal);
 
--- Tasmi lookups
-CREATE INDEX IF NOT EXISTS idx_tasmi_santri_id ON tasmi(santri_id);
-
 -- =============================================
 -- KESANTRIAN TABLES INDEXES
 -- =============================================
