@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { InstallPrompt } from "@/components/install-prompt";
 import { ServiceWorkerRegister } from "@/components/sw-register";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
     title: "QUBA - Catatan Perkembangan Santri",
@@ -58,6 +59,7 @@ export default function RootLayout({
                         <InstallPrompt />
                         <ServiceWorkerRegister />
                     </ToastProvider>
+                    <SpeedInsights />
                 </ThemeProvider>
             </body>
         </html>
