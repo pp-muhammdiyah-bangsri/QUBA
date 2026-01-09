@@ -530,7 +530,13 @@ export async function getPresensiRekapMultiActivity(
     // 4. Filter activities based on mode
     const filteredActivities = Object.keys(activityCount).filter((name) => {
         const nameLower = name.toLowerCase();
-        const isSholat = nameLower.includes("sholat") || nameLower.includes("solat") || nameLower.includes("shalat");
+        const isSholat =
+            nameLower.includes("sholat") ||
+            nameLower.includes("solat") ||
+            nameLower.includes("shalat") ||
+            nameLower.includes("ba'diyah") ||
+            nameLower.includes("qobliyah");
+
         const isRecurring = activityCount[name] > 5; // Heuristic: >5 occurrences = recurring
 
         if (mode === "sholat") {
