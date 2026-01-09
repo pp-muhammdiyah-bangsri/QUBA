@@ -534,9 +534,9 @@ export async function getPresensiRekapMultiActivity(
             nameLower.includes("sholat") ||
             nameLower.includes("solat") ||
             nameLower.includes("shalat") ||
-            nameLower.includes("badiyah") ||   // matches ba'diyah, badiyah, etc.
-            nameLower.includes("qobliyah") ||
-            nameLower.includes("qabliyah");    // alternate spelling
+            nameLower.includes("badiah") ||    // matches ba'diah, badiah
+            nameLower.includes("qobliah") ||   // matches qobliah
+            nameLower.includes("qabliah");     // alternate spelling
 
         const isRecurring = activityCount[name] > 5; // Heuristic: >5 occurrences = recurring
 
