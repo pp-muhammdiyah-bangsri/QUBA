@@ -133,7 +133,7 @@ export function NotificationToggle() {
                     size="sm"
                     onClick={handleTest}
                     disabled={loading}
-                    className="text-xs text-emerald-500 hidden md:flex"
+                    className="text-xs text-emerald-500"
                 >
                     Test Push
                 </Button>
