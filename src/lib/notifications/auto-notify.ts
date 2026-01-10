@@ -20,7 +20,11 @@ interface NotificationPayload {
 
 // Helper to send notification to a user
 async function sendToUser(userId: string, payload: NotificationPayload) {
-    if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) return { sent: 0 };
+    console.log(`[Push] Attempting to send to user ${userId}`);
+    if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
+        console.error("[Push] VAPID keys missing");
+        return { sent: 0 };
+    }
 
     const supabase = await createClient();
 
@@ -30,7 +34,12 @@ async function sendToUser(userId: string, payload: NotificationPayload) {
         .select("endpoint, p256dh, auth")
         .eq("user_id", userId);
 
-    if (!subscriptions || subscriptions.length === 0) return { sent: 0 };
+    if (!subscriptions || subscriptions.length === 0) {
+        console.warn(`[Push] No subscriptions found for user ${userId}`);
+        return { sent: 0 };
+    }
+
+    console.log(`[Push] Found ${subscriptions.length} subscriptions for user ${userId}`);
 
     const payloadStr = JSON.stringify(payload);
     let sent = 0;
@@ -41,14 +50,14 @@ async function sendToUser(userId: string, payload: NotificationPayload) {
                 { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
                 payloadStr
             );
-            sent++;
+            console.log(`[Push] Notification sent to endpoint ending in ${sub.endpoint.slice(-5)}`);
             sent++;
         } catch (err) {
-            console.error("Failed to send push to endpoint", sub.endpoint.slice(-20), err);
-            // Ignore errors (expired subscriptions, etc.)
+            console.error("[Push] Failed to send to endpoint", sub.endpoint.slice(-20), err);
         }
     }
 
+    console.log(`[Push] Total sent: ${sent}/${subscriptions.length}`);
     return { sent };
 }
 
@@ -111,8 +120,12 @@ export async function notifyParentHafalanSelesai(santriId: string, juz: number) 
     // Save to notifications table for in-app display (with santri-specific targeting)
     await saveToNotificationsTable(title, body, "ortu", santriId);
 
-    if (!parentProfile) return { sent: 0 };
+    if (!parentProfile) {
+        console.warn(`[Push] No parent profile found for santri ${santriId}`);
+        return { sent: 0 };
+    }
 
+    console.log(`[Push] Found parent ${parentProfile.id}`);
     return sendToUser(parentProfile.id, { title, body, url });
 }
 
