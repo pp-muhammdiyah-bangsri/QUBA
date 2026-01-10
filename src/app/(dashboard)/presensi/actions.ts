@@ -563,8 +563,8 @@ export async function getPresensiRekapMultiActivity(
     // Custom sort order for sholat activities
     const sholatOrder = [
         "tahajud", "qobliah subuh", "subuh", "syuruq", "duha",
-        "dzuhur", "badiah dzuhur", "qobliah ashar", "ashar",
-        "maghrib", "badiah maghrib", "isya", "badiah isya", "witir"
+        "qobliah dzuhur", "dzuhur", "badiah dzuhur", "qobliah ashar", "ashar",
+        "qobliah maghrib", "maghrib", "badiah maghrib", "qobliah isya", "isya", "badiah isya", "witir"
     ];
 
     const getSholatSortIndex = (name: string): number => {
