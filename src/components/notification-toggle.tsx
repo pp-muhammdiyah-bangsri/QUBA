@@ -198,11 +198,16 @@ export function NotificationToggle() {
         if (!isSubscribed) return;
         setLoading(true);
         try {
-            await sendTestNotification();
-            alert("Test notifikasi dikirim! Cek notifikasi di HP/PC Anda.");
+            const result = await sendTestNotification();
+            if (result.error) {
+                alert("Gagal dari server: " + result.error);
+            } else {
+                alert(`Server Berhasil: Terkirim ke ${result.sent} device. Cek notifikasi di HP/PC (mungkin ada delay).`);
+            }
         } catch (err) {
             console.error("Test failed:", err);
-            alert("Gagal mengirim test notifikasi.");
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            alert("Gagal memanggil server: " + (err as any).message);
         }
         setLoading(false);
     };

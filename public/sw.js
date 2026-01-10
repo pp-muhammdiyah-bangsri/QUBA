@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quba-v6';
+const CACHE_NAME = 'quba-v7';
 const STATIC_ASSETS = [
     '/',
     '/login',
