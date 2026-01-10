@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { notifyParentPresensi } from "@/lib/notifications/auto-notify";
 
 // ======= KEGIATAN (Activities) =======
 
@@ -275,6 +276,17 @@ export async function bulkCreatePresensi(kegiatanId: string, presensiList: { san
     if (error) {
         console.error("Error creating presensi:", error);
         return { error: error.message };
+    }
+
+    // Fire notifications asynchronously (don't await strictly)
+    if (kegiatan) {
+        const kegiatanNama = kegiatan.nama;
+        Promise.allSettled(
+            presensiList.map(p =>
+                notifyParentPresensi(p.santri_id, kegiatanNama, p.status)
+                    .catch(err => console.error("Failed to notify parent:", err))
+            )
+        );
     }
 
     revalidatePath("/presensi");

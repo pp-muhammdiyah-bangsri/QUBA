@@ -250,6 +250,47 @@ export async function notifyParentPerizinan(santriId: string, status: string) {
 }
 
 /**
+ * Notify parent when presensi is recorded
+ */
+export async function notifyParentPresensi(santriId: string, kegiatanName: string, status: string) {
+    const supabase = await createClient();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: santri } = await (supabase as any)
+        .from("santri")
+        .select("nama")
+        .eq("id", santriId)
+        .single();
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: parentProfile } = await (supabase as any)
+        .from("profiles")
+        .select("id")
+        .eq("linked_santri_id", santriId)
+        .eq("role", "ortu")
+        .single();
+
+    if (!parentProfile) return { sent: 0 };
+
+    const statusMap: Record<string, string> = {
+        hadir: "Hadir ✅",
+        izin: "Izin 📩",
+        sakit: "Sakit 💊",
+        alpa: "Alpa ❌",
+    };
+
+    const statusText = statusMap[status.toLowerCase()] || status;
+    const title = "📝 Laporan Presensi";
+    const body = `${santri?.nama || "Anak Anda"} - ${kegiatanName}: ${statusText}`;
+    const url = "/presensi/riwayat"; // Or redirect to specific page
+
+    // Save to notifications table
+    await saveToNotificationsTable(title, body, "ortu", santriId);
+
+    return sendToUser(parentProfile.id, { title, body, url });
+}
+
+/**
  * Notify all parents about a new event
  */
 export async function notifyAllParentsEvent(eventName: string, eventDate: string) {
