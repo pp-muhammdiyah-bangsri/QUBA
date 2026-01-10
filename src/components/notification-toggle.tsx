@@ -154,13 +154,17 @@ export function NotificationToggle() {
 
             // Save to database
             const subJson = subscription.toJSON();
-            await savePushSubscription({
+            const saveResult = await savePushSubscription({
                 endpoint: subJson.endpoint!,
                 keys: {
                     p256dh: subJson.keys!.p256dh,
                     auth: subJson.keys!.auth,
                 },
             });
+
+            if (saveResult.error) {
+                throw new Error("Gagal menyimpan ke database: " + saveResult.error);
+            }
 
             setIsSubscribed(true);
             alert("Berhasil subscribe notifikasi!");
