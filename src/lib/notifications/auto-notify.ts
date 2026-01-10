@@ -42,7 +42,9 @@ async function sendToUser(userId: string, payload: NotificationPayload) {
                 payloadStr
             );
             sent++;
-        } catch {
+            sent++;
+        } catch (err) {
+            console.error("Failed to send push to endpoint", sub.endpoint.slice(-20), err);
             // Ignore errors (expired subscriptions, etc.)
         }
     }
