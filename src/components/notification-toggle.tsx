@@ -194,6 +194,14 @@ export function NotificationToggle() {
         setLoading(false);
     };
 
+    // Check support only after mount to avoid SSR errors
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) return null;
+
     if (!("Notification" in window) || !("serviceWorker" in navigator)) {
         return null; // Not supported
     }

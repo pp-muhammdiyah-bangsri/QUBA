@@ -26,7 +26,10 @@ async function sendToUser(userId: string, payload: NotificationPayload) {
         return { sent: 0 };
     }
 
-    const supabase = await createClient();
+    // Use service client to bypass RLS so we can read ANY user's subscription
+    // (Action triggered by Ustadz needs to read Parent's subscription)
+    const { createServiceClient } = await import("@/lib/supabase/server");
+    const supabase = createServiceClient();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: subscriptions } = await (supabase as any)
