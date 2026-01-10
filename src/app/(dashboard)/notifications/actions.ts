@@ -286,12 +286,57 @@ export async function sendTestNotification() {
 
     if (!user) return { error: "Not authenticated" };
 
-    const result = await sendNotificationToUser(
-        user.id,
-        "Test Notifikasi QUBA",
-        "Ini adalah pesan uji coba push notification. Jika Anda melihat ini, berarti konfigurasi berhasil!",
-        "/notifications"
-    );
+    // Direct fetch to debug
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: subscriptions } = await (supabase as any)
+        .from("push_subscriptions")
+        .select("endpoint, p256dh, auth")
+        .eq("user_id", user.id);
 
-    return result;
+    if (!subscriptions || subscriptions.length === 0) {
+        return { error: "Tidak ada subscription ditemukan di database. Coba unsubscribe lalu subscribe lagi." };
+    }
+
+    const payload = JSON.stringify({
+        title: "Test Server QUBA",
+        body: "Jika ini muncul, VAPID Key Server OK!",
+        url: "/notifications"
+    });
+
+    const results = [];
+    for (const sub of subscriptions) {
+        try {
+            await webpush.sendNotification(
+                {
+                    endpoint: sub.endpoint,
+                    keys: { p256dh: sub.p256dh, auth: sub.auth },
+                },
+                payload
+            );
+            results.push({ success: true, endpoint: sub.endpoint.slice(-20) });
+        } catch (err: any) {
+            console.error("Test Push Error:", err);
+            results.push({
+                success: false,
+                statusCode: err.statusCode,
+                headers: err.headers,
+                body: err.body
+            });
+
+            // Remove invalid subscriptions
+            if (err.statusCode === 410 || err.statusCode === 404) {
+                await removePushSubscription(sub.endpoint);
+            }
+        }
+    }
+
+    const successCount = results.filter(r => r.success).length;
+    if (successCount === 0) {
+        const firstError = results.find(r => !r.success);
+        return {
+            error: `Gagal mengirim ke ${results.length} device. Error: ${firstError?.statusCode} - ${firstError?.body || 'Unknown'}`
+        };
+    }
+
+    return { success: true, sent: successCount };
 }
