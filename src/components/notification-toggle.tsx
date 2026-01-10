@@ -87,19 +87,51 @@ export function NotificationToggle() {
             }
 
             // Subscribe to push
-            console.log("Waiting for SW ready...");
+            console.log("Checking SW registration...");
             if (!navigator.serviceWorker) {
                 alert("Service Worker not supported.");
                 setLoading(false);
                 return;
             }
 
-            const registration = await withTimeout(
-                navigator.serviceWorker.ready,
-                10000,
-                "Timeout menunggu Service Worker. Coba refresh halaman."
-            );
-            console.log("SW Ready. Subscribing...");
+            // Bypass .ready() and get registration directly
+            let registration = await navigator.serviceWorker.getRegistration();
+
+            if (!registration) {
+                console.log("No registration found, registering...");
+                try {
+                    registration = await navigator.serviceWorker.register("/sw.js");
+                } catch (e) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    throw new Error("Register SW gagal: " + (e as any).message);
+                }
+            }
+
+            if (!registration) throw new Error("Gagal mendapatkan SW registration");
+
+            // Ensure active
+            if (!registration.active) {
+                console.log("Waiting for SW activation...");
+                await new Promise<void>((resolve) => {
+                    const worker = registration!.installing || registration!.waiting;
+                    if (worker) {
+                        const listener = () => {
+                            if (worker.state === 'activated') {
+                                worker.removeEventListener('statechange', listener);
+                                resolve();
+                            }
+                        };
+                        worker.addEventListener('statechange', listener);
+                    } else {
+                        // Fallback
+                        resolve();
+                    }
+                    // Timeout 3s for activation
+                    setTimeout(resolve, 3000);
+                });
+            }
+
+            console.log("SW active. Subscribing...");
 
             const subscription = await withTimeout(
                 registration.pushManager.subscribe({
@@ -107,7 +139,7 @@ export function NotificationToggle() {
                     applicationServerKey: urlBase64ToUint8Array(vapidKey),
                 }),
                 10000,
-                "Timeout saat proses subscribe ke push service."
+                "Timeout tombol subscribe (PushManager). Coba lagi."
             );
             console.log("Subscribed!", subscription);
 
