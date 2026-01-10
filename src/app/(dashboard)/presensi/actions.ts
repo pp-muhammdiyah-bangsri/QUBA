@@ -568,8 +568,19 @@ export async function getPresensiRekapMultiActivity(
     ];
 
     const getSholatSortIndex = (name: string): number => {
-        const norm = name.toLowerCase().replace(/[''`]/g, "").replace(/sholat\s*/i, "").trim();
+        const norm = name.toLowerCase()
+            .replace(/[''`]/g, "") // Remove quotes
+            .replace(/sholat\s*/i, "") // Remove prefix
+            .replace(/qobliyah/g, "qobliah") // Normalize spellings
+            .replace(/badiyah/g, "badiah")
+            .trim();
+
         for (let i = 0; i < sholatOrder.length; i++) {
+            // Check exact match or inclusion
+            // Priority: Longer tokens in sholatOrder should be matched first?
+            // "qobliah dzuhur" is longer than "dzuhur", so it must come first in sholatOrder if we iterate.
+            // But here we rely on the order in sholatOrder.
+            // "qobliah dzuhur" IS before "dzuhur".
             if (norm.includes(sholatOrder[i]) || sholatOrder[i].includes(norm)) {
                 return i;
             }
