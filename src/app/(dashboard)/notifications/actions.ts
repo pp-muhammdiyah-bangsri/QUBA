@@ -262,6 +262,32 @@ export async function dismissNotification(notificationId: string) {
     return { success: true };
 }
 
+// Dismiss multiple notifications
+export async function dismissAllNotifications(notificationIds: string[]) {
+    if (!notificationIds.length) return { success: true };
+
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: "Not authenticated" };
+
+    const upsertData = notificationIds.map(id => ({
+        user_id: user.id,
+        notification_id: id
+    }));
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any)
+        .from("notification_dismissals")
+        .upsert(upsertData, { onConflict: "user_id,notification_id" });
+
+    if (error) {
+        console.error("Error dismissing all:", error);
+        return { error: error.message };
+    }
+
+    return { success: true };
+}
+
 // Helper function to format relative time
 function formatRelativeTime(dateStr: string): string {
     const date = new Date(dateStr);

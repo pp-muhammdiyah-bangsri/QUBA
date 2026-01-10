@@ -213,9 +213,25 @@ export function NotificationBell() {
                 {unreadCount > 0 && (
                     <button
                         onClick={markAllAsRead}
-                        className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                        className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors mr-2"
                     >
-                        Tandai sudah dibaca
+                        Baca semua
+                    </button>
+                )}
+                {notifications.length > 0 && (
+                    <button
+                        onClick={async () => {
+                            if (confirm("Hapus semua notifikasi?")) {
+                                const ids = notifications.map(n => n.id);
+                                setNotifications([]); // Optimistic clear
+                                await import("@/app/(dashboard)/notifications/actions").then(mod =>
+                                    mod.dismissAllNotifications(ids)
+                                );
+                            }
+                        }}
+                        className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors"
+                    >
+                        Hapus semua
                     </button>
                 )}
             </div>
