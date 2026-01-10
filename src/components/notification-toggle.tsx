@@ -42,28 +42,43 @@ export function NotificationToggle() {
         setLoading(true);
         try {
             // Request permission
+            console.log("Requesting permission...");
             const perm = await Notification.requestPermission();
             setPermission(perm);
 
             if (perm !== "granted") {
+                alert("Izin notifikasi ditolak. Mohon izinkan di pengaturan browser.");
                 setLoading(false);
                 return;
             }
 
             // Get VAPID key
+            console.log("Fetching VAPID key...");
             const vapidKey = await getVapidPublicKey();
+            console.log("VAPID key:", vapidKey ? "Found" : "Missing");
+
             if (!vapidKey) {
-                console.error("VAPID key not configured");
+                alert("VAPID Public Key belum disetting di .env (Server). Hubungi admin.");
                 setLoading(false);
                 return;
             }
 
             // Subscribe to push
+            console.log("Waiting for SW ready...");
+            if (!navigator.serviceWorker) {
+                alert("Service Worker not supported.");
+                setLoading(false);
+                return;
+            }
+
             const registration = await navigator.serviceWorker.ready;
+            console.log("SW Ready. Subscribing...");
+
             const subscription = await registration.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: urlBase64ToUint8Array(vapidKey),
             });
+            console.log("Subscribed!", subscription);
 
             // Save to database
             const subJson = subscription.toJSON();
@@ -76,8 +91,11 @@ export function NotificationToggle() {
             });
 
             setIsSubscribed(true);
+            alert("Berhasil subscribe notifikasi!");
         } catch (err) {
             console.error("Error subscribing:", err);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            alert(`Gagal subscribe: ${(err as any).message}`);
         }
         setLoading(false);
     };
