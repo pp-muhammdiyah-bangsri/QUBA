@@ -65,7 +65,12 @@ export async function createPelanggaran(formData: PelanggaranFormData) {
     }
 
     // Notify parent
-    notifyParentPelanggaran(validated.data.santri_id, validated.data.deskripsi).catch(console.error);
+    // Notify parent
+    try {
+        await notifyParentPelanggaran(validated.data.santri_id, validated.data.deskripsi);
+    } catch (e) {
+        console.error("Failed to notify parent:", e);
+    }
 
     revalidatePath("/kesantrian/pelanggaran");
     return { success: true };
@@ -201,7 +206,11 @@ export async function updatePerizinanStatus(id: string, status: "pending" | "app
 
     // Notify parent if status changed to approved/rejected
     if (perizinan?.santri_id && (status === "approved" || status === "rejected")) {
-        notifyParentPerizinan(perizinan.santri_id, status).catch(console.error);
+        try {
+            await notifyParentPerizinan(perizinan.santri_id, status);
+        } catch (e) {
+            console.error("Failed to notify parent:", e);
+        }
     }
 
     revalidatePath("/kesantrian/perizinan");

@@ -90,11 +90,16 @@ export async function createHafalanLembar(formData: HafalanLembarFormData) {
     }
 
     // Notify parent about new hafalan lembar
-    notifyParentHafalanLembar(
-        validated.data.santri_id,
-        validated.data.juz,
-        validated.data.lembar
-    ).catch(console.error);
+    // Notify parent about new hafalan lembar
+    try {
+        await notifyParentHafalanLembar(
+            validated.data.santri_id,
+            validated.data.juz,
+            validated.data.lembar
+        );
+    } catch (e) {
+        console.error("Failed to notify parent:", e);
+    }
 
     revalidatePath("/akademik/lembar");
     return { success: true };
@@ -218,7 +223,12 @@ export async function createHafalanSelesai(formData: HafalanSelesaiFormData) {
     }
 
     // Notify parent about completed juz
-    notifyParentHafalanSelesai(data.santri_id, data.juz).catch(console.error);
+    // Notify parent about completed juz
+    try {
+        await notifyParentHafalanSelesai(data.santri_id, data.juz);
+    } catch (e) {
+        console.error("Failed to notify parent:", e);
+    }
 
     revalidatePath("/akademik/selesai");
     revalidatePath("/akademik/lembar");
@@ -330,11 +340,16 @@ export async function createHafalanTasmi(formData: HafalanTasmiFormData) {
     }
 
     // Notify parent about tasmi result
-    notifyParentHafalanTasmi(
-        validated.data.santri_id,
-        validated.data.juz,
-        validated.data.predikat
-    ).catch(console.error);
+    // Notify parent about tasmi result
+    try {
+        await notifyParentHafalanTasmi(
+            validated.data.santri_id,
+            validated.data.juz,
+            validated.data.predikat
+        );
+    } catch (e) {
+        console.error("Failed to notify parent:", e);
+    }
 
     revalidatePath("/akademik/tasmi");
     return { success: true };
