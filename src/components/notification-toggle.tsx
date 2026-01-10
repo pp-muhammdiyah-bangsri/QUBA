@@ -246,28 +246,7 @@ export function NotificationToggle() {
 
     return (
         <div className="flex items-center gap-1">
-            {isSubscribed && (
-                <>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleTestLocal}
-                        disabled={loading}
-                        className="text-xs text-blue-500"
-                    >
-                        Test Local
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleTest}
-                        disabled={loading}
-                        className="text-xs text-emerald-500"
-                    >
-                        Test Server
-                    </Button>
-                </>
-            )}
+            {/* Test buttons hidden for production */}
             <Button
                 variant="ghost"
                 size="icon"
