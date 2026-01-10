@@ -38,12 +38,31 @@ export function NotificationToggle() {
         setIsSubscribed(!!subscription);
     };
 
+    // Helper for timeout
+    const withTimeout = <T,>(promise: Promise<T>, ms: number, msg: string): Promise<T> => {
+        return new Promise((resolve, reject) => {
+            const timer = setTimeout(() => reject(new Error(msg)), ms);
+            promise.then(
+                (res) => { clearTimeout(timer); resolve(res); },
+                (err) => { clearTimeout(timer); reject(err); }
+            );
+        });
+    };
+
     const subscribe = async () => {
         setLoading(true);
         try {
             // Request permission
             console.log("Requesting permission...");
-            const perm = await Notification.requestPermission();
+            if (Notification.permission === "default") {
+                alert("Mohon klik 'Allow' atau 'Izinkan' pada pop-up browser yang muncul.");
+            }
+
+            const perm = await withTimeout(
+                Notification.requestPermission(),
+                10000,
+                "Timeout menunggu izin notifikasi. Cek setting browser Anda."
+            );
             setPermission(perm);
 
             if (perm !== "granted") {
@@ -54,7 +73,11 @@ export function NotificationToggle() {
 
             // Get VAPID key
             console.log("Fetching VAPID key...");
-            const vapidKey = await getVapidPublicKey();
+            const vapidKey = await withTimeout(
+                getVapidPublicKey(),
+                10000,
+                "Timeout mengambil VAPID key dari server. Cek koneksi internet."
+            );
             console.log("VAPID key:", vapidKey ? "Found" : "Missing");
 
             if (!vapidKey) {
@@ -71,13 +94,21 @@ export function NotificationToggle() {
                 return;
             }
 
-            const registration = await navigator.serviceWorker.ready;
+            const registration = await withTimeout(
+                navigator.serviceWorker.ready,
+                10000,
+                "Timeout menunggu Service Worker. Coba refresh halaman."
+            );
             console.log("SW Ready. Subscribing...");
 
-            const subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(vapidKey),
-            });
+            const subscription = await withTimeout(
+                registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(vapidKey),
+                }),
+                10000,
+                "Timeout saat proses subscribe ke push service."
+            );
             console.log("Subscribed!", subscription);
 
             // Save to database
