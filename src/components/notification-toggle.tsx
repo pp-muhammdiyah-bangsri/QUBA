@@ -207,6 +207,26 @@ export function NotificationToggle() {
         setLoading(false);
     };
 
+    const handleTestLocal = async () => {
+        if (!("serviceWorker" in navigator)) return;
+        try {
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration) {
+                await registration.showNotification("Test Lokal", {
+                    body: "Ini adalah notifikasi lokal dari browser Anda (tanpa server).",
+                    icon: "/icons/icon-192x192.png",
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    data: { url: window.location.href }
+                });
+            } else {
+                alert("Service Worker not registered!");
+            }
+        } catch (e) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            alert("Gagal showNotification local: " + (e as any).message);
+        }
+    };
+
     if (permission === "denied") {
         return (
             <Button variant="ghost" size="icon" disabled title="Notifikasi diblokir">
@@ -218,15 +238,26 @@ export function NotificationToggle() {
     return (
         <div className="flex items-center gap-1">
             {isSubscribed && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleTest}
-                    disabled={loading}
-                    className="text-xs text-emerald-500"
-                >
-                    Test Push
-                </Button>
+                <>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleTestLocal}
+                        disabled={loading}
+                        className="text-xs text-blue-500"
+                    >
+                        Test Local
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleTest}
+                        disabled={loading}
+                        className="text-xs text-emerald-500"
+                    >
+                        Test Server
+                    </Button>
+                </>
             )}
             <Button
                 variant="ghost"

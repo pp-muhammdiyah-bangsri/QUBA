@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quba-v5';
+const CACHE_NAME = 'quba-v6';
 const STATIC_ASSETS = [
     '/',
     '/login',
@@ -85,19 +85,37 @@ self.addEventListener('fetch', (event) => {
 
 // Push notification event
 self.addEventListener('push', (event) => {
-    if (!event.data) return;
+    console.log("SW: Push event received", event);
+    if (!event.data) {
+        console.log("SW: No data in push event");
+        return;
+    }
 
-    const data = event.data.json();
+    let data;
+    try {
+        data = event.data.json();
+        console.log("SW: Push data parsed", data);
+    } catch (e) {
+        console.error("SW: Failed to parse push data", e);
+        data = { body: event.data.text() };
+    }
+
     const options = {
         body: data.body || 'Notifikasi baru dari QUBA',
         icon: '/icons/icon-192x192.png',
         data: {
             url: data.url || '/',
-        }
+        },
+        tag: 'quba-notification',
+        renotify: true
     };
+
+    console.log("SW: Showing notification with options", options);
 
     event.waitUntil(
         self.registration.showNotification(data.title || 'QUBA', options)
+            .then(() => console.log("SW: Notification shown"))
+            .catch((err) => console.error("SW: Show notification failed", err))
     );
 });
 
