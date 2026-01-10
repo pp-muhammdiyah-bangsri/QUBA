@@ -278,15 +278,21 @@ export async function bulkCreatePresensi(kegiatanId: string, presensiList: { san
         return { error: error.message };
     }
 
-    // Fire notifications asynchronously (don't await strictly)
+    // Fire notifications synchronously to ensure delivery before function exit
     if (kegiatan) {
+        console.log("Sending notifications for activity:", kegiatan.nama);
         const kegiatanNama = kegiatan.nama;
-        Promise.allSettled(
-            presensiList.map(p =>
-                notifyParentPresensi(p.santri_id, kegiatanNama, p.status)
-                    .catch(err => console.error("Failed to notify parent:", err))
-            )
+        const results = await Promise.allSettled(
+            presensiList.map(async (p) => {
+                console.log(`Notifying parent of santri ${p.santri_id} status ${p.status}`);
+                return notifyParentPresensi(p.santri_id, kegiatanNama, p.status)
+                    .catch(err => {
+                        console.error("Failed to notify parent:", err);
+                        throw err;
+                    });
+            })
         );
+        console.log("Notification results:", results.map(r => r.status));
     }
 
     revalidatePath("/presensi");
