@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quba-v2';
+const CACHE_NAME = 'quba-v3';
 const STATIC_ASSETS = [
     '/',
     '/login',
@@ -94,10 +94,8 @@ self.addEventListener('push', (event) => {
         data: {
             url: data.url || '/',
         },
-        actions: [
-            { action: 'open', title: 'Buka' },
-            { action: 'close', title: 'Tutup' },
-        ],
+        tag: 'quba-notification',
+        renotify: true
     };
 
     event.waitUntil(
