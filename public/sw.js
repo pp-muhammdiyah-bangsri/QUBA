@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quba-v4';
+const CACHE_NAME = 'quba-v5';
 const STATIC_ASSETS = [
     '/',
     '/login',
@@ -9,7 +9,9 @@ const STATIC_ASSETS = [
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(STATIC_ASSETS);
+            return cache.addAll(STATIC_ASSETS).catch((error) => {
+                console.error('Failed to cache assets during install:', error);
+            });
         })
     );
     self.skipWaiting();
