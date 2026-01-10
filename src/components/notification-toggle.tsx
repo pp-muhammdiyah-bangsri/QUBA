@@ -111,7 +111,7 @@ export function NotificationToggle() {
 
             // Ensure active
             if (!registration.active) {
-                console.log("Waiting for SW activation...");
+                console.log("SW not active yet. Waiting for activation...");
                 await new Promise<void>((resolve) => {
                     const worker = registration!.installing || registration!.waiting;
                     if (worker) {
@@ -122,13 +122,22 @@ export function NotificationToggle() {
                             }
                         };
                         worker.addEventListener('statechange', listener);
+                        // Also check immediately if state changed
+                        if (worker.state === 'activated') {
+                            worker.removeEventListener('statechange', listener);
+                            resolve();
+                        }
                     } else {
-                        // Fallback
                         resolve();
                     }
-                    // Timeout 3s for activation
-                    setTimeout(resolve, 3000);
+                    // Timeout 5s for activation
+                    setTimeout(resolve, 5000);
                 });
+            }
+
+            // Double check active state
+            if (!registration.active) {
+                throw new Error("Service Worker belum aktif sepenuhnya. Mohon refresh halaman dan tunggu 5 detik sebelum coba lagi.");
             }
 
             console.log("SW active. Subscribing...");
