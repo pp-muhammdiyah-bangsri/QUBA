@@ -575,17 +575,23 @@ export async function getPresensiRekapMultiActivity(
             .replace(/badiyah/g, "badiah")
             .trim();
 
+        let bestMatchIndex = 999;
+        let bestMatchLength = 0;
+
         for (let i = 0; i < sholatOrder.length; i++) {
-            // Check exact match or inclusion
-            // Priority: Longer tokens in sholatOrder should be matched first?
-            // "qobliah dzuhur" is longer than "dzuhur", so it must come first in sholatOrder if we iterate.
-            // But here we rely on the order in sholatOrder.
-            // "qobliah dzuhur" IS before "dzuhur".
-            if (norm.includes(sholatOrder[i]) || sholatOrder[i].includes(norm)) {
-                return i;
+            const keyword = sholatOrder[i];
+            // Only check if input contains keyword
+            if (norm.includes(keyword)) {
+                // If effective match, prefer the longer one (specific)
+                // e.g. "Badiah Dzuhur" (len 13) > "Dzuhur" (len 6)
+                if (keyword.length > bestMatchLength) {
+                    bestMatchLength = keyword.length;
+                    bestMatchIndex = i;
+                }
             }
         }
-        return 999; // Unknown activities go to the end
+
+        return bestMatchIndex;
     };
 
     const sortedActivities = mode === "sholat"
