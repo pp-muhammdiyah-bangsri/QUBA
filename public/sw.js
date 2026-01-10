@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quba-v3';
+const CACHE_NAME = 'quba-v4';
 const STATIC_ASSETS = [
     '/',
     '/login',
@@ -89,13 +89,9 @@ self.addEventListener('push', (event) => {
     const options = {
         body: data.body || 'Notifikasi baru dari QUBA',
         icon: '/icons/icon-192x192.png',
-        badge: '/icons/icon-72x72.png',
-        vibrate: [100, 50, 100],
         data: {
             url: data.url || '/',
-        },
-        tag: 'quba-notification',
-        renotify: true
+        }
     };
 
     event.waitUntil(
