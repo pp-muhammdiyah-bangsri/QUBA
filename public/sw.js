@@ -1,4 +1,4 @@
-const CACHE_NAME = 'quba-v7';
+const CACHE_NAME = 'quba-v8';
 const STATIC_ASSETS = [
     '/',
     '/login',
@@ -106,8 +106,10 @@ self.addEventListener('push', (event) => {
         data: {
             url: data.url || '/',
         },
-        tag: 'quba-notification',
-        renotify: true
+        // Remove static tag to allow stacking.
+        // If server sends a tag, use it. Otherwise undefined.
+        tag: data.tag || undefined,
+        renotify: !!data.tag // Only renotify if replacing an existing tag
     };
 
     console.log("SW: Showing notification with options", options);
