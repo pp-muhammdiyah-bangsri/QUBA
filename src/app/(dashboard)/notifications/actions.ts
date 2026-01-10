@@ -60,7 +60,9 @@ export async function removePushSubscription(endpoint: string) {
 
 // Send notification to specific user
 export async function sendNotificationToUser(userId: string, title: string, body: string, url?: string) {
-    const supabase = await createClient();
+    // Use service client to bypass RLS (Admin sending to User)
+    const { createServiceClient } = await import("@/lib/supabase/server");
+    const supabase = createServiceClient();
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: subscriptions } = await (supabase as any)
@@ -98,10 +100,12 @@ export async function sendNotificationToUser(userId: string, title: string, body
 
 // Broadcast notification to all users or by role
 export async function broadcastNotification(title: string, body: string, targetRole?: string) {
-    const supabase = await createClient();
-
-    // Get current user for logging
-    const { data: { user } } = await supabase.auth.getUser();
+    // Use service client to bypass RLS (Admin sending to All)
+    const { createServiceClient } = await import("@/lib/supabase/server");
+    const supabase = createServiceClient();
+    // Get current user for logging (we need a separate auth client)
+    const authSupabase = await createClient();
+    const { data: { user } } = await authSupabase.auth.getUser();
 
     // Build query
     let query = (supabase as any)
