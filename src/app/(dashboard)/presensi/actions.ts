@@ -59,12 +59,50 @@ export async function generateDailySchedules() {
     // 2. Check which ones are already created for today
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: existing } = await (supabase.from("kegiatan") as any)
-        .select("jadwal_rutin_id")
+        .select("id, jadwal_rutin_id, created_at, presensi(id)")
         .eq("tanggal_mulai", todayString)
         .not("jadwal_rutin_id", "is", null);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const existingIds = new Set((existing as any[])?.map((e) => e.jadwal_rutin_id) || []);
+    // Deduplicate: If multiple activities share the same jadwal_rutin_id, keep the one with data or oldest
+    const groups: Record<string, any[]> = {};
+    const existingIds = new Set<string>();
+    const idsToDelete: string[] = [];
+
+    existing?.forEach((e: any) => {
+        // Track ID for creation check
+        existingIds.add(e.jadwal_rutin_id);
+
+        // Group for deduplication
+        const key = e.jadwal_rutin_id;
+        if (!groups[key]) groups[key] = [];
+        groups[key].push(e);
+    });
+
+    Object.values(groups).forEach((group) => {
+        if (group.length > 1) {
+            // Sort: 
+            // 1. Has Presensi data (more items) -> Keep
+            // 2. Older Created At -> Keep
+            group.sort((a, b) => {
+                const countA = a.presensi?.length || 0;
+                const countB = b.presensi?.length || 0;
+                if (countA !== countB) return countB - countA; // Descending by data
+
+                return new Date(a.created_at).getTime() - new Date(b.created_at).getTime(); // Ascending by time
+            });
+
+            // Mark duplicates for deletion (skip index 0)
+            for (let i = 1; i < group.length; i++) {
+                idsToDelete.push(group[i].id);
+            }
+        }
+    });
+
+    if (idsToDelete.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (supabase.from("kegiatan") as any).delete().in("id", idsToDelete);
+        console.log(`[generateDailySchedules] Cleaned up ${idsToDelete.length} duplicates.`);
+    }
 
     // 3. Create missing activities
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
