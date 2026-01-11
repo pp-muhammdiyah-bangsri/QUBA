@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { renderToStream } from "@react-pdf/renderer";
+import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
 import { LaporanPDFDocument } from "@/lib/pdf/laporan-template";
 
@@ -32,20 +32,16 @@ export async function POST(req: NextRequest) {
 
         const pdfData = { ...data, logos };
 
-        // Render PDF to stream
+        // Render PDF to buffer (Safer than stream for preventing corrupt chunks)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const stream = await renderToStream(createElement(LaporanPDFDocument, { data: pdfData }) as any);
+        const buffer = await renderToBuffer(createElement(LaporanPDFDocument, { data: pdfData }) as any);
 
-        // Convert Node.js stream to Web ReadableStream
-        // Next.js App Router return type expects a Web Response
-        const responseCallback = new Response(stream as any, {
+        return new Response(buffer as any, {
             headers: {
                 "Content-Type": "application/pdf",
                 "Content-Disposition": `attachment; filename="Laporan_${data.santri.nama.replace(/\s+/g, "_")}.pdf"`,
             },
         });
-
-        return responseCallback;
     } catch (error) {
         console.error("PDF API Error:", error);
         return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 });
