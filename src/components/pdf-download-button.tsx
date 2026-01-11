@@ -42,23 +42,16 @@ export function PDFDownloadButton({ data }: PDFDownloadButtonProps) {
         const generatePdf = async () => {
             setLoading(true);
             try {
-                const { pdf } = await import("@react-pdf/renderer");
-                const { LaporanPDFDocument } = await import("@/lib/pdf/laporan-template");
-                const { optimizeImage } = await import("@/lib/image-optimizer");
+                // Fetch PDF from Server API
+                const response = await fetch("/api/pdf/laporan", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
 
-                // Optimize photo unique to this santri (resize to max 200px width)
-                // This drastically reduces PDF generation time for large uploaded photos
-                let processedPhoto = null;
-                if (data.santri?.foto_url) {
-                    processedPhoto = await optimizeImage(data.santri.foto_url);
-                }
+                if (!response.ok) throw new Error("Failed to generate PDF");
 
-                const pdfData = {
-                    ...data,
-                    processedPhoto
-                };
-
-                const blob = await pdf(<LaporanPDFDocument data={pdfData} />).toBlob();
+                const blob = await response.blob();
                 const url = URL.createObjectURL(blob);
 
                 if (isMounted) {
@@ -71,10 +64,10 @@ export function PDFDownloadButton({ data }: PDFDownloadButtonProps) {
             }
         };
 
-        // Debounce slightly to allow UI to settle first
+        // Debounce to avoid spamming server
         const timer = setTimeout(() => {
             generatePdf();
-        }, 100);
+        }, 500);
 
         return () => {
             isMounted = false;

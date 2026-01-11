@@ -237,17 +237,9 @@ interface LaporanPDFProps {
         musyrif_nama: string;
         musyrif_jenis_kelamin: string;
         processedPhoto?: string | null;
+        logos?: { kiri: string; kanan: string };
     }
 }
-
-const truncateName = (name: string) => {
-    const parts = name.split(" ");
-    if (parts.length <= 2) return name;
-    // Take first 2 words + initials of the rest
-    const mainParts = parts.slice(0, 2).join(" ");
-    const initials = parts.slice(2).map(p => p.charAt(0).toUpperCase() + ".").join("");
-    return `${mainParts} ${initials}`;
-};
 
 export function LaporanPDFDocument({ data }: LaporanPDFProps) {
     const violationCount = data.pelanggaran.length;
@@ -293,7 +285,6 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
             percentage
         };
     }).sort((a, b) => parseInt(a.juz) - parseInt(b.juz));
-
     return (
         <Document>
             <Page size="A4" style={styles.page}>
@@ -301,7 +292,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                 {/* Header */}
                 <View style={styles.headerContainer}>
                     <View style={styles.logoBox}>
-                        <Image src="/logo_kiri.jpg" style={styles.logoImage} />
+                        <Image src={data.logos?.kiri || "/logo_kiri.jpg"} style={styles.logoImage} />
                     </View>
                     <View style={styles.headerContent}>
                         <Text style={styles.headerTitleMain}>PONDOK PESANTREN MUHAMMADIYAH BANGSRI</Text>
@@ -309,7 +300,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                         <Text style={styles.headerAddress}>Jl. Seroja No.04 Kauman rt.01 rw.09 Bangsri Jepara</Text>
                     </View>
                     <View style={styles.logoBox}>
-                        <Image src="/logo_kanan.jpg" style={styles.logoImage} />
+                        <Image src={data.logos?.kanan || "/logo_kanan.jpg"} style={styles.logoImage} />
                     </View>
                 </View>
 
@@ -330,7 +321,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                             <View style={styles.profileInfo}>
                                 <View style={styles.infoRow}>
                                     <Text style={styles.infoLabel}>Nama</Text>
-                                    <Text style={styles.infoValue}>: {data.santri?.nama ? truncateName(data.santri.nama) : "-"}</Text>
+                                    <Text style={styles.infoValue}>: {data.santri?.nama ? data.santri.nama : "-"}</Text>
                                 </View>
                                 <View style={styles.infoRow}>
                                     <Text style={styles.infoLabel}>NIS</Text>
