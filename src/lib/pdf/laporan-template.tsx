@@ -292,7 +292,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                 {/* Header */}
                 <View style={styles.headerContainer}>
                     <View style={styles.logoBox}>
-                        <Image src={data.logos?.kiri || "/logo_kiri.jpg"} style={styles.logoImage} />
+                        {data.logos?.kiri && <Image src={data.logos.kiri} style={styles.logoImage} />}
                     </View>
                     <View style={styles.headerContent}>
                         <Text style={styles.headerTitleMain}>PONDOK PESANTREN MUHAMMADIYAH BANGSRI</Text>
@@ -300,7 +300,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                         <Text style={styles.headerAddress}>Jl. Seroja No.04 Kauman rt.01 rw.09 Bangsri Jepara</Text>
                     </View>
                     <View style={styles.logoBox}>
-                        <Image src={data.logos?.kanan || "/logo_kanan.jpg"} style={styles.logoImage} />
+                        {data.logos?.kanan && <Image src={data.logos.kanan} style={styles.logoImage} />}
                     </View>
                 </View>
 
@@ -315,7 +315,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                         <View style={styles.profileContent}>
                             {/* Photo */}
                             <View style={styles.photoBox}>
-                                <Image src={photoSrc} style={styles.photoImage} />
+                                {photoSrc && <Image src={photoSrc} style={styles.photoImage} />}
                             </View>
                             {/* Info */}
                             <View style={styles.profileInfo}>
