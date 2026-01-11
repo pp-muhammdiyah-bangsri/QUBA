@@ -516,7 +516,10 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
 
                                     const now = new Date();
                                     const isExpired = now > endDate;
-                                    const canDoPresensi = userRole === "admin" || !isExpired;
+
+                                    // User requirement: Hide button if Ustadz has No Students OR Mixed Students
+                                    const hasRelevance = userRole === "admin" || (myStudents.length > 0 && myGenderScope !== "all");
+                                    const canDoPresensi = userRole === "admin" || (!isExpired && hasRelevance);
 
                                     return (
                                         <TableRow key={k.id}>
