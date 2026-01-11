@@ -70,6 +70,16 @@ export async function generateDailySchedules() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const toCreate = (routines as any[]).filter((r) => !existingIds.has(r.id));
 
+    const result = {
+        date: todayString,
+        day: dayOfWeek,
+        totalRoutines: allRoutines?.length || 0,
+        activeRoutines: routines.length,
+        activeNames: routines.map((r: any) => r.nama_kegiatan),
+        existingCount: existingIds.size,
+        createdCount: 0
+    };
+
     if (toCreate.length > 0) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (supabase.from("kegiatan") as any).insert(
@@ -82,9 +92,10 @@ export async function generateDailySchedules() {
                 deskripsi: `Auto-generated: ${r.kode_presensi}`
             }))
         );
-        // Note: revalidatePath removed - called during render is not allowed
-        // Data will be fresh on next getKegiatanList call
+        result.createdCount = toCreate.length;
     }
+
+    return result;
 }
 
 export async function getKegiatanList() {

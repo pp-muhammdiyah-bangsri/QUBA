@@ -7,7 +7,7 @@ import { AttendanceReminderChecker } from "@/components/attendance-reminder";
 
 export default async function PresensiPage() {
     // 1. Lazy generate routines
-    await generateDailySchedules();
+    const debug = await generateDailySchedules();
 
     // 2. Fetch data
     const [kegiatanList, santriList, kelasList, halaqohList, myGroups, userRole] = await Promise.all([
@@ -20,12 +20,6 @@ export default async function PresensiPage() {
     ]);
 
     const today = new Date();
-    const todayString = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Asia/Jakarta",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-    }).format(today);
     const dayName = new Intl.DateTimeFormat("id-ID", {
         timeZone: "Asia/Jakarta",
         weekday: "long"
@@ -36,10 +30,13 @@ export default async function PresensiPage() {
             {/* Diagnostic Banner */}
             <Alert className="bg-blue-50 border-blue-200">
                 <Info className="h-4 w-4 text-blue-500" />
-                <AlertTitle className="text-blue-700">Info Server Time</AlertTitle>
-                <AlertDescription className="text-blue-600">
-                    Sistem mendeteksi hari ini: <strong>{dayName}, {todayString}</strong> (Asia/Jakarta).
-                    Pastikan Jadwal Rutin Anda aktif untuk hari ini.
+                <AlertTitle className="text-blue-700">System Diagnostic</AlertTitle>
+                <AlertDescription className="text-blue-600 text-xs font-mono mt-1">
+                    Date: {debug?.date} ({dayName}) | Active Routines: {debug?.activeRoutines}
+                    <br />
+                    Found: {debug?.activeNames?.join(", ") || "None"}
+                    <br />
+                    Created: {debug?.createdCount} | Existing: {debug?.existingCount}
                 </AlertDescription>
             </Alert>
 
