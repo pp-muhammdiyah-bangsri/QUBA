@@ -21,8 +21,21 @@ export type KegiatanFormData = z.infer<typeof kegiatanSchema>;
 export async function generateDailySchedules() {
     const supabase = await createClient();
     const today = new Date();
-    const todayString = today.toISOString().split("T")[0]; // YYYY-MM-DD
-    const dayOfWeek = today.getDay() || 7; // Convert 0(Sun) -> 7
+    // Force Timezone to Asia/Jakarta (WIB)
+    // format to YYYY-MM-DD
+    const todayString = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Jakarta",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(today);
+
+    // Get day of week for Jakarta
+    // new Date(todayString) parses as UTC, so we can use getDay() properly if Sunday=0
+    // "2025-01-12" (Sunday) -> getDay() = 0 -> converted to 7
+    // "2025-01-13" (Monday) -> getDay() = 1
+    const jakartaDate = new Date(todayString);
+    const dayOfWeek = jakartaDate.getDay() || 7; // Convert 0(Sun) -> 7
 
     // 1. Get ALL Routines first (debug), then filter manually or use correct syntax
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -52,6 +52,38 @@ export async function createJadwalRutin(formData: FormData) {
     revalidatePath("/data-master/jadwal-rutin");
 }
 
+export async function updateJadwalRutin(id: string, formData: FormData) {
+    const supabase = await createClient();
+    const nama_kegiatan = formData.get("nama_kegiatan") as string;
+    const jam_mulai = formData.get("jam_mulai") as string;
+    const jam_selesai = formData.get("jam_selesai") as string;
+    const kode_presensi = formData.get("kode_presensi") as string;
+    const target_gender = (formData.get("target_gender") as string) || "all";
+
+    // Parse hari_aktif
+    const hari_aktif_str = formData.get("hari_aktif") as string;
+    const hari_aktif = hari_aktif_str ? hari_aktif_str.split(",").map(Number) : [];
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase.from("jadwal_rutin") as any)
+        .update({
+            nama_kegiatan,
+            jam_mulai,
+            jam_selesai,
+            hari_aktif,
+            kode_presensi,
+            target_gender,
+        })
+        .eq("id", id);
+
+    if (error) {
+        console.error(error);
+        return;
+    }
+
+    revalidatePath("/data-master/jadwal-rutin");
+}
+
 export async function deleteJadwalRutin(id: string) {
     const supabase = await createClient();
     const { error } = await supabase.from("jadwal_rutin").delete().eq("id", id);

@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getJadwalRutin, createJadwalRutin, deleteJadwalRutin, JadwalRutin } from "./actions";
+import { getJadwalRutin, createJadwalRutin, updateJadwalRutin, deleteJadwalRutin, JadwalRutin } from "./actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Loader2 } from "lucide-react";
+import { Trash2, Loader2, Pencil, X } from "lucide-react";
 
 const HARI_LABELS = ["Sn", "Sl", "Rb", "Km", "Jm", "Sb", "Mg"];
 const TARGET_GENDER_LABELS: Record<string, { label: string; color: string }> = {
@@ -29,6 +29,7 @@ export default function JadwalRutinPage() {
     const [kodePresensi, setKodePresensi] = useState("");
     const [hariAktif, setHariAktif] = useState<number[]>([]);
     const [targetGender, setTargetGender] = useState<'all' | 'L' | 'P'>('all');
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     const fetchData = async () => {
         setLoading(true);
@@ -63,19 +64,37 @@ export default function JadwalRutinPage() {
         formData.set("hari_aktif", hariAktif.join(","));
         formData.set("target_gender", targetGender);
 
-        await createJadwalRutin(formData);
+        if (editingId) {
+            await updateJadwalRutin(editingId, formData);
+        } else {
+            await createJadwalRutin(formData);
+        }
 
-        // Reset form
+        handleCancelEdit();
+
+        // Refresh list
+        await fetchData();
+        setSaving(false);
+    };
+
+    const handleEdit = (item: JadwalRutin) => {
+        setEditingId(item.id);
+        setNamaKegiatan(item.nama_kegiatan);
+        setJamMulai(item.jam_mulai);
+        setJamSelesai(item.jam_selesai);
+        setKodePresensi(item.kode_presensi);
+        setHariAktif(item.hari_aktif);
+        setTargetGender(item.target_gender);
+    };
+
+    const handleCancelEdit = () => {
+        setEditingId(null);
         setNamaKegiatan("");
         setJamMulai("");
         setJamSelesai("");
         setKodePresensi("");
         setHariAktif([]);
         setTargetGender('all');
-
-        // Refresh list
-        await fetchData();
-        setSaving(false);
     };
 
     const handleDelete = async (id: string) => {
@@ -91,8 +110,15 @@ export default function JadwalRutinPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Form Input */}
                 <Card className="md:col-span-1 h-fit">
-                    <CardHeader>
-                        <CardTitle>Tambah Jadwal Baru</CardTitle>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-base font-bold">
+                            {editingId ? "Edit Jadwal" : "Tambah Jadwal Baru"}
+                        </CardTitle>
+                        {editingId && (
+                            <Button variant="ghost" size="sm" onClick={handleCancelEdit} className="h-8 w-8 p-0">
+                                <X className="h-4 w-4" />
+                            </Button>
+                        )}
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -167,8 +193,8 @@ export default function JadwalRutinPage() {
                                         <label
                                             key={g}
                                             className={`flex items-center gap-1 text-sm border p-2 rounded cursor-pointer transition-colors ${targetGender === g
-                                                    ? TARGET_GENDER_LABELS[g].color
-                                                    : "hover:bg-gray-50"
+                                                ? TARGET_GENDER_LABELS[g].color
+                                                : "hover:bg-gray-50"
                                                 }`}
                                         >
                                             <input
@@ -187,8 +213,13 @@ export default function JadwalRutinPage() {
 
                             <Button type="submit" className="w-full" disabled={saving}>
                                 {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                                Simpan Jadwal
+                                {editingId ? "Simpan Perubahan" : "Simpan Jadwal"}
                             </Button>
+                            {editingId && (
+                                <Button type="button" variant="outline" className="w-full mt-2" onClick={handleCancelEdit}>
+                                    Batal
+                                </Button>
+                            )}
                         </form>
                     </CardContent>
                 </Card>
@@ -247,14 +278,24 @@ export default function JadwalRutinPage() {
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="text-red-500"
-                                                        onClick={() => handleDelete(j.id)}
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </Button>
+                                                    <div className="flex items-center gap-1">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="text-blue-500 hover:text-blue-600"
+                                                            onClick={() => handleEdit(j)}
+                                                        >
+                                                            <Pencil className="w-4 h-4" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="text-red-500"
+                                                            onClick={() => handleDelete(j.id)}
+                                                        >
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </Button>
+                                                    </div>
                                                 </TableCell>
                                             </TableRow>
                                         ))
