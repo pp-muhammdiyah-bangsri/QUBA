@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -33,55 +33,62 @@ interface PDFDownloadButtonProps {
 }
 
 export function PDFDownloadButton({ data }: PDFDownloadButtonProps) {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [blobUrl, setBlobUrl] = useState<string | null>(null);
 
-    const handleDownload = async () => {
-        setLoading(true);
-        try {
-            // Dynamic import to avoid SSR issues
-            const { pdf } = await import("@react-pdf/renderer");
-            const { LaporanPDFDocument } = await import("@/lib/pdf/laporan-template");
+    useEffect(() => {
+        let isMounted = true;
 
-            const blob = await pdf(<LaporanPDFDocument data={data} />).toBlob();
-            const url = URL.createObjectURL(blob);
+        const generatePdf = async () => {
+            setLoading(true);
+            try {
+                const { pdf } = await import("@react-pdf/renderer");
+                const { LaporanPDFDocument } = await import("@/lib/pdf/laporan-template");
 
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `Laporan_${data.santri?.nama?.replace(/\s+/g, "_") || "Santri"}_${data.monthName}_${data.year}.pdf`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+                const blob = await pdf(<LaporanPDFDocument data={data} />).toBlob();
+                const url = URL.createObjectURL(blob);
 
-            // Small delay before revoking to ensure download starts
-            setTimeout(() => {
-                URL.revokeObjectURL(url);
-            }, 100);
-        } catch (error) {
-            console.error("Error generating PDF:", error);
-            alert("Gagal membuat PDF. Silakan coba lagi.");
-        } finally {
-            setLoading(false);
-        }
-    };
+                if (isMounted) {
+                    setBlobUrl(url);
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error("Error generating PDF:", error);
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        // Debounce slightly to allow UI to settle first
+        const timer = setTimeout(() => {
+            generatePdf();
+        }, 500);
+
+        return () => {
+            isMounted = false;
+            clearTimeout(timer);
+            if (blobUrl) URL.revokeObjectURL(blobUrl);
+        };
+    }, [data]); // Re-run if data changes
+
+    if (!blobUrl && loading) {
+        return (
+            <Button variant="outline" disabled className="bg-emerald-50 border-emerald-200 text-emerald-700">
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Menyiapkan PDF...
+            </Button>
+        );
+    }
 
     return (
         <Button
             variant="outline"
-            onClick={handleDownload}
-            disabled={loading}
             className="bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+            asChild
         >
-            {loading ? (
-                <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Membuat PDF...
-                </>
-            ) : (
-                <>
-                    <Download className="w-4 h-4 mr-2" />
-                    Download PDF
-                </>
-            )}
+            <a href={blobUrl || "#"} download={`Laporan_${data.santri?.nama?.replace(/\s+/g, "_") || "Santri"}_${data.monthName}_${data.year}.pdf`}>
+                <Download className="w-4 h-4 mr-2" />
+                Download PDF
+            </a>
         </Button>
     );
 }
