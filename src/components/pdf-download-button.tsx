@@ -74,7 +74,7 @@ export function PDFDownloadButton({ data }: PDFDownloadButtonProps) {
         // Debounce slightly to allow UI to settle first
         const timer = setTimeout(() => {
             generatePdf();
-        }, 500);
+        }, 100);
 
         return () => {
             isMounted = false;

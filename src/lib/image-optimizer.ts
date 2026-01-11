@@ -7,8 +7,16 @@ export async function optimizeImage(url: string, maxWidth: number = 300): Promis
     if (!url) return null;
 
     try {
-        // 1. Fetch the image
-        const response = await fetch(url, { mode: 'cors' });
+        // 1. Fetch the image with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+        const response = await fetch(url, {
+            mode: 'cors',
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
         if (!response.ok) throw new Error("Failed to fetch image");
 
         const blob = await response.blob();
