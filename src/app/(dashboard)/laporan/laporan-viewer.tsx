@@ -73,11 +73,7 @@ const predikatColors: Record<string, string> = {
     maqbul: "bg-yellow-100 text-yellow-800",
 };
 
-const truncateName = (name: string) => {
-    const parts = name.split(" ");
-    if (parts.length <= 3) return name;
-    return parts.slice(0, 3).join(" ") + "..."; // Optional: add ellipsis if desired, though request said "disingkat"
-};
+
 
 export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole = "admin", linkedSantriId }: LaporanViewerProps) {
     const currentDate = new Date();
@@ -218,7 +214,7 @@ export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole 
                                     <div className="space-y-1">
                                         <div className="grid grid-cols-[100px_auto] gap-2">
                                             <span className="text-gray-500">Nama</span>
-                                            <span className="font-medium">: {laporanData.santri ? truncateName(laporanData.santri.nama) : "-"}</span>
+                                            <span className="font-medium">: {laporanData.santri ? laporanData.santri.nama : "-"}</span>
                                         </div>
                                         <div className="grid grid-cols-[100px_auto] gap-2">
                                             <span className="text-gray-500">NIS</span>
