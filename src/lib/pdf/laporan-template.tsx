@@ -236,8 +236,6 @@ interface LaporanPDFProps {
         pelanggaran: { tanggal: string; deskripsi: string; poin: number | null; penyelesaian?: string | null }[];
         musyrif_nama: string;
         musyrif_jenis_kelamin: string;
-        processedPhoto?: string | null;
-        logos?: { kiri: string; kanan: string };
     }
 }
 
@@ -259,7 +257,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
     const MALE_AVATAR = "https://avatar.iran.liara.run/public/boy";
     const FEMALE_AVATAR = "https://avatar.iran.liara.run/public/girl";
 
-    const photoSrc = data.processedPhoto || data.santri?.foto_url || (data.santri?.jenis_kelamin === "L" ? MALE_AVATAR : FEMALE_AVATAR);
+    const photoSrc = data.santri?.foto_url || (data.santri?.jenis_kelamin === "L" ? MALE_AVATAR : FEMALE_AVATAR);
 
     // -- PROGRESS LOGIC --
     const progressByJuz = new Map<string, { uniqueLembar: Set<string>, activeDays: Set<string> }>();
@@ -292,7 +290,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                 {/* Header */}
                 <View style={styles.headerContainer}>
                     <View style={styles.logoBox}>
-                        {data.logos?.kiri && <Image src={data.logos.kiri} style={styles.logoImage} />}
+                        <Image src="/logo_kiri.jpg" style={styles.logoImage} />
                     </View>
                     <View style={styles.headerContent}>
                         <Text style={styles.headerTitleMain}>PONDOK PESANTREN MUHAMMADIYAH BANGSRI</Text>
@@ -300,7 +298,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                         <Text style={styles.headerAddress}>Jl. Seroja No.04 Kauman rt.01 rw.09 Bangsri Jepara</Text>
                     </View>
                     <View style={styles.logoBox}>
-                        {data.logos?.kanan && <Image src={data.logos.kanan} style={styles.logoImage} />}
+                        <Image src="/logo_kanan.jpg" style={styles.logoImage} />
                     </View>
                 </View>
 
@@ -315,7 +313,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                         <View style={styles.profileContent}>
                             {/* Photo */}
                             <View style={styles.photoBox}>
-                                {photoSrc && <Image src={photoSrc} style={styles.photoImage} />}
+                                <Image src={photoSrc} style={styles.photoImage} />
                             </View>
                             {/* Info */}
                             <View style={styles.profileInfo}>
