@@ -3,18 +3,22 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
 import { LaporanPDFDocument } from "@/lib/pdf/laporan-template";
 
-// Force Node.js runtime for @react-pdf/renderer compatibility
+// Force Node.js runtime to ensure full compatibility for @react-pdf/renderer 
+// (Buffer, fs, streams support)
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
     try {
         const data = await req.json();
 
+        // Validation
         if (!data || !data.santri) {
             return NextResponse.json({ error: "Invalid data" }, { status: 400 });
         }
 
-        // Inject Base64 Logos
+        // 1. Inject Base64 Logos (Server-Side)
+        // We read the files from the public directory directly to avoid HTTP network calls 
+        // which can time out or be blocked in server environments.
         const fs = await import("fs");
         const path = await import("path");
 
@@ -38,12 +42,13 @@ export async function POST(req: NextRequest) {
 
         const pdfData = { ...data, logos };
 
+        // 2. Render PDF to Buffer
+        // renderToBuffer builds the entire PDF in memory. This is safer than random-access streams
+        // for passing to the client as a single blob.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const buffer = await renderToBuffer(createElement(LaporanPDFDocument, { data: pdfData }) as any);
 
-        // Debug log
-        console.log(`[PDF Generator] Created PDF buffer size: ${buffer.length} bytes`);
-
+        // 3. Return Binary Response
         return new NextResponse(buffer as any, {
             headers: {
                 "Content-Type": "application/pdf",
