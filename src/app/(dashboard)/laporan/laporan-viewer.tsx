@@ -214,7 +214,7 @@ export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole 
                                         className="w-full h-full object-cover"
                                     />
                                 </div>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm flex-1 w-full">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm flex-1 w-full text-left">
                                     <div className="space-y-1">
                                         <div className="grid grid-cols-[100px_auto] gap-2">
                                             <span className="text-gray-500">Nama</span>
