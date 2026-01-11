@@ -102,7 +102,7 @@ export function UstadzDashboard({
                     return (
                         <Card
                             key={stat.title}
-                            className={`border-0 shadow-lg shadow-gray-100/50 dark:shadow-none dark:bg-card/50 dark:border dark:border-border hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-xl overflow-hidden group`}
+                            className={`border border-slate-100 dark:border-border shadow-sm bg-white dark:bg-card/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 rounded-xl overflow-hidden group`}
                         >
                             <CardContent className="p-6">
                                 <div className="flex items-center justify-between">
@@ -150,7 +150,7 @@ export function UstadzDashboard({
             </div>
 
             {/* Hafalan Chart */}
-            <Card className="border-0 shadow-lg shadow-gray-100/50 dark:shadow-none dark:bg-card/50 dark:border dark:border-border rounded-2xl overflow-hidden">
+            <Card className="border border-slate-100 dark:border-border shadow-sm bg-white dark:bg-card/50 rounded-2xl overflow-hidden">
                 <CardHeader className="bg-muted/30 border-b border-border pb-4">
                     <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
                         <TrendingUp className="w-5 h-5 text-emerald-500" />
@@ -181,7 +181,7 @@ export function UstadzDashboard({
             {/* Three Column Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Top Santri Hafalan */}
-                <Card className="border-0 shadow-lg shadow-gray-100/50 dark:shadow-none dark:bg-card/50 dark:border dark:border-border rounded-2xl overflow-hidden">
+                <Card className="border border-slate-100 dark:border-border shadow-sm bg-white dark:bg-card/50 rounded-2xl overflow-hidden">
                     <CardHeader className="bg-muted/30 border-b border-border pb-4">
                         <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
                             <Trophy className="w-5 h-5 text-yellow-500" />
@@ -197,9 +197,9 @@ export function UstadzDashboard({
                                     <div key={santri.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
                                         <div className="flex items-center gap-3">
                                             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${index === 0 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" :
-                                                    index === 1 ? "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300" :
-                                                        index === 2 ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" :
-                                                            "bg-muted text-muted-foreground"
+                                                index === 1 ? "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300" :
+                                                    index === 2 ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" :
+                                                        "bg-muted text-muted-foreground"
                                                 }`}>
                                                 {index + 1}
                                             </div>
@@ -216,7 +216,7 @@ export function UstadzDashboard({
                 </Card>
 
                 {/* Recent Hafalan Selesai */}
-                <Card className="border-0 shadow-lg shadow-gray-100/50 dark:shadow-none dark:bg-card/50 dark:border dark:border-border rounded-2xl overflow-hidden">
+                <Card className="border border-slate-100 dark:border-border shadow-sm bg-white dark:bg-card/50 rounded-2xl overflow-hidden">
                     <CardHeader className="bg-muted/30 border-b border-border pb-4">
                         <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
                             <BookOpen className="w-5 h-5 text-emerald-500" />
@@ -245,7 +245,7 @@ export function UstadzDashboard({
                 </Card>
 
                 {/* Upcoming Events */}
-                <Card className="border-0 shadow-lg shadow-gray-100/50 dark:shadow-none dark:bg-card/50 dark:border dark:border-border rounded-2xl overflow-hidden">
+                <Card className="border border-slate-100 dark:border-border shadow-sm bg-white dark:bg-card/50 rounded-2xl overflow-hidden">
                     <CardHeader className="bg-muted/30 border-b border-border pb-4">
                         <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
                             <Calendar className="w-5 h-5 text-orange-500" />
@@ -275,7 +275,7 @@ export function UstadzDashboard({
             </div>
 
             {/* Recent Santri Progress */}
-            <Card className="border-0 shadow-lg shadow-gray-100/50 dark:shadow-none dark:bg-card/50 dark:border dark:border-border rounded-2xl overflow-hidden">
+            <Card className="border border-slate-100 dark:border-border shadow-sm bg-white dark:bg-card/50 rounded-2xl overflow-hidden">
                 <CardHeader className="bg-muted/30 border-b border-border pb-4">
                     <CardTitle className="text-lg font-bold text-foreground">Progres Hafalan Lembar Terbaru</CardTitle>
                 </CardHeader>

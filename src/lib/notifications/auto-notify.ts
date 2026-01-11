@@ -305,7 +305,9 @@ export async function notifyParentPresensi(santriId: string, kegiatanName: strin
     // Save to notifications table
     await saveToNotificationsTable(title, body, "ortu", santriId);
 
-    return sendToUser(parentProfile.id, { title, body, url });
+    // Disable push notification for presensi to reduce spam
+    // return sendToUser(parentProfile.id, { title, body, url });
+    return { sent: 0 };
 }
 
 /**

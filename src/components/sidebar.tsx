@@ -171,38 +171,38 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
 
     return (
         <div className={cn(
-            "flex flex-col h-full w-64 bg-emerald-950/90 dark:bg-emerald-950/90 text-white relative overflow-hidden backdrop-blur-md supports-[backdrop-filter]:bg-emerald-950/60",
+            "flex flex-col h-full w-64 bg-white dark:bg-emerald-950/90 text-slate-800 dark:text-white relative overflow-hidden backdrop-blur-md supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-emerald-950/60",
             // Mobile: Fixed position, slide in/out
-            "fixed md:relative z-40 transition-transform duration-300 ease-in-out border-r border-white/5 shadow-2xl",
+            "fixed md:relative z-40 transition-transform duration-300 ease-in-out border-r border-slate-200 dark:border-white/5 shadow-2xl",
             isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         )}>
-            {/* Background Gradients */}
-            <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/80 via-transparent to-teal-900/80 z-0 pointer-events-none" />
+            {/* Background Gradients - Only visible in Dark Mode */}
+            <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/80 via-transparent to-teal-900/80 z-0 pointer-events-none opacity-0 dark:opacity-100 transition-opacity duration-300" />
 
-            {/* Background Pattern */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none z-0">
+            {/* Background Pattern - Only visible in Dark Mode */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-0 dark:opacity-20 pointer-events-none z-0 transition-opacity duration-300">
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-10 -left-10 w-40 h-40 bg-teal-500 rounded-full blur-3xl"></div>
             </div>
 
             {/* Logo - with close button on mobile */}
-            <div className="p-6 border-b border-white/10 relative z-10">
+            <div className="p-6 border-b border-slate-100 dark:border-white/10 relative z-10">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/10">
+                        <div className="w-10 h-10 bg-emerald-600 text-white dark:bg-white/10 backdrop-blur-sm rounded-xl flex items-center justify-center border border-transparent dark:border-white/10 shadow-sm dark:shadow-none">
                             <span className="text-xl font-bold">Q</span>
                         </div>
                         <div>
-                            <h1 className="font-bold text-lg tracking-wide">QUBA</h1>
-                            <p className="text-xs text-emerald-200/80">PP Muhammadiyah Bangsri</p>
+                            <h1 className="font-bold text-lg tracking-wide text-emerald-950 dark:text-white">QUBA</h1>
+                            <p className="text-xs text-slate-500 dark:text-emerald-200/80">PP Muhammadiyah Bangsri</p>
                         </div>
                     </div>
                     <button
                         onClick={close}
-                        className="md:hidden p-1.5 hover:bg-white/10 rounded-lg transition-colors border border-transparent hover:border-white/10"
+                        className="md:hidden p-1.5 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
                         aria-label="Close menu"
                     >
-                        <X className="w-5 h-5 text-emerald-100" />
+                        <X className="w-5 h-5 text-slate-500 dark:text-emerald-100" />
                     </button>
                 </div>
             </div>
@@ -232,23 +232,23 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
                                         className={cn(
                                             "w-full flex items-center justify-between px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 group relative overflow-hidden",
                                             (isActive || isChildActive)
-                                                ? "bg-white/10 text-white shadow-sm ring-1 ring-white/20"
-                                                : "text-emerald-100/70 hover:bg-white/10 hover:text-white hover:translate-x-1"
+                                                ? "bg-emerald-50 text-emerald-700 dark:bg-white/10 dark:text-white shadow-sm ring-1 ring-emerald-100 dark:ring-white/20"
+                                                : "text-slate-600 dark:text-emerald-100/70 hover:bg-emerald-50 dark:hover:bg-white/10 hover:text-emerald-600 dark:hover:text-white hover:translate-x-1"
                                         )}
                                     >
                                         <div className="flex items-center gap-3">
-                                            <Icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", (isActive || isChildActive) && "text-emerald-300")} />
+                                            <Icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", (isActive || isChildActive) && "text-emerald-600 dark:text-emerald-300")} />
                                             <span>{item.title}</span>
                                         </div>
                                         <ChevronDown
                                             className={cn(
-                                                "w-4 h-4 transition-transform text-white/50",
-                                                isOpen && "rotate-180 text-white"
+                                                "w-4 h-4 transition-transform text-slate-400 dark:text-white/50",
+                                                isOpen && "rotate-180 text-emerald-600 dark:text-white"
                                             )}
                                         />
                                     </button>
                                     {isOpen && (
-                                        <ul className="mt-2 ml-3 pl-3 border-l border-white/10 space-y-1">
+                                        <ul className="mt-2 ml-3 pl-3 border-l border-slate-200 dark:border-white/10 space-y-1">
                                             {filteredChildren.map((child) => {
                                                 const isChildLinkActive = pathname === child.href;
                                                 return (
@@ -259,8 +259,8 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
                                                             className={cn(
                                                                 "flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200 relative",
                                                                 isChildLinkActive
-                                                                    ? "text-emerald-300 font-medium bg-white/5"
-                                                                    : "text-emerald-100/60 hover:text-white hover:translate-x-1"
+                                                                    ? "text-emerald-600 dark:text-emerald-300 font-medium bg-emerald-50 dark:bg-white/5"
+                                                                    : "text-slate-500 dark:text-emerald-100/60 hover:text-emerald-600 dark:hover:text-white hover:translate-x-1"
                                                             )}
                                                         >
                                                             {isChildLinkActive && <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] mr-1" />}
@@ -283,11 +283,11 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
                                     className={cn(
                                         "flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all duration-200 group relative overflow-hidden",
                                         isActive
-                                            ? "bg-gradient-to-r from-white/15 to-white/5 text-white shadow-sm ring-1 ring-white/20"
-                                            : "text-emerald-100/70 hover:bg-white/10 hover:text-white hover:translate-x-1"
+                                            ? "bg-gradient-to-r from-emerald-50 to-white dark:from-white/15 dark:to-white/5 text-emerald-700 dark:text-white shadow-sm ring-1 ring-emerald-100 dark:ring-white/20"
+                                            : "text-slate-600 dark:text-emerald-100/70 hover:bg-emerald-50 dark:hover:bg-white/10 hover:text-emerald-600 dark:hover:text-white hover:translate-x-1"
                                     )}
                                 >
-                                    <Icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive && "text-emerald-300")} />
+                                    <Icon className={cn("w-5 h-5 transition-transform group-hover:scale-110", isActive && "text-emerald-600 dark:text-emerald-300")} />
                                     <span>{item.title}</span>
                                     {isActive && (
                                         <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
@@ -300,14 +300,14 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
             </nav>
 
             {/* User Info & Logout */}
-            <div className="p-4 border-t border-white/10 relative z-10">
-                <div className="flex items-center gap-3 mb-4 p-3 bg-white/5 rounded-xl border border-white/5">
-                    <div className="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center text-sm font-medium border border-emerald-500/30 text-emerald-100">
+            <div className="p-4 border-t border-slate-100 dark:border-white/10 relative z-10">
+                <div className="flex items-center gap-3 mb-4 p-3 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5">
+                    <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center text-sm font-medium border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-100">
                         {userName.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate text-white">{userName}</p>
-                        <p className="text-xs text-emerald-200/60 capitalize">{userRole}</p>
+                        <p className="text-sm font-medium truncate text-slate-800 dark:text-white">{userName}</p>
+                        <p className="text-xs text-slate-500 dark:text-emerald-200/60 capitalize">{userRole}</p>
                     </div>
                     <NotificationToggle />
                     <NotificationBell />
@@ -319,7 +319,7 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
                         <Link
                             href="/profil/edit"
                             onClick={handleLinkClick}
-                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-emerald-100/70 hover:bg-white/10 hover:text-white transition-colors"
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-500 dark:text-emerald-100/70 hover:bg-emerald-50 dark:hover:bg-white/10 hover:text-emerald-600 dark:hover:text-white transition-colors"
                         >
                             <UserCog className="w-4 h-4" />
                             <span>Edit Profil Saya</span>
@@ -329,7 +329,7 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
                         <Link
                             href="/profil/santri"
                             onClick={handleLinkClick}
-                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-emerald-100/70 hover:bg-white/10 hover:text-white transition-colors"
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-500 dark:text-emerald-100/70 hover:bg-emerald-50 dark:hover:bg-white/10 hover:text-emerald-600 dark:hover:text-white transition-colors"
                         >
                             <Users className="w-4 h-4" />
                             <span>Data Santri Saya</span>
@@ -338,14 +338,14 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
                     <Link
                         href="/profil/ganti-password"
                         onClick={handleLinkClick}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-emerald-100/70 hover:bg-white/10 hover:text-white transition-colors"
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-500 dark:text-emerald-100/70 hover:bg-emerald-50 dark:hover:bg-white/10 hover:text-emerald-600 dark:hover:text-white transition-colors"
                     >
                         <KeyRound className="w-4 h-4" />
                         <span>Ganti Password</span>
                     </Link>
                     <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-emerald-100/70 hover:bg-white/10 hover:text-white transition-colors hover:bg-red-500/10 hover:text-red-200"
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-500 dark:text-emerald-100/70 hover:bg-red-50 dark:hover:bg-white/10 hover:text-red-600 dark:hover:text-red-200 transition-colors"
                     >
                         <LogOut className="w-4 h-4" />
                         <span>Keluar</span>

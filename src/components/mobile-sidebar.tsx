@@ -38,9 +38,9 @@ export function MobileHeader() {
     const { isOpen, toggle } = useMobileSidebar();
 
     return (
-        <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-emerald-700 to-emerald-800 text-white px-4 py-3 flex items-center justify-between shadow-lg">
+        <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-white dark:bg-emerald-950 text-slate-900 dark:text-white px-4 py-3 flex items-center justify-between shadow-sm dark:shadow-lg border-b border-slate-200 dark:border-white/10 transition-colors duration-300">
             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-emerald-600 text-white dark:bg-white/20 rounded-lg flex items-center justify-center">
                     <span className="text-lg font-bold">Q</span>
                 </div>
                 <div>
@@ -49,7 +49,7 @@ export function MobileHeader() {
             </div>
             <button
                 onClick={toggle}
-                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="p-2 hover:bg-slate-100 dark:hover:bg-white/10 rounded-lg transition-colors border border-transparent hover:border-slate-200 dark:hover:border-white/10"
                 aria-label="Toggle menu"
             >
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

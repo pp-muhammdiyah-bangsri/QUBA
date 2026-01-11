@@ -14,7 +14,7 @@ interface DashboardShellProps {
 export function DashboardShell({ children, userRole, userName }: DashboardShellProps) {
     return (
         <MobileSidebarProvider>
-            <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
+            <div className="flex h-screen bg-slate-50 dark:bg-gray-950 transition-colors duration-300">
                 {/* Mobile Header */}
                 <MobileHeader />
 
