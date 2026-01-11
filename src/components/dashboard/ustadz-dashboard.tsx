@@ -65,25 +65,25 @@ export function UstadzDashboard({
             title: "Total Santri Aktif",
             value: stats.santriCount,
             icon: Users,
-            color: "bg-blue-500",
+            baseColor: "blue",
         },
         {
             title: "Hafalan Hari Ini",
             value: stats.hafalanHariIni,
             icon: BookOpen,
-            color: "bg-emerald-500",
+            baseColor: "emerald",
         },
         {
             title: "Presensi Hari Ini",
             value: stats.presensiHariIni,
             icon: ClipboardCheck,
-            color: "bg-purple-500",
+            baseColor: "purple",
         },
         {
             title: "Event Mendatang",
             value: stats.eventCount,
             icon: Calendar,
-            color: "bg-orange-500",
+            baseColor: "orange",
         },
     ];
 
@@ -112,8 +112,8 @@ export function UstadzDashboard({
                                             {stat.value.toLocaleString('id-ID')}
                                         </p>
                                     </div>
-                                    <div className={`w-12 h-12 rounded-xl ${stat.color} bg-opacity-10 dark:bg-opacity-20 flex items-center justify-center text-white shadow-sm group-hover:scale-110 transition-transform`}>
-                                        <Icon className={`w-6 h-6 ${stat.color.replace('bg-', 'text-')} dark:text-white`} />
+                                    <div className={`w-12 h-12 rounded-xl bg-${stat.baseColor}-500/10 dark:bg-${stat.baseColor}-500/20 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform`}>
+                                        <Icon className={`w-6 h-6 text-${stat.baseColor}-600 dark:text-white`} />
                                     </div>
                                 </div>
                             </CardContent>
