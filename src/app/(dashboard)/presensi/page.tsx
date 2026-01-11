@@ -3,6 +3,9 @@ import { getKelasDropdown, getHalaqohDropdown } from "../data-master/actions";
 import { PresensiPage as PresensiContent } from "./presensi-page";
 import { AttendanceReminderChecker } from "@/components/attendance-reminder";
 
+export const dynamic = "force-dynamic";
+
+
 export default async function PresensiPage() {
     // 1. Lazy generate routines
     await generateDailySchedules();
