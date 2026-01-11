@@ -51,7 +51,6 @@ export async function generateDailySchedules() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const routines = (allRoutines as any[])?.filter((r) => {
         const hariAktif = r.hari_aktif || [];
-        // Check if any element matches dayOfWeek (as string or number)
         return hariAktif.some((h: number | string) => Number(h) === dayOfWeek);
     }) || [];
 
