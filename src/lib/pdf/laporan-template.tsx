@@ -236,6 +236,7 @@ interface LaporanPDFProps {
         pelanggaran: { tanggal: string; deskripsi: string; poin: number | null; penyelesaian?: string | null }[];
         musyrif_nama: string;
         musyrif_jenis_kelamin: string;
+        processedPhoto?: string | null;
     }
 }
 
@@ -266,7 +267,7 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
     const MALE_AVATAR = "https://avatar.iran.liara.run/public/boy";
     const FEMALE_AVATAR = "https://avatar.iran.liara.run/public/girl";
 
-    const photoSrc = data.santri?.foto_url || (data.santri?.jenis_kelamin === "L" ? MALE_AVATAR : FEMALE_AVATAR);
+    const photoSrc = data.processedPhoto || data.santri?.foto_url || (data.santri?.jenis_kelamin === "L" ? MALE_AVATAR : FEMALE_AVATAR);
 
     // -- PROGRESS LOGIC --
     const progressByJuz = new Map<string, { uniqueLembar: Set<string>, activeDays: Set<string> }>();

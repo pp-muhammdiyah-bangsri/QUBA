@@ -44,8 +44,21 @@ export function PDFDownloadButton({ data }: PDFDownloadButtonProps) {
             try {
                 const { pdf } = await import("@react-pdf/renderer");
                 const { LaporanPDFDocument } = await import("@/lib/pdf/laporan-template");
+                const { optimizeImage } = await import("@/lib/image-optimizer");
 
-                const blob = await pdf(<LaporanPDFDocument data={data} />).toBlob();
+                // Optimize photo unique to this santri (resize to max 200px width)
+                // This drastically reduces PDF generation time for large uploaded photos
+                let processedPhoto = null;
+                if (data.santri?.foto_url) {
+                    processedPhoto = await optimizeImage(data.santri.foto_url);
+                }
+
+                const pdfData = {
+                    ...data,
+                    processedPhoto
+                };
+
+                const blob = await pdf(<LaporanPDFDocument data={pdfData} />).toBlob();
                 const url = URL.createObjectURL(blob);
 
                 if (isMounted) {
