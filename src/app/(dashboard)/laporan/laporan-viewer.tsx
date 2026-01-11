@@ -205,7 +205,7 @@ export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole 
                                 <h2 className="text-2xl font-bold print:text-xl">LAPORAN BULANAN SANTRI</h2>
                                 <p className="text-gray-600">Periode: {monthName} {laporanData.year}</p>
                             </div>
-                            <div className="flex gap-6 mt-4 pt-4 border-t">
+                            <div className="flex flex-col md:flex-row gap-6 mt-4 pt-4 border-t items-center md:items-start text-center md:text-left">
                                 <div className="w-24 h-32 bg-gray-100 rounded-md overflow-hidden border border-gray-200 shrink-0">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
@@ -214,7 +214,7 @@ export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole 
                                         className="w-full h-full object-cover"
                                     />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4 text-sm flex-1">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm flex-1 w-full">
                                     <div className="space-y-1">
                                         <div className="grid grid-cols-[100px_auto] gap-2">
                                             <span className="text-gray-500">Nama</span>
@@ -422,7 +422,7 @@ export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole 
                         )
                     }
                     {/* Signature Section */}
-                    <div className="mt-12 grid grid-cols-2 gap-8 text-center print:mt-8 break-inside-avoid">
+                    <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-8 text-center print:mt-8 break-inside-avoid print:grid-cols-2">
                         <div className="space-y-16">
                             <div>
                                 <p className="mb-1">Mengetahui,</p>
