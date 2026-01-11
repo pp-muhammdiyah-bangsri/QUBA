@@ -129,9 +129,44 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
 
     const [presensiData, setPresensiData] = useState<Record<string, { status: string; catatan: string }>>({});
 
-    const filteredKegiatan = kegiatan.filter(
-        (k) => k.nama.toLowerCase().includes(search.toLowerCase())
-    );
+
+
+    // 1. Determine My Students (for Ustadz filtering)
+    const myStudents = santriList.filter(s => {
+        if (userRole === "admin") return false;
+        if (!myGroups.kelasId && !myGroups.halaqohId) return false;
+
+        const inKelas = myGroups.kelasId && s.kelas_id === myGroups.kelasId;
+        const inHalaqoh = myGroups.halaqohId && s.halaqoh_id === myGroups.halaqohId;
+        return inKelas || inHalaqoh;
+    });
+
+    // 2. Determine My Gender Scope
+    const myGenderScope = (() => {
+        if (userRole === "admin" || myStudents.length === 0) return "all";
+        const hasL = myStudents.some(s => s.jenis_kelamin === "L");
+        const hasP = myStudents.some(s => s.jenis_kelamin === "P");
+        if (hasL && hasP) return "all";
+        if (hasL) return "L";
+        if (hasP) return "P";
+        return "all";
+    })();
+
+    const filteredKegiatan = kegiatan.filter((k) => {
+        // Search Filter
+        if (!k.nama.toLowerCase().includes(search.toLowerCase())) return false;
+
+        // Ustadz Relevance Filter
+        if (userRole !== "admin") {
+            const targetGender = k.jadwal_rutin?.target_gender || "all";
+            // If activity is specific (L/P) and doesn't match my scope, hide it
+            if (targetGender !== "all" && myGenderScope !== "all") {
+                if (targetGender !== myGenderScope) return false;
+            }
+        }
+
+        return true;
+    });
 
     const handleOpenAddKegiatan = () => {
         setEditingKegiatan(null);
