@@ -1,6 +1,6 @@
 ﻿"use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { notifyAllParentsEvent } from "@/lib/notifications/auto-notify";
@@ -19,7 +19,7 @@ const kegiatanSchema = z.object({
 export type KegiatanFormData = z.infer<typeof kegiatanSchema>;
 
 export async function generateDailySchedules() {
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
     const today = new Date();
     // Force Timezone to Asia/Jakarta (WIB)
     // format to YYYY-MM-DD
@@ -88,7 +88,7 @@ export async function generateDailySchedules() {
 }
 
 export async function getKegiatanList() {
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabase as any)
         .from("kegiatan")
