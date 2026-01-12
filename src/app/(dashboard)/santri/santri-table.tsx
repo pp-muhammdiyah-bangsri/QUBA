@@ -477,7 +477,7 @@ export function SantriTable({ initialData, kelasList, halaqohList }: SantriTable
                     <DialogHeader>
                         <DialogTitle>Hapus Santri</DialogTitle>
                     </DialogHeader>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Apakah Anda yakin ingin menghapus data santri{" "}
                         <strong>{deletingSantri?.nama}</strong>? Tindakan ini tidak dapat
                         dibatalkan.

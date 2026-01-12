@@ -189,7 +189,7 @@ export function NilaiTable({ initialData, santriList, mapelList, semesterOptions
                     <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                             <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                                <FileText className="w-6 h-6 text-gray-600" />
+                                <FileText className="w-6 h-6 text-gray-600 dark:text-gray-400" />
                             </div>
                             <div>
                                 <div className="text-2xl font-bold">{filteredData.length}</div>
@@ -444,7 +444,7 @@ export function NilaiTable({ initialData, santriList, mapelList, semesterOptions
                     <DialogHeader>
                         <DialogTitle>Hapus Nilai</DialogTitle>
                     </DialogHeader>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Hapus nilai <strong>{deletingItem?.mapel?.nama}</strong> untuk{" "}
                         <strong>{deletingItem?.santri?.nama}</strong>?
                     </p>

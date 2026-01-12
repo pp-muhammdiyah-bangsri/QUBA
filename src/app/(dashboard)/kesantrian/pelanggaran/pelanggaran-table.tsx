@@ -221,10 +221,12 @@ export function PelanggaranTable({ initialData, santriList, userRole = "admin" }
                                 />
                             </div>
                         ) : <div></div>}
-                        <Button onClick={handleOpenAdd} className="w-full sm:w-auto">
-                            <Plus className="w-4 h-4 mr-2" />
-                            Tambah Pelanggaran
-                        </Button>
+                        {userRole !== "ortu" && (
+                            <Button onClick={handleOpenAdd} className="w-full sm:w-auto">
+                                <Plus className="w-4 h-4 mr-2" />
+                                Tambah Pelanggaran
+                            </Button>
+                        )}
                     </div>
 
                     <Table>
@@ -272,20 +274,24 @@ export function PelanggaranTable({ initialData, santriList, userRole = "admin" }
                                             )}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleOpenEdit(item)}
-                                            >
-                                                <Pencil className="w-4 h-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleOpenDelete(item)}
-                                            >
-                                                <Trash2 className="w-4 h-4 text-red-500" />
-                                            </Button>
+                                            {userRole !== "ortu" && (
+                                                <>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => handleOpenEdit(item)}
+                                                    >
+                                                        <Pencil className="w-4 h-4" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => handleOpenDelete(item)}
+                                                    >
+                                                        <Trash2 className="w-4 h-4 text-red-500" />
+                                                    </Button>
+                                                </>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -385,7 +391,7 @@ export function PelanggaranTable({ initialData, santriList, userRole = "admin" }
                     <DialogHeader>
                         <DialogTitle>Hapus Pelanggaran</DialogTitle>
                     </DialogHeader>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Apakah Anda yakin ingin menghapus data pelanggaran{" "}
                         <strong>{deletingItem?.santri?.nama}</strong>?
                     </p>

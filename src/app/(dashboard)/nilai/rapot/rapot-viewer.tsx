@@ -144,7 +144,7 @@ export function RapotViewer({ santriList, semesterOptions }: RapotViewerProps) {
                         <CardContent className="p-6">
                             <div className="text-center mb-6 print:mb-4">
                                 <h2 className="text-2xl font-bold print:text-xl">LAPORAN HASIL BELAJAR</h2>
-                                <p className="text-gray-600">Semester: {rapotData.semester}</p>
+                                <p className="text-gray-600 dark:text-gray-400">Semester: {rapotData.semester}</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4 text-sm">

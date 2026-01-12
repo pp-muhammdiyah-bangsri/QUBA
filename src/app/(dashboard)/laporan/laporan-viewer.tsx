@@ -203,7 +203,7 @@ export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole 
                         <CardContent className="p-6 print:p-4">
                             <div className="text-center mb-6 print:mb-4">
                                 <h2 className="text-2xl font-bold print:text-xl">LAPORAN BULANAN SANTRI</h2>
-                                <p className="text-gray-600">Periode: {monthName} {laporanData.year}</p>
+                                <p className="text-gray-600 dark:text-gray-400">Periode: {monthName} {laporanData.year}</p>
                             </div>
                             <div className="flex flex-col md:flex-row gap-6 mt-4 pt-4 border-t items-center md:items-start text-center md:text-left">
                                 <div className="w-24 h-32 bg-gray-100 rounded-md overflow-hidden border border-gray-200 shrink-0">

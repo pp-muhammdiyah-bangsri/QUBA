@@ -413,7 +413,7 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
                     <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                                <Calendar className="w-5 h-5 text-gray-600" />
+                                <Calendar className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                             </div>
                             <div>
                                 <div className="text-xl font-bold">{stats.total}</div>
@@ -721,7 +721,7 @@ export function PresensiPage({ initialKegiatan, santriList, kelasList, halaqohLi
                     <DialogHeader>
                         <DialogTitle>Hapus Kegiatan</DialogTitle>
                     </DialogHeader>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Apakah Anda yakin ingin menghapus kegiatan{" "}
                         <strong>{deletingKegiatan?.nama}</strong>? Data presensi terkait juga akan dihapus.
                     </p>

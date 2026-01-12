@@ -301,17 +301,33 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
 
             {/* User Info & Logout */}
             <div className="p-4 border-t border-slate-100 dark:border-white/10 relative z-10">
-                <div className="flex items-center gap-3 mb-4 p-3 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5">
-                    <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center text-sm font-medium border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-100">
-                        {userName.charAt(0).toUpperCase()}
+                <div className="flex flex-col gap-3 mb-4">
+                    <div className="flex items-center gap-3 px-1">
+                        <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-500/20 rounded-full flex items-center justify-center text-base font-bold border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-100 shrink-0">
+                            {userName.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-slate-800 dark:text-white leading-tight break-words">
+                                {(() => {
+                                    const words = userName.split(" ");
+                                    if (words.length > 3) {
+                                        return words.slice(0, 3).join(" ") + " ...";
+                                    }
+                                    return userName;
+                                })()}
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-emerald-200/60 capitalize mt-0.5">{userRole}</p>
+                        </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate text-slate-800 dark:text-white">{userName}</p>
-                        <p className="text-xs text-slate-500 dark:text-emerald-200/60 capitalize">{userRole}</p>
+
+                    <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5">
+                        <span className="text-xs font-medium text-slate-500 dark:text-slate-400 pl-2">Preferensi</span>
+                        <div className="flex items-center gap-1">
+                            <NotificationToggle />
+                            <NotificationBell />
+                            <ThemeToggle />
+                        </div>
                     </div>
-                    <NotificationToggle />
-                    <NotificationBell />
-                    <ThemeToggle />
                 </div>
 
                 <div className="space-y-1">
@@ -335,14 +351,7 @@ export function Sidebar({ userRole, userName }: SidebarProps) {
                             <span>Data Santri Saya</span>
                         </Link>
                     )}
-                    <Link
-                        href="/profil/ganti-password"
-                        onClick={handleLinkClick}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-500 dark:text-emerald-100/70 hover:bg-emerald-50 dark:hover:bg-white/10 hover:text-emerald-600 dark:hover:text-white transition-colors"
-                    >
-                        <KeyRound className="w-4 h-4" />
-                        <span>Ganti Password</span>
-                    </Link>
+
                     <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-500 dark:text-emerald-100/70 hover:bg-red-50 dark:hover:bg-white/10 hover:text-red-600 dark:hover:text-red-200 transition-colors"

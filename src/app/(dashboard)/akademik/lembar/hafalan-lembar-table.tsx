@@ -232,13 +232,15 @@ export function HafalanLembarTable({ initialData, santriList, asatidzList, compl
                                         </TableCell>
                                         <TableCell className="max-w-[200px] truncate">{item.catatan || "-"}</TableCell>
                                         <TableCell className="text-right">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleOpenDelete(item)}
-                                            >
-                                                <Trash2 className="w-4 h-4 text-red-500" />
-                                            </Button>
+                                            {userRole !== "ortu" && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleOpenDelete(item)}
+                                                >
+                                                    <Trash2 className="w-4 h-4 text-red-500" />
+                                                </Button>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))

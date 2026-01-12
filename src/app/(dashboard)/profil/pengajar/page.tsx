@@ -83,26 +83,26 @@ export default async function PengajarPage() {
                             <CardContent className="space-y-3">
                                 {teacher.biografi && (
                                     <div>
-                                        <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
                                             <User className="w-4 h-4" /> Biografi
                                         </h4>
-                                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{teacher.biografi}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{teacher.biografi}</p>
                                     </div>
                                 )}
                                 {teacher.pendidikan && (
                                     <div>
-                                        <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
                                             <GraduationCap className="w-4 h-4" /> Pendidikan
                                         </h4>
-                                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{teacher.pendidikan}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{teacher.pendidikan}</p>
                                     </div>
                                 )}
                                 {teacher.keahlian && (
                                     <div>
-                                        <h4 className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
                                             <BookOpen className="w-4 h-4" /> Keahlian
                                         </h4>
-                                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">{teacher.keahlian}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">{teacher.keahlian}</p>
                                     </div>
                                 )}
                                 {!teacher.biografi && !teacher.pendidikan && !teacher.keahlian && (

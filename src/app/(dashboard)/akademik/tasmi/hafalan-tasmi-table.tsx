@@ -293,13 +293,15 @@ export function HafalanTasmiTable({ initialData, santriList, asatidzList, userRo
                                             )}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => handleOpenDelete(item)}
-                                            >
-                                                <Trash2 className="w-4 h-4 text-red-500" />
-                                            </Button>
+                                            {userRole !== "ortu" && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleOpenDelete(item)}
+                                                >
+                                                    <Trash2 className="w-4 h-4 text-red-500" />
+                                                </Button>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -430,7 +432,7 @@ export function HafalanTasmiTable({ initialData, santriList, asatidzList, userRo
                     <DialogHeader>
                         <DialogTitle>Hapus Tasmi'</DialogTitle>
                     </DialogHeader>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Apakah Anda yakin ingin menghapus data tasmi Juz {deletingItem?.juz} dari{" "}
                         <strong>{deletingItem?.santri?.nama}</strong>?
                     </p>

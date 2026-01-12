@@ -390,7 +390,7 @@ export function EventPage({ initialEvents, initialInformasi, userRole = "admin" 
                                                 </TableCell>
                                                 <TableCell>
                                                     {event.lokasi && (
-                                                        <div className="flex items-center gap-1 text-sm text-gray-600">
+                                                        <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
                                                             <MapPin className="w-3 h-3" />
                                                             {event.lokasi}
                                                         </div>
@@ -402,12 +402,16 @@ export function EventPage({ initialEvents, initialInformasi, userRole = "admin" 
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleOpenEditEvent(event)}>
-                                                        <Pencil className="w-4 h-4" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleOpenDelete("event", event)}>
-                                                        <Trash2 className="w-4 h-4 text-red-500" />
-                                                    </Button>
+                                                    {userRole !== "ortu" && (
+                                                        <>
+                                                            <Button variant="ghost" size="icon" onClick={() => handleOpenEditEvent(event)}>
+                                                                <Pencil className="w-4 h-4" />
+                                                            </Button>
+                                                            <Button variant="ghost" size="icon" onClick={() => handleOpenDelete("event", event)}>
+                                                                <Trash2 className="w-4 h-4 text-red-500" />
+                                                            </Button>
+                                                        </>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         ))
@@ -461,15 +465,19 @@ export function EventPage({ initialEvents, initialInformasi, userRole = "admin" 
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="text-right">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleTogglePin(info)}>
-                                                        {info.is_pinned ? <PinOff className="w-4 h-4 text-orange-500" /> : <Pin className="w-4 h-4" />}
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleOpenEditInfo(info)}>
-                                                        <Pencil className="w-4 h-4" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleOpenDelete("info", info)}>
-                                                        <Trash2 className="w-4 h-4 text-red-500" />
-                                                    </Button>
+                                                    {userRole !== "ortu" && (
+                                                        <>
+                                                            <Button variant="ghost" size="icon" onClick={() => handleTogglePin(info)}>
+                                                                {info.is_pinned ? <PinOff className="w-4 h-4 text-orange-500" /> : <Pin className="w-4 h-4" />}
+                                                            </Button>
+                                                            <Button variant="ghost" size="icon" onClick={() => handleOpenEditInfo(info)}>
+                                                                <Pencil className="w-4 h-4" />
+                                                            </Button>
+                                                            <Button variant="ghost" size="icon" onClick={() => handleOpenDelete("info", info)}>
+                                                                <Trash2 className="w-4 h-4 text-red-500" />
+                                                            </Button>
+                                                        </>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         ))
@@ -572,7 +580,7 @@ export function EventPage({ initialEvents, initialInformasi, userRole = "admin" 
                     <DialogHeader>
                         <DialogTitle>Hapus {deletingItem?.type === "event" ? "Event" : "Informasi"}</DialogTitle>
                     </DialogHeader>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Apakah Anda yakin ingin menghapus <strong>{(deletingItem?.item as Event)?.judul}</strong>?
                     </p>
                     <DialogFooter className="mt-4">

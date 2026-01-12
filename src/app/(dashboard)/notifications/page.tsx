@@ -123,13 +123,13 @@ export default function NotificationsPage() {
                     <CardHeader>
                         <CardTitle>Panduan</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-4 text-sm text-gray-600">
+                    <CardContent className="space-y-4 text-sm text-gray-600 dark:text-gray-400">
                         <div>
-                            <h4 className="font-medium text-gray-800">Cara Kerja</h4>
+                            <h4 className="font-medium text-gray-800 dark:text-gray-200">Cara Kerja</h4>
                             <p>Notifikasi akan dikirim ke semua user yang telah mengaktifkan notifikasi di browser/HP mereka.</p>
                         </div>
                         <div>
-                            <h4 className="font-medium text-gray-800">Tips</h4>
+                            <h4 className="font-medium text-gray-800 dark:text-gray-200">Tips</h4>
                             <ul className="list-disc list-inside space-y-1">
                                 <li>Gunakan judul yang jelas dan ringkas</li>
                                 <li>Isi pesan maksimal 2-3 kalimat</li>
@@ -137,7 +137,7 @@ export default function NotificationsPage() {
                             </ul>
                         </div>
                         <div>
-                            <h4 className="font-medium text-gray-800">Konfigurasi</h4>
+                            <h4 className="font-medium text-gray-800 dark:text-gray-200">Konfigurasi</h4>
                             <p className="text-amber-600">
                                 Pastikan VAPID keys sudah dikonfigurasi di <code>.env.local</code>
                             </p>

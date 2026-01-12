@@ -401,7 +401,7 @@ export function PerizinanTable({ initialData, santriList, userRole = "admin", li
                     <DialogHeader>
                         <DialogTitle>Hapus Perizinan</DialogTitle>
                     </DialogHeader>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Apakah Anda yakin ingin menghapus data izin{" "}
                         <strong>{deletingItem?.santri?.nama}</strong>?
                     </p>

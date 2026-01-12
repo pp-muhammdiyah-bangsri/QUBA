@@ -16,8 +16,8 @@ export default async function SantriPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-800">Data Santri</h1>
-                    <p className="text-gray-600">Kelola data santri Pondok Pesantren</p>
+                    <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Data Santri</h1>
+                    <p className="text-gray-600 dark:text-gray-400">Kelola data santri Pondok Pesantren</p>
                 </div>
                 <Link href="/santri/import">
                     <Button variant="outline" className="border-emerald-300 text-emerald-700 hover:bg-emerald-50">

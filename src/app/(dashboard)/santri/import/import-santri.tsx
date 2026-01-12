@@ -125,7 +125,7 @@ export function ImportSantri() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <h4 className="font-medium">Format File</h4>
-                            <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                            <ul className="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1">
                                 <li>File CSV dengan header di baris pertama</li>
                                 <li>Kolom wajib: <code className="bg-gray-100 px-1 rounded">nis, nama, jenis_kelamin, jenjang</code></li>
                                 <li>jenis_kelamin: L (Laki-laki) atau P (Perempuan)</li>
@@ -134,7 +134,7 @@ export function ImportSantri() {
                         </div>
                         <div className="space-y-2">
                             <h4 className="font-medium">Kolom Opsional</h4>
-                            <ul className="text-sm text-gray-600 list-disc list-inside space-y-1">
+                            <ul className="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1">
                                 <li><code className="bg-gray-100 px-1 rounded">alamat</code> - Alamat santri</li>
                                 <li><code className="bg-gray-100 px-1 rounded">nama_wali</code> - Nama wali/orang tua</li>
                                 <li><code className="bg-gray-100 px-1 rounded">kontak_wali</code> - Nomor telepon wali</li>

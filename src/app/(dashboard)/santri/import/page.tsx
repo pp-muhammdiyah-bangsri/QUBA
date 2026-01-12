@@ -114,7 +114,7 @@ export default function ImportSantriPage() {
                                 <p className="text-emerald-600 font-medium">Drop file Excel di sini...</p>
                             ) : (
                                 <>
-                                    <p className="text-gray-600 font-medium mb-2">
+                                    <p className="text-gray-600 dark:text-gray-400 font-medium mb-2">
                                         Drag & drop file Excel, atau klik untuk memilih
                                     </p>
                                     <p className="text-sm text-gray-400">Format: .xlsx atau .xls</p>

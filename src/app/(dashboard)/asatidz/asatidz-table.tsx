@@ -344,7 +344,7 @@ export function AsatidzTable({ initialData }: AsatidzTableProps) {
                     <DialogHeader>
                         <DialogTitle>Hapus Asatidz</DialogTitle>
                     </DialogHeader>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Apakah Anda yakin ingin menghapus data{" "}
                         <strong>{deletingAsatidz?.nama}</strong>? Tindakan ini tidak dapat
                         dibatalkan.

@@ -308,7 +308,7 @@ export function MapelTable({ initialData }: MapelTableProps) {
                     <DialogHeader>
                         <DialogTitle>Hapus Mapel</DialogTitle>
                     </DialogHeader>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                         Apakah Anda yakin ingin menghapus <strong>{deletingItem?.nama}</strong>?
                     </p>
                     <DialogFooter className="mt-4">
