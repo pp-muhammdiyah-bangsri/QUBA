@@ -52,25 +52,90 @@ export async function getLaporanData(santriId: string, month: number, year: numb
         .gte("tanggal", startDate)
         .lte("tanggal", endDate);
 
-    // Get presensi for the month
+    // Get presensi for the month with kegiatan info for categorization
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: presensiData } = await (supabase as any)
         .from("presensi")
-        .select("status, created_at")
+        .select("status, created_at, kegiatan:kegiatan_id(id, nama)")
         .eq("santri_id", santriId)
         .gte("created_at", startDate)
         .lte("created_at", endDate + "T23:59:59");
 
-    const presensiSummary = {
-        hadir: 0,
-        izin: 0,
-        sakit: 0,
-        alpa: 0,
+    // Categorize presensi by activity type
+    // Track unique kegiatan per category to count total opportunities
+    const categoryData = {
+        sholat: { hadir: 0, total: 0, kegiatanIds: new Set<string>() },
+        kbm: { hadir: 0, total: 0, kegiatanIds: new Set<string>() },
+        halaqoh: { hadir: 0, total: 0, kegiatanIds: new Set<string>() },
+        lainnya: { hadir: 0, total: 0, kegiatanIds: new Set<string>() },
     };
+
+    // Helper to categorize activity by name
+    const categorizeActivity = (nama: string): keyof typeof categoryData => {
+        const normalized = nama.toLowerCase().replace(/[''`]/g, "");
+
+        // Check for Sholat keywords
+        if (
+            normalized.includes("sholat") ||
+            normalized.includes("solat") ||
+            normalized.includes("shalat") ||
+            normalized.includes("qobliah") ||
+            normalized.includes("qabliah") ||
+            normalized.includes("badiah") ||
+            normalized.includes("badiyah") ||
+            normalized.includes("subuh") ||
+            normalized.includes("dzuhur") ||
+            normalized.includes("ashar") ||
+            normalized.includes("maghrib") ||
+            normalized.includes("isya") ||
+            normalized.includes("tahajud") ||
+            normalized.includes("duha") ||
+            normalized.includes("witir") ||
+            normalized.includes("syuruq")
+        ) {
+            return "sholat";
+        }
+
+        // Check for KBM
+        if (normalized.includes("kbm")) {
+            return "kbm";
+        }
+
+        // Check for Halaqoh
+        if (normalized.includes("halaqoh") || normalized.includes("halaqah")) {
+            return "halaqoh";
+        }
+
+        // Default to lainnya
+        return "lainnya";
+    };
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (presensiData as any[])?.forEach((p: { status: string }) => {
-        presensiSummary[p.status as keyof typeof presensiSummary]++;
+    (presensiData as any[])?.forEach((p: { status: string; kegiatan: { id: string; nama: string } | null }) => {
+        if (!p.kegiatan) return;
+
+        const category = categorizeActivity(p.kegiatan.nama);
+        const kegiatanId = p.kegiatan.id;
+
+        // Track unique kegiatan for total count
+        if (!categoryData[category].kegiatanIds.has(kegiatanId)) {
+            categoryData[category].kegiatanIds.add(kegiatanId);
+            categoryData[category].total++;
+        }
+
+        // Count hadir
+        if (p.status === "hadir") {
+            categoryData[category].hadir++;
+        }
     });
+
+    // Build categorized presensi result (without Set for serialization)
+    const presensiCategorized = {
+        sholat: { hadir: categoryData.sholat.hadir, total: categoryData.sholat.total },
+        kbm: { hadir: categoryData.kbm.hadir, total: categoryData.kbm.total },
+        halaqoh: { hadir: categoryData.halaqoh.hadir, total: categoryData.halaqoh.total },
+        lainnya: { hadir: categoryData.lainnya.hadir, total: categoryData.lainnya.total },
+    };
 
     // Get pelanggaran for the month
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -100,7 +165,7 @@ export async function getLaporanData(santriId: string, month: number, year: numb
             lembar: hafalanLembar || [],
             tasmi: hafalanTasmi || [],
         },
-        presensi: presensiSummary,
+        presensi: presensiCategorized,
         pelanggaran: pelanggaran || [],
         perizinan: perizinan || [],
     };

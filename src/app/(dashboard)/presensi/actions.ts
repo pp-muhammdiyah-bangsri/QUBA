@@ -21,6 +21,7 @@ export type KegiatanFormData = z.infer<typeof kegiatanSchema>;
 export async function generateDailySchedules() {
     const supabase = await createAdminClient();
     const today = new Date();
+
     // Force Timezone to Asia/Jakarta (WIB)
     // format to YYYY-MM-DD
     const todayString = new Intl.DateTimeFormat("en-CA", {
@@ -30,12 +31,20 @@ export async function generateDailySchedules() {
         day: "2-digit"
     }).format(today);
 
-    // Get day of week for Jakarta
-    // new Date(todayString) parses as UTC, so we can use getDay() properly if Sunday=0
-    // "2025-01-12" (Sunday) -> getDay() = 0 -> converted to 7
-    // "2025-01-13" (Monday) -> getDay() = 1
-    const jakartaDate = new Date(todayString);
-    const dayOfWeek = jakartaDate.getDay() || 7; // Convert 0(Sun) -> 7
+    // Get day of week for Jakarta timezone directly (avoid UTC parsing issues)
+    // Sunday=0 -> 7, Monday=1, etc.
+    const dayOfWeekRaw = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Jakarta",
+        weekday: "short"
+    }).format(today);
+
+    // Map weekday name to number (1=Monday, 7=Sunday)
+    const dayMap: Record<string, number> = {
+        "Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6, "Sun": 7
+    };
+    const dayOfWeek = dayMap[dayOfWeekRaw] || 1;
+
+    console.log(`[generateDailySchedules] Running for date: ${todayString}, day: ${dayOfWeekRaw} (${dayOfWeek})`);
 
     // 1. Get ALL Routines first (debug), then filter manually or use correct syntax
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,6 +62,8 @@ export async function generateDailySchedules() {
         const hariAktif = r.hari_aktif || [];
         return hariAktif.some((h: number | string) => Number(h) === dayOfWeek);
     }) || [];
+
+    console.log(`[generateDailySchedules] Found ${routines.length} routines for day ${dayOfWeek}`);
 
     if (!routines || routines.length === 0) return;
 

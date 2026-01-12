@@ -58,10 +58,10 @@ interface LaporanData {
         tasmi: { juz: number; predikat: string; nilai: number | null; tanggal: string }[];
     };
     presensi: {
-        hadir: number;
-        izin: number;
-        sakit: number;
-        alpa: number;
+        sholat: { hadir: number; total: number };
+        kbm: { hadir: number; total: number };
+        halaqoh: { hadir: number; total: number };
+        lainnya: { hadir: number; total: number };
     };
     pelanggaran: { deskripsi: string; poin: number | null; tanggal: string; penyelesaian: string | null }[];
     perizinan: { alasan: string; status: string; tgl_mulai: string; tgl_selesai: string }[];
@@ -122,8 +122,12 @@ export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole 
 
     const monthName = monthOptions.find((m) => m.value === selectedMonth)?.label || "";
 
-    const totalPresensi = laporanData
-        ? laporanData.presensi.hadir + laporanData.presensi.izin + laporanData.presensi.sakit + laporanData.presensi.alpa
+    // Calculate total attendance from all categories
+    const totalHadir = laporanData
+        ? laporanData.presensi.sholat.hadir + laporanData.presensi.kbm.hadir + laporanData.presensi.halaqoh.hadir + laporanData.presensi.lainnya.hadir
+        : 0;
+    const totalKegiatan = laporanData
+        ? laporanData.presensi.sholat.total + laporanData.presensi.kbm.total + laporanData.presensi.halaqoh.total + laporanData.presensi.lainnya.total
         : 0;
 
     return (
@@ -266,7 +270,7 @@ export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole 
                                 <div className="flex items-center gap-2">
                                     <CheckCircle className="w-8 h-8 text-green-600 print:w-6 print:h-6" />
                                     <div>
-                                        <div className="text-xl font-bold text-green-700 print:text-lg">{laporanData.presensi.hadir}/{totalPresensi}</div>
+                                        <div className="text-xl font-bold text-green-700 print:text-lg">{totalHadir}/{totalKegiatan}</div>
                                         <div className="text-xs text-green-600">Kehadiran</div>
                                     </div>
                                 </div>
@@ -361,21 +365,21 @@ export function LaporanViewer({ santriList, monthOptions, yearOptions, userRole 
                         </CardHeader>
                         <CardContent>
                             <div className="grid grid-cols-4 gap-4 text-center print:gap-2">
-                                <div className="p-3 bg-green-50 rounded-lg print:p-2">
-                                    <div className="text-2xl font-bold text-green-700 print:text-lg">{laporanData.presensi.hadir}</div>
-                                    <div className="text-sm text-green-600">Hadir</div>
-                                </div>
                                 <div className="p-3 bg-blue-50 rounded-lg print:p-2">
-                                    <div className="text-2xl font-bold text-blue-700 print:text-lg">{laporanData.presensi.izin}</div>
-                                    <div className="text-sm text-blue-600">Izin</div>
+                                    <div className="text-2xl font-bold text-blue-700 print:text-lg">{laporanData.presensi.sholat.hadir}/{laporanData.presensi.sholat.total}</div>
+                                    <div className="text-sm text-blue-600">Sholat</div>
+                                </div>
+                                <div className="p-3 bg-green-50 rounded-lg print:p-2">
+                                    <div className="text-2xl font-bold text-green-700 print:text-lg">{laporanData.presensi.kbm.hadir}/{laporanData.presensi.kbm.total}</div>
+                                    <div className="text-sm text-green-600">KBM</div>
                                 </div>
                                 <div className="p-3 bg-yellow-50 rounded-lg print:p-2">
-                                    <div className="text-2xl font-bold text-yellow-700 print:text-lg">{laporanData.presensi.sakit}</div>
-                                    <div className="text-sm text-yellow-600">Sakit</div>
+                                    <div className="text-2xl font-bold text-yellow-700 print:text-lg">{laporanData.presensi.halaqoh.hadir}/{laporanData.presensi.halaqoh.total}</div>
+                                    <div className="text-sm text-yellow-600">Halaqoh</div>
                                 </div>
-                                <div className="p-3 bg-red-50 rounded-lg print:p-2">
-                                    <div className="text-2xl font-bold text-red-700 print:text-lg">{laporanData.presensi.alpa}</div>
-                                    <div className="text-sm text-red-600">Alpa</div>
+                                <div className="p-3 bg-purple-50 rounded-lg print:p-2">
+                                    <div className="text-2xl font-bold text-purple-700 print:text-lg">{laporanData.presensi.lainnya.hadir}/{laporanData.presensi.lainnya.total}</div>
+                                    <div className="text-sm text-purple-600">Kegiatan Lain</div>
                                 </div>
                             </div>
                         </CardContent>

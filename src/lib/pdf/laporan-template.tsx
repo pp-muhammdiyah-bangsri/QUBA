@@ -232,7 +232,12 @@ interface LaporanPDFProps {
             lembar: { tanggal: string; juz: number; lembar: string }[];
             tasmi: { tanggal: string; juz: number; nilai: number | null; predikat?: string }[];
         };
-        presensi: { hadir: number; izin: number; sakit: number; alpa: number };
+        presensi: {
+            sholat: { hadir: number; total: number };
+            kbm: { hadir: number; total: number };
+            halaqoh: { hadir: number; total: number };
+            lainnya: { hadir: number; total: number };
+        };
         pelanggaran: { tanggal: string; deskripsi: string; poin: number | null; penyelesaian?: string | null }[];
         musyrif_nama: string;
         musyrif_jenis_kelamin: string;
@@ -251,13 +256,6 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
         .sort((a, b) => (b.poin ?? 0) - (a.poin ?? 0))
         .slice(0, 3);
     const hasMorePelanggaran = data.pelanggaran.length > 3;
-
-    // -- PHOTO LOGIC --
-    // Gender-based fallback
-    const MALE_AVATAR = "https://avatar.iran.liara.run/public/boy";
-    const FEMALE_AVATAR = "https://avatar.iran.liara.run/public/girl";
-
-    const photoSrc = data.santri?.foto_url || (data.santri?.jenis_kelamin === "L" ? MALE_AVATAR : FEMALE_AVATAR);
 
     // -- PROGRESS LOGIC --
     const progressByJuz = new Map<string, { uniqueLembar: Set<string>, activeDays: Set<string> }>();
@@ -311,9 +309,27 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                     <View style={styles.profileBox}>
                         <Text style={styles.sectionLabel}>DATA SANTRI</Text>
                         <View style={styles.profileContent}>
-                            {/* Photo */}
+                            {/* Photo - Only load actual photo if exists, otherwise show initials */}
                             <View style={styles.photoBox}>
-                                <Image src={photoSrc} style={styles.photoImage} />
+                                {data.santri?.foto_url ? (
+                                    <Image src={data.santri.foto_url} style={styles.photoImage} />
+                                ) : (
+                                    <View style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        backgroundColor: data.santri?.jenis_kelamin === 'L' ? '#3b82f6' : '#ec4899',
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }}>
+                                        <Text style={{
+                                            fontSize: 24,
+                                            fontWeight: 'bold',
+                                            color: '#ffffff'
+                                        }}>
+                                            {data.santri?.nama ? data.santri.nama.charAt(0).toUpperCase() : '?'}
+                                        </Text>
+                                    </View>
+                                )}
                             </View>
                             {/* Info */}
                             <View style={styles.profileInfo}>
@@ -340,21 +356,21 @@ export function LaporanPDFDocument({ data }: LaporanPDFProps) {
                     <View style={styles.statsBox}>
                         <Text style={styles.sectionLabel}>REKAP KEHADIRAN</Text>
                         <View style={styles.attendanceGrid}>
+                            <View style={[styles.attCard, { backgroundColor: '#dbeafe' }]}>
+                                <Text style={[styles.attValue, { color: '#1e40af' }]}>{data.presensi.sholat.hadir}/{data.presensi.sholat.total}</Text>
+                                <Text style={styles.attLabel}>Sholat</Text>
+                            </View>
                             <View style={[styles.attCard, { backgroundColor: '#dcfce7' }]}>
-                                <Text style={[styles.attValue, { color: '#166534' }]}>{data.presensi.hadir}</Text>
-                                <Text style={styles.attLabel}>Hadir</Text>
+                                <Text style={[styles.attValue, { color: '#166534' }]}>{data.presensi.kbm.hadir}/{data.presensi.kbm.total}</Text>
+                                <Text style={styles.attLabel}>KBM</Text>
                             </View>
                             <View style={[styles.attCard, { backgroundColor: '#fef9c3' }]}>
-                                <Text style={[styles.attValue, { color: '#854d0e' }]}>{data.presensi.sakit}</Text>
-                                <Text style={styles.attLabel}>Sakit</Text>
+                                <Text style={[styles.attValue, { color: '#854d0e' }]}>{data.presensi.halaqoh.hadir}/{data.presensi.halaqoh.total}</Text>
+                                <Text style={styles.attLabel}>Halaqoh</Text>
                             </View>
-                            <View style={[styles.attCard, { backgroundColor: '#dbeafe' }]}>
-                                <Text style={[styles.attValue, { color: '#1e40af' }]}>{data.presensi.izin}</Text>
-                                <Text style={styles.attLabel}>Izin</Text>
-                            </View>
-                            <View style={[styles.attCard, { backgroundColor: '#fee2e2' }]}>
-                                <Text style={[styles.attValue, { color: '#b91c1c' }]}>{data.presensi.alpa}</Text>
-                                <Text style={styles.attLabel}>Alpa</Text>
+                            <View style={[styles.attCard, { backgroundColor: '#f3e8ff' }]}>
+                                <Text style={[styles.attValue, { color: '#7c3aed' }]}>{data.presensi.lainnya.hadir}/{data.presensi.lainnya.total}</Text>
+                                <Text style={styles.attLabel}>Kegiatan Lain</Text>
                             </View>
                         </View>
                     </View>

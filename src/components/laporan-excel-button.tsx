@@ -19,10 +19,10 @@ interface LaporanData {
         tasmi: { juz: number; predikat: string; nilai: number | null; tanggal: string }[];
     };
     presensi: {
-        hadir: number;
-        izin: number;
-        sakit: number;
-        alpa: number;
+        sholat: { hadir: number; total: number };
+        kbm: { hadir: number; total: number };
+        halaqoh: { hadir: number; total: number };
+        lainnya: { hadir: number; total: number };
     };
     pelanggaran: { deskripsi: string; poin: number | null; tanggal: string; penyelesaian: string | null }[];
 }
@@ -76,16 +76,18 @@ export function LaporanExcelButton({ data }: LaporanExcelButtonProps) {
                 XLSX.utils.book_append_sheet(workbook, tasmiSheet, "Tasmi");
             }
 
-            // Sheet 4: Presensi
-            const presensiData = [
-                ["Status", "Jumlah"],
-                ["Hadir", data.presensi.hadir],
-                ["Izin", data.presensi.izin],
-                ["Sakit", data.presensi.sakit],
-                ["Alpa", data.presensi.alpa],
-                ["Total", data.presensi.hadir + data.presensi.izin + data.presensi.sakit + data.presensi.alpa],
+            // Sheet 4: Presensi (categorized format)
+            const totalHadir = data.presensi.sholat.hadir + data.presensi.kbm.hadir + data.presensi.halaqoh.hadir + data.presensi.lainnya.hadir;
+            const totalKegiatan = data.presensi.sholat.total + data.presensi.kbm.total + data.presensi.halaqoh.total + data.presensi.lainnya.total;
+            const presensiDataSheet = [
+                ["Kategori", "Hadir", "Total"],
+                ["Sholat", data.presensi.sholat.hadir, data.presensi.sholat.total],
+                ["KBM", data.presensi.kbm.hadir, data.presensi.kbm.total],
+                ["Halaqoh", data.presensi.halaqoh.hadir, data.presensi.halaqoh.total],
+                ["Kegiatan Lain", data.presensi.lainnya.hadir, data.presensi.lainnya.total],
+                ["Total", totalHadir, totalKegiatan],
             ];
-            const presensiSheet = XLSX.utils.aoa_to_sheet(presensiData);
+            const presensiSheet = XLSX.utils.aoa_to_sheet(presensiDataSheet);
             XLSX.utils.book_append_sheet(workbook, presensiSheet, "Presensi");
 
             // Sheet 5: Pelanggaran
