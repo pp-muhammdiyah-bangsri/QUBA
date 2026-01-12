@@ -9,6 +9,8 @@ import { UpcomingEvents, EventItem } from "@/components/upcoming-events";
 interface AdminDashboardProps {
     stats: {
         santriCount: number;
+        santriPutraCount: number;
+        santriPutriCount: number;
         asatidzCount: number;
         hafalanCount: number;
         eventCount: number;
@@ -27,6 +29,7 @@ export function AdminDashboard({ stats, chartData, recentActivities, upcomingEve
         {
             title: "Jumlah Santri",
             value: stats.santriCount,
+            subtitle: `Putra: ${stats.santriPutraCount} | Putri: ${stats.santriPutriCount}`,
             icon: Users,
             color: "bg-blue-500",
         },
@@ -85,6 +88,9 @@ export function AdminDashboard({ stats, chartData, recentActivities, upcomingEve
                                         <h3 className="text-3xl font-bold text-foreground mt-1 tracking-tight">
                                             {stat.value.toLocaleString('id-ID')}
                                         </h3>
+                                        {stat.subtitle && (
+                                            <p className="text-xs text-muted-foreground mt-1">{stat.subtitle}</p>
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>

@@ -7,8 +7,10 @@ import { OrtuDashboard } from "@/components/dashboard/ortu-dashboard";
 async function getAdminStats() {
     const supabase = await createClient();
 
-    const [santriResult, asatidzResult, hafalanResult, eventResult] = await Promise.all([
+    const [santriResult, santriPutraResult, santriPutriResult, asatidzResult, hafalanResult, eventResult] = await Promise.all([
         supabase.from("santri").select("*", { count: "exact", head: true }),
+        supabase.from("santri").select("*", { count: "exact", head: true }).eq("jenis_kelamin", "L"),
+        supabase.from("santri").select("*", { count: "exact", head: true }).eq("jenis_kelamin", "P"),
         supabase.from("asatidz").select("*", { count: "exact", head: true }),
         supabase.from("hafalan_selesai").select("*", { count: "exact", head: true }),
         supabase.from("event").select("*", { count: "exact", head: true }),
@@ -16,6 +18,8 @@ async function getAdminStats() {
 
     return {
         santriCount: santriResult.count || 0,
+        santriPutraCount: santriPutraResult.count || 0,
+        santriPutriCount: santriPutriResult.count || 0,
         asatidzCount: asatidzResult.count || 0,
         hafalanCount: hafalanResult.count || 0,
         eventCount: eventResult.count || 0,
