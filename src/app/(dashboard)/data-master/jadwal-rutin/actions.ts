@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { generateDailySchedules } from "@/app/(dashboard)/presensi/actions";
 
 export type JadwalRutin = {
     id: string;
@@ -49,7 +50,11 @@ export async function createJadwalRutin(formData: FormData) {
         return;
     }
 
+    // Auto-generate kegiatan for today if this jadwal rutin is active today
+    await generateDailySchedules();
+
     revalidatePath("/data-master/jadwal-rutin");
+    revalidatePath("/presensi");
 }
 
 export async function updateJadwalRutin(id: string, formData: FormData) {
