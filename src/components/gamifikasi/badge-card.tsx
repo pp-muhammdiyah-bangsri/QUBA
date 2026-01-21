@@ -112,13 +112,6 @@ export function BadgeCard({
                         </div>
                     </div>
                 </div>
-
-                {/* Locked overlay */}
-                {isLocked && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm">
-                        <span className="text-3xl">🔒</span>
-                    </div>
-                )}
             </CardContent>
         </Card>
     );
