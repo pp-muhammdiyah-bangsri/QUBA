@@ -21,6 +21,8 @@ import {
     KeyRound,
     Bell,
     Settings,
+    Trophy,
+    Medal,
 } from "lucide-react";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -115,6 +117,18 @@ const menuItems = [
         ],
     },
 
+    {
+        title: "Leaderboard",
+        href: "/leaderboard",
+        icon: Trophy,
+        roles: ["admin", "ustadz", "ortu"],
+    },
+    {
+        title: "Pencapaian",
+        href: "/achievements",
+        icon: Medal,
+        roles: ["ortu"],
+    },
     {
         title: "Profil Asatidz",
         href: "/profil/pengajar",
