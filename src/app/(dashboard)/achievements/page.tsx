@@ -46,7 +46,8 @@ export default async function AchievementsPage() {
     const santriId = profile.linked_santri_id;
 
     // Get santri info
-    const { data: santri } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: santri } = await (supabase as any)
         .from("santri")
         .select("nama")
         .eq("id", santriId)
