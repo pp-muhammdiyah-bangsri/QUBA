@@ -40,6 +40,7 @@ export interface LeaderboardEntry {
     total_points: number;
     level: number;
     badge_count: number;
+    rank?: number;
 }
 
 // Get all badges
@@ -181,6 +182,48 @@ export async function getLeaderboard(limit = 10, jenjang?: string): Promise<Lead
         level: s.level || 1,
         badge_count: badgeCountMap.get(s.id) || 0,
     }));
+}
+
+// Get santri rank in leaderboard
+export async function getSantriRank(santriId: string): Promise<LeaderboardEntry | null> {
+    const supabase = await createClient();
+
+    // Get santri info
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: santri } = await (supabase as any)
+        .from("santri")
+        .select("id, nama, jenjang, total_points, level")
+        .eq("id", santriId)
+        .single();
+
+    if (!santri) return null;
+
+    // Count how many santri have more points (to calculate rank)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { count } = await (supabase as any)
+        .from("santri")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "aktif")
+        .gt("total_points", santri.total_points || 0);
+
+    const rank = (count || 0) + 1;
+
+    // Get badge count
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { count: badgeCount } = await (supabase as any)
+        .from("santri_badges")
+        .select("id", { count: "exact", head: true })
+        .eq("santri_id", santriId);
+
+    return {
+        id: santri.id,
+        nama: santri.nama,
+        jenjang: santri.jenjang,
+        total_points: santri.total_points || 0,
+        level: santri.level || 1,
+        badge_count: badgeCount || 0,
+        rank,
+    };
 }
 
 // Award badge to santri
