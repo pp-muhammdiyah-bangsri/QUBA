@@ -302,24 +302,42 @@ async function getOrtuData(userId: string) {
     const santriId = profileData?.linked_santri_id;
 
     if (!santriId) {
-        return { childInfo: null, hafalanProgress: { juzSelesai: 0, totalJuz: 30 }, presensiSummary: { hadir: 0, izin: 0, sakit: 0, alpa: 0 }, recentPelanggaran: [], recentPerizinan: [], upcomingEvents: [] };
+        return {
+            childInfo: null,
+            hafalanProgress: { juzSelesai: 0, totalJuz: 30 },
+            presensiSummary: {
+                sholat: { hadir: 0, total: 0 },
+                kbm: { hadir: 0, total: 0 },
+                halaqoh: { hadir: 0, total: 0 },
+                lainnya: { hadir: 0, total: 0 },
+            },
+            recentPelanggaran: [],
+            recentPerizinan: [],
+            upcomingEvents: []
+        };
     }
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date();
+    const todayStr = today.toISOString().split("T")[0];
+
+    // Get current month date range
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split("T")[0];
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split("T")[0];
 
     const [santriResult, hafalanResult, presensiResult, pelanggaranResult, perizinanResult, eventsResult] = await Promise.all([
         supabase.from("santri").select("nama, nis, jenjang, status").eq("id", santriId).single(),
         supabase.from("hafalan_selesai").select("juz, tanggal").eq("santri_id", santriId).order("tanggal", { ascending: false }),
-        supabase.from("presensi").select("status").eq("santri_id", santriId),
+        // Get presensi with kegiatan info for categorization - filter by current month
+        supabase.from("presensi").select("status, kegiatan:kegiatan_id(id, nama)").eq("santri_id", santriId).gte("created_at", startOfMonth).lte("created_at", endOfMonth + "T23:59:59"),
         supabase.from("pelanggaran").select("id, deskripsi, tanggal, poin").eq("santri_id", santriId).order("tanggal", { ascending: false }).limit(3),
         supabase.from("perizinan").select("id, alasan, status, tgl_mulai, tgl_selesai").eq("santri_id", santriId).order("tgl_mulai", { ascending: false }).limit(3),
-        supabase.from("event").select("*").gte("tanggal_mulai", today).order("tanggal_mulai", { ascending: true }).limit(5),
+        supabase.from("event").select("*").gte("tanggal_mulai", todayStr).order("tanggal_mulai", { ascending: true }).limit(5),
     ]);
 
     // Type assertions
     const santriData = santriResult.data as { nama: string; nis: string; jenjang: string; status: string } | null;
     const hafalanData = hafalanResult.data as { juz: number; tanggal: string }[] | null;
-    const presensiData = presensiResult.data as { status: string }[] | null;
+    const presensiData = presensiResult.data as { status: string; kegiatan: { id: string; nama: string } | null }[] | null;
     const pelanggaranData = pelanggaranResult.data as { id: string; deskripsi: string; tanggal: string; poin?: number }[] | null;
     const perizinanData = perizinanResult.data as { id: string; alasan: string; status: string; tgl_mulai: string; tgl_selesai: string }[] | null;
     const upcomingEvents = (eventsResult.data || []).map((e: any) => ({
@@ -330,11 +348,78 @@ async function getOrtuData(userId: string) {
         jenis: e.jenis
     }));
 
+    // Helper to categorize activity by name
+    const categorizeActivity = (nama: string): "sholat" | "kbm" | "halaqoh" | "lainnya" => {
+        const normalized = nama.toLowerCase().replace(/[''`]/g, "");
+
+        // Check for Sholat keywords
+        if (
+            normalized.includes("sholat") ||
+            normalized.includes("solat") ||
+            normalized.includes("shalat") ||
+            normalized.includes("qobliah") ||
+            normalized.includes("qabliah") ||
+            normalized.includes("badiah") ||
+            normalized.includes("badiyah") ||
+            normalized.includes("subuh") ||
+            normalized.includes("dzuhur") ||
+            normalized.includes("ashar") ||
+            normalized.includes("maghrib") ||
+            normalized.includes("isya") ||
+            normalized.includes("tahajud") ||
+            normalized.includes("duha") ||
+            normalized.includes("witir") ||
+            normalized.includes("syuruq")
+        ) {
+            return "sholat";
+        }
+
+        // Check for KBM
+        if (normalized.includes("kbm")) {
+            return "kbm";
+        }
+
+        // Check for Halaqoh
+        if (normalized.includes("halaqoh") || normalized.includes("halaqah")) {
+            return "halaqoh";
+        }
+
+        // Default to lainnya
+        return "lainnya";
+    };
+
+    // Categorize presensi by activity type
+    const categoryData = {
+        sholat: { hadir: 0, total: 0, kegiatanIds: new Set<string>() },
+        kbm: { hadir: 0, total: 0, kegiatanIds: new Set<string>() },
+        halaqoh: { hadir: 0, total: 0, kegiatanIds: new Set<string>() },
+        lainnya: { hadir: 0, total: 0, kegiatanIds: new Set<string>() },
+    };
+
+    (presensiData || []).forEach((p) => {
+        if (!p.kegiatan) return;
+
+        const category = categorizeActivity(p.kegiatan.nama);
+        const kegiatanId = p.kegiatan.id;
+
+        // Track unique kegiatan for total count
+        if (!categoryData[category].kegiatanIds.has(kegiatanId)) {
+            categoryData[category].kegiatanIds.add(kegiatanId);
+            categoryData[category].total++;
+        }
+
+        // Count hadir
+        if (p.status === "hadir") {
+            categoryData[category].hadir++;
+        }
+    });
+
+    // Build categorized presensi result
     const presensiSummary = {
-        hadir: presensiData?.filter(p => p.status === "hadir").length || 0,
-        izin: presensiData?.filter(p => p.status === "izin").length || 0,
-        sakit: presensiData?.filter(p => p.status === "sakit").length || 0,
-        alpa: presensiData?.filter(p => p.status === "alpa").length || 0,
+        sholat: { hadir: categoryData.sholat.hadir, total: categoryData.sholat.total },
+        kbm: { hadir: categoryData.kbm.hadir, total: categoryData.kbm.total },
+        halaqoh: { hadir: categoryData.halaqoh.hadir, total: categoryData.halaqoh.total },
+        lainnya: { hadir: categoryData.lainnya.hadir, total: categoryData.lainnya.total },
     };
 
     return {

@@ -21,10 +21,10 @@ interface OrtuDashboardProps {
         };
     };
     presensiSummary: {
-        hadir: number;
-        izin: number;
-        sakit: number;
-        alpa: number;
+        sholat: { hadir: number; total: number };
+        kbm: { hadir: number; total: number };
+        halaqoh: { hadir: number; total: number };
+        lainnya: { hadir: number; total: number };
     };
     recentPelanggaran: {
         id: string;
@@ -169,21 +169,21 @@ export function OrtuDashboard({
                     </CardHeader>
                     <CardContent className="p-6">
                         <div className="grid grid-cols-2 gap-4 h-full">
-                            <div className="flex flex-col justify-center p-4 bg-green-50/50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 rounded-2xl hover:bg-green-100/50 dark:hover:bg-green-900/20 transition-colors">
-                                <span className="text-sm font-medium text-green-700 dark:text-green-400">Hadir</span>
-                                <span className="text-3xl font-bold text-green-600 dark:text-green-500 mt-1">{presensiSummary.hadir}</span>
+                            <div className="flex flex-col justify-center p-4 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-2xl hover:bg-blue-100/50 dark:hover:bg-blue-900/20 transition-colors text-center">
+                                <span className="text-2xl font-bold text-blue-600 dark:text-blue-500">{presensiSummary.sholat.hadir}/{presensiSummary.sholat.total}</span>
+                                <span className="text-sm font-medium text-blue-700 dark:text-blue-400 mt-1">Sholat</span>
                             </div>
-                            <div className="flex flex-col justify-center p-4 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-2xl hover:bg-blue-100/50 dark:hover:bg-blue-900/20 transition-colors">
-                                <span className="text-sm font-medium text-blue-700 dark:text-blue-400">Izin</span>
-                                <span className="text-3xl font-bold text-blue-600 dark:text-blue-500 mt-1">{presensiSummary.izin}</span>
+                            <div className="flex flex-col justify-center p-4 bg-green-50/50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 rounded-2xl hover:bg-green-100/50 dark:hover:bg-green-900/20 transition-colors text-center">
+                                <span className="text-2xl font-bold text-green-600 dark:text-green-500">{presensiSummary.kbm.hadir}/{presensiSummary.kbm.total}</span>
+                                <span className="text-sm font-medium text-green-700 dark:text-green-400 mt-1">KBM</span>
                             </div>
-                            <div className="flex flex-col justify-center p-4 bg-yellow-50/50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/30 rounded-2xl hover:bg-yellow-100/50 dark:hover:bg-yellow-900/20 transition-colors">
-                                <span className="text-sm font-medium text-yellow-700 dark:text-yellow-400">Sakit</span>
-                                <span className="text-3xl font-bold text-yellow-600 dark:text-yellow-500 mt-1">{presensiSummary.sakit}</span>
+                            <div className="flex flex-col justify-center p-4 bg-yellow-50/50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/30 rounded-2xl hover:bg-yellow-100/50 dark:hover:bg-yellow-900/20 transition-colors text-center">
+                                <span className="text-2xl font-bold text-yellow-600 dark:text-yellow-500">{presensiSummary.halaqoh.hadir}/{presensiSummary.halaqoh.total}</span>
+                                <span className="text-sm font-medium text-yellow-700 dark:text-yellow-400 mt-1">Halaqoh</span>
                             </div>
-                            <div className="flex flex-col justify-center p-4 bg-red-50/50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-2xl hover:bg-red-100/50 dark:hover:bg-red-900/20 transition-colors">
-                                <span className="text-sm font-medium text-red-700 dark:text-red-400">Alpa</span>
-                                <span className="text-3xl font-bold text-red-600 dark:text-red-500 mt-1">{presensiSummary.alpa}</span>
+                            <div className="flex flex-col justify-center p-4 bg-purple-50/50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/30 rounded-2xl hover:bg-purple-100/50 dark:hover:bg-purple-900/20 transition-colors text-center">
+                                <span className="text-2xl font-bold text-purple-600 dark:text-purple-500">{presensiSummary.lainnya.hadir}/{presensiSummary.lainnya.total}</span>
+                                <span className="text-sm font-medium text-purple-700 dark:text-purple-400 mt-1">Kegiatan Lain</span>
                             </div>
                         </div>
                     </CardContent>
