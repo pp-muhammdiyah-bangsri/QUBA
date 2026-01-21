@@ -132,7 +132,12 @@ export async function getLeaderboard(limit = 10, jenjang?: string): Promise<Lead
         .limit(limit);
 
     if (jenjang && jenjang !== "all") {
-        query = query.eq("jenjang", jenjang);
+        // Handle SMA/SMK combined category
+        if (jenjang === "SMA/SMK") {
+            query = query.in("jenjang", ["SMA", "SMK"]);
+        } else {
+            query = query.eq("jenjang", jenjang);
+        }
     }
 
     const { data: santriData, error: santriError } = await query;

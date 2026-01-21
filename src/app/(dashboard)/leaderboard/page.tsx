@@ -27,7 +27,8 @@ export default async function LeaderboardPage() {
     // Get leaderboard data
     const leaderboardAll = await getLeaderboard(10);
     const leaderboardSMP = await getLeaderboard(10, "SMP");
-    const leaderboardSMA = await getLeaderboard(10, "SMA");
+    // SMA/SMK combined - need to fetch both and merge
+    const leaderboardSMA = await getLeaderboard(10, "SMA/SMK");
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10">
@@ -60,7 +61,7 @@ export default async function LeaderboardPage() {
                 />
                 <LeaderboardCard
                     entries={leaderboardSMA}
-                    title="📗 Top 10 SMA"
+                    title="📗 Top 10 SMA/SMK"
                     currentSantriId={linkedSantriId}
                 />
             </div>
