@@ -50,7 +50,7 @@ export function LevelProgress({
                         className="h-2 bg-amber-100 dark:bg-amber-900/50"
                     />
                     <p className="text-xs text-muted-foreground text-right">
-                        {nextLevelPoints.toLocaleString("id-ID")} poin untuk level selanjutnya
+                        Butuh {(nextLevelPoints - totalPoints).toLocaleString("id-ID")} poin lagi
                     </p>
                 </div>
             )}
